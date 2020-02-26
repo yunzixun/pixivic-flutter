@@ -10,9 +10,11 @@ class PicPage extends StatefulWidget {
   @override
   _PicPageState createState() => _PicPageState();
 
-  PicPage(this.picDate);
+  PicPage(this.picDate, this.picMode, this.modeIsSearch);
 
   final String picDate;
+  final String picMode;
+  final bool modeIsSearch;
 }
 
 class _PicPageState extends State<PicPage> {
@@ -35,26 +37,42 @@ class _PicPageState extends State<PicPage> {
   }
 
   @override
+  void didUpdateWidget(PicPage oldWidget) {
+    _getJsonList().then((value) {
+      setState(() {
+        picList = value;
+        picTotalNum = value.length;
+      });
+    });
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (picList == null) {
       return Center();
     } else {
       return Container(
-        child: StaggeredGridView.countBuilder(
-          crossAxisCount: 2,
-          itemCount: picTotalNum,
-          itemBuilder: (BuildContext context, int index) => imageCell(index),
-          staggeredTileBuilder: (index) => StaggeredTile.fit(1),
-          mainAxisSpacing: 4.0,
-          crossAxisSpacing: 4.0,
-        )
-      );
+          child: StaggeredGridView.countBuilder(
+        crossAxisCount: 2,
+        itemCount: picTotalNum,
+        itemBuilder: (BuildContext context, int index) => imageCell(index),
+        staggeredTileBuilder: (index) => StaggeredTile.fit(1),
+        mainAxisSpacing: 4.0,
+        crossAxisSpacing: 4.0,
+      ));
     }
   }
 
   _getJsonList() async {
-    String url =
-        'https://api.pixivic.com/ranks?page=1&date=${widget.picDate}&mode=day&pageSize=500';
+    String url;
+    if (!widget.modeIsSearch) {
+      url =
+          'https://api.pixivic.com/ranks?page=1&date=${widget.picDate}&mode=${widget.picMode}&pageSize=500';
+    } else {
+      url =
+          'https://api.pixivic.com/illustrations?illustType=illust&searchType=original&maxSanityLevel=6&page=1&keyword=${widget.picMode}&pageSize=30';
+    }
     var requests = await Requests.get(url);
     requests.raiseForStatus();
     List jsonList = jsonDecode(requests.content())['data'];

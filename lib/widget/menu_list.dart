@@ -10,29 +10,30 @@ class MenuList extends StatefulWidget {
   MenuList(this.active, this.onTap);
 
   final bool active;
-  final ValueChanged<int> onTap;
+  final ValueChanged<String> onTap;
 }
 
 class _MenuListState extends State<MenuList> {
-  List<double> leftList = [0,0,0];
+  List<double> leftList = [0, 0, 0];
+  int numOftotalCell = 4;
+  List<int> durations = [300, 350, 400, 450];
+  List<int> heightNumOfCell = [91, 183, 275, 329];
 
   @override
   Widget build(BuildContext context) {
-    if(widget.active) {
-      leftList = [ScreenUtil().setHeight(12), 
-        ScreenUtil().setHeight(12), ScreenUtil().setHeight(12)];
+    if (widget.active) {
+      leftList = List.filled(numOftotalCell, ScreenUtil().setHeight(12));
     } else {
-      leftList = [ScreenUtil().setHeight(-300),
-        ScreenUtil().setHeight(-300),ScreenUtil().setHeight(-300)];
+      leftList = List.filled(numOftotalCell, ScreenUtil().setHeight(-300));
     }
 
     return Stack(
       children: <Widget>[
         AnimatedPositioned(
-          duration: Duration(milliseconds: 300),
+          duration: Duration(milliseconds: durations[0]),
           curve: Curves.easeInOut,
           left: leftList[0],
-          bottom: ScreenUtil().setHeight(91),
+          bottom: ScreenUtil().setHeight(heightNumOfCell[0]),
           child: Material(
             elevation: 8,
             borderRadius: BorderRadius.circular(ScreenUtil().setWidth(32)),
@@ -53,16 +54,15 @@ class _MenuListState extends State<MenuList> {
                     children: <Widget>[
                       Row(
                         children: <Widget>[
-                          optionButton('日'),
-                          optionButton('周'),
-                          optionButton('月'),
+                          optionButton('日', 'day'),
+                          optionButton('周', 'week'),
+                          optionButton('月', 'month'),
                         ],
                       ),
                       Row(
                         children: <Widget>[
-                          optionButton('日-男性'),
-                          optionButton('日-女性'),
-                          optionButton('自定义'),
+                          optionButton('日-男性', 'male'),
+                          optionButton('日-女性', 'female'),
                           SizedBox(width: ScreenUtil().setWidth(8)),
                         ],
                       ),
@@ -74,10 +74,10 @@ class _MenuListState extends State<MenuList> {
           ),
         ),
         AnimatedPositioned(
-          duration: Duration(milliseconds: 350),
+          duration: Duration(milliseconds: durations[1]),
           curve: Curves.easeInOut,
           left: leftList[1],
-          bottom: ScreenUtil().setHeight(183),
+          bottom: ScreenUtil().setHeight(heightNumOfCell[1]),
           child: Material(
             borderRadius: BorderRadius.circular(ScreenUtil().setWidth(12)),
             elevation: 8,
@@ -98,15 +98,14 @@ class _MenuListState extends State<MenuList> {
                     children: <Widget>[
                       Row(
                         children: <Widget>[
-                          optionButton('日'),
-                          optionButton('周'),
-                          optionButton('月'),      
+                          optionButton('日', 'day_manga'),
+                          optionButton('周', 'week_manga'),
                         ],
                       ),
                       Row(
                         children: <Widget>[
-                          optionButton('新秀周'),
-                          optionButton('自定义'),
+                          optionButton('月', 'month_manga'),
+                          optionButton('新秀周', 'week_rookie_manga'),
                           SizedBox(width: ScreenUtil().setWidth(8)),
                         ],
                       ),
@@ -118,31 +117,33 @@ class _MenuListState extends State<MenuList> {
           ),
         ),
         AnimatedPositioned(
-          duration: Duration(milliseconds: 400),
+          duration: Duration(milliseconds: durations[2]),
           curve: Curves.easeInOut,
           left: leftList[2],
-          bottom: ScreenUtil().setHeight(275),
+          bottom: ScreenUtil().setHeight(heightNumOfCell[2]),
+          child: Material(
+            borderRadius: BorderRadius.circular(ScreenUtil().setWidth(32)),
+            elevation: 8,
+            child: menuCell(
+                38,
+                Colors.red[100],
+                independentOption(Icons.calendar_today, 'new_date', '其它时间'),
+            )
+          ),
+        ),
+        AnimatedPositioned(
+          duration: Duration(milliseconds: durations[3]),
+          curve: Curves.easeInOut,
+          left: leftList[3],
+          bottom: ScreenUtil().setHeight(heightNumOfCell[3]),
           child: Material(
             borderRadius: BorderRadius.circular(ScreenUtil().setWidth(32)),
             elevation: 8,
             child: menuCell(
                 38,
                 Colors.lightBlue[100],
-                Row(
-                  children: <Widget>[
-                    SizedBox(
-                      width: ScreenUtil().setWidth(5),
-                    ),
-                    Icon(Icons.search),
-                    SizedBox(
-                      width: ScreenUtil().setWidth(5),
-                    ),
-                    Text('搜索'),
-                    SizedBox(
-                      width: ScreenUtil().setWidth(8),
-                    ),
-                  ],
-                )),
+                independentOption(Icons.search, 'search', '搜索'),
+            ),
           ),
         ),
       ],
@@ -162,7 +163,7 @@ class _MenuListState extends State<MenuList> {
     );
   }
 
-  Widget optionButton(String label) {
+  Widget optionButton(String label, String parameter) {
     return Row(
       children: <Widget>[
         SizedBox(
@@ -176,11 +177,37 @@ class _MenuListState extends State<MenuList> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
           child: OutlineButton(
-            onPressed: () {},
+            onPressed: () {
+              widget.onTap(parameter);
+            },
             child: Text(label),
           ),
         ),
       ],
+    );
+  }
+
+  Widget independentOption(
+      IconData icon, String parameter, String text) {
+    return GestureDetector(
+      onTap: () {
+        widget.onTap(parameter);
+      },
+      child: Row(
+        children: <Widget>[
+          SizedBox(
+            width: ScreenUtil().setWidth(5),
+          ),
+          Icon(icon),
+          SizedBox(
+            width: ScreenUtil().setWidth(5),
+          ),
+          Text(text),
+          SizedBox(
+            width: ScreenUtil().setWidth(8),
+          ),
+        ],
+      ),
     );
   }
 }
