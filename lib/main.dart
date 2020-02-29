@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _picDateStr = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(Duration(days: 3)));
   String _picMode = 'day';
   DateTime _picLastDate = DateTime.now().subtract(Duration(days: 3));
-  DateTime _picFirstDate = DateTime(2018, 1, 1);
+  DateTime _picFirstDate = DateTime(2008, 1, 1);
 
   @override
   void initState() {
@@ -91,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
   StatefulWidget _getPageByIndex(int index) {
     switch (index) {
       case 0:
-        return PicPage(_picDateStr, _picMode, _picModeIsSearch);
+        return PicPage.home(_picDateStr, _picMode, _picModeIsSearch);
       case 1:
         return CenterPage();
       case 2:
@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 3:
         return UserPage();
       default:
-        return PicPage(_picDateStr, _picMode, _picModeIsSearch);
+        return PicPage.home(_picDateStr, _picMode, _picModeIsSearch);
     }
   }
 
@@ -139,14 +139,16 @@ class _MyHomePageState extends State<MyHomePage> {
           context: context,
           initialDate: _picDate,
           firstDate: _picFirstDate,
-          lastDate: _picLastDate
+          lastDate: _picLastDate,
+          // locale: Locale('zh')
         );
         if(newDate != null) {
           setState(() {
-          _picDate = newDate;
-          _picDateStr = DateFormat('yyyy-MM-dd').format(_picDate);
-          _menuButtonActive = !_menuButtonActive;
-          _menuListActive = !_menuListActive;
+            print(newDate);
+            _picDate = newDate;
+            _picDateStr = DateFormat('yyyy-MM-dd').format(_picDate);
+            _menuButtonActive = !_menuButtonActive;
+            _menuListActive = !_menuListActive;
         });
         }
       }else if(parameter == 'search') {

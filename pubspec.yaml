@@ -32,7 +32,9 @@ dev_dependencies:
   requests: ^3.0.4
   random_color: ^1.0.3
   intl: ^0.16.1
-
+  flutter_html: ^0.11.1
+  flutter_swiper : ^1.1.6
+  url_launcher: ^5.4.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

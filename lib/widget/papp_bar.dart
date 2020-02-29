@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class PappBar extends StatefulWidget implements PreferredSizeWidget {
   final double contentHeight; //从外部指定高度
-  Color backgroundColor; //设置导航栏背景的颜色
-  Widget leadingWidget;
-  Widget trailingWidget;
-  String title;
+  final Color backgroundColor; //设置导航栏背景的颜色
+  final Widget leadingWidget;
+  final Widget trailingWidget;
+  final String title;
 
   PappBar({
     this.leadingWidget,
