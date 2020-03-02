@@ -8,25 +8,54 @@ import 'package:random_color/random_color.dart';
 
 import 'pic_detail_page.dart';
 
+// 可以作为页面中单个组件或者单独页面使用的pic瀑布流组件,因可以作为页面，故不归为widget
 class PicPage extends StatefulWidget {
   @override
   _PicPageState createState() => _PicPageState();
 
-  PicPage(this.picDate, this.picMode, this.modeIsSearch,
-      {this.relatedId = 0, this.jsonMode = 'home'});
-  PicPage.home(this.picDate, this.picMode, this.modeIsSearch,
-      {this.relatedId = 0, this.jsonMode = 'home'});
-  PicPage.related(this.relatedId,
-      {this.picDate = '',
-      this.picMode = '',
-      this.modeIsSearch = false,
-      this.jsonMode = 'related'});
+  PicPage({
+    @required this.picDate, 
+    @required this.picMode, 
+    this.relatedId = 0, 
+    this.jsonMode = 'home',
+    this.searchKeywords,
+    this.searchManga
+  });
+  
+  PicPage.home({
+    @required this.picDate, 
+    @required this.picMode, 
+    this.relatedId, 
+    this.jsonMode = 'home',
+    this.searchKeywords,
+    this.searchManga
+  });
+  
+  PicPage.related({
+    @required this.relatedId,
+    this.picDate,
+    this.picMode,
+    this.jsonMode = 'related',
+    this.searchKeywords,
+    this.searchManga
+  });
+  
+  PicPage.search({
+    @required this.searchKeywords,
+    this.picDate,
+    this.picMode,
+    this.jsonMode = 'search',
+    this.relatedId,
+    this.searchManga = false,
+  }
+  );
 
   final String picDate;
   final String picMode;
-  final bool modeIsSearch;
   final num relatedId;
-  // jsonMode could be set to 'home, related, Spotlight, tag, artist'
+  final String searchKeywords;
+  final bool searchManga;
+  // jsonMode could be set to 'home, related, Spotlight, tag, artist, search'
   final String jsonMode;
 }
 
@@ -45,7 +74,11 @@ class _PicPageState extends State<PicPage> {
         picList = value;
         picTotalNum = value.length;
       });
+    })
+    .catchError((error) {
+      print(error);
     });
+    
     super.initState();
   }
 
@@ -56,7 +89,11 @@ class _PicPageState extends State<PicPage> {
         picList = value;
         picTotalNum = value.length;
       });
+    })
+    .catchError((error) {
+      print(error);
     });
+    
     super.didUpdateWidget(oldWidget);
   }
 
@@ -66,36 +103,36 @@ class _PicPageState extends State<PicPage> {
       return Center();
     } else {
       return Container(
-          child: StaggeredGridView.countBuilder(
-        crossAxisCount: 2,
-        itemCount: picTotalNum,
-        itemBuilder: (BuildContext context, int index) => imageCell(index),
-        staggeredTileBuilder: (index) => StaggeredTile.fit(1),
-        mainAxisSpacing: 4.0,
-        crossAxisSpacing: 4.0,
-      ));
+        child: StaggeredGridView.countBuilder(
+          crossAxisCount: 2,
+          itemCount: picTotalNum,
+          itemBuilder: (BuildContext context, int index) => imageCell(index),
+          staggeredTileBuilder: (index) => StaggeredTile.fit(1),
+          mainAxisSpacing: 4.0,
+          crossAxisSpacing: 4.0,
+        )
+      );
     }
   }
 
   _getJsonList() async {
     // 获取所有的图片数据
     String url;
+    List jsonList;
     if (widget.jsonMode == 'home') {
-      if (!widget.modeIsSearch) {
-        url =
-            'https://api.pixivic.com/ranks?page=1&date=${widget.picDate}&mode=${widget.picMode}&pageSize=500';
-      } else {
-        url =
-            'https://api.pixivic.com/illustrations?illustType=illust&searchType=original&maxSanityLevel=6&page=1&keyword=${widget.picMode}&pageSize=30';
-      }
+        url = 'https://api.pixivic.com/ranks?page=1&date=${widget.picDate}&mode=${widget.picMode}&pageSize=500';
+    }
+    else if(widget.jsonMode == 'search') {
+      url =
+        'https://api.pixivic.com/illustrations?illustType=illust&searchType=original&maxSanityLevel=6&page=1&keyword=${widget.searchKeywords}&pageSize=30';
     }
     else if(widget.jsonMode == 'related') {
-      url = 'https://api.pixivic.com/illusts/${widget.relatedId}/related?page=1&pageSize=30';
+      url = 'https://api.pixivic.com/illusts/${widget.relatedId}/related?page=1&pageSize=300';
     }
 
     var requests = await Requests.get(url);
     requests.raiseForStatus();
-    List jsonList = jsonDecode(requests.content())['data'];
+    jsonList = jsonDecode(requests.content())['data'];
     return (jsonList);
   }
 

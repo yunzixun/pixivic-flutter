@@ -29,7 +29,6 @@ class _PicDetailPageState extends State<PicDetailPage> {
   @override
   void initState() {
     picTotalNum = widget._picData['pageCount'];
-    print(picTotalNum);
     super.initState();
   }
 
@@ -189,7 +188,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
                     width: ScreenUtil().setWidth(324),
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      '先关作品',
+                      '相关作品',
                       style: normalTextStyle,
                     ),
                   )
@@ -200,10 +199,10 @@ class _PicDetailPageState extends State<PicDetailPage> {
         ),
         Center(
           child: Container(
-              width: ScreenUtil().setWidth(324),
-              height: ScreenUtil().setHeight(376),
-              color: Colors.white,
-              child: PicPage.related(widget._picData['id'])),
+            width: ScreenUtil().setWidth(324),
+            height: ScreenUtil().setHeight(376),
+            color: Colors.white,
+            child: PicPage.related(relatedId: widget._picData['id'],)),
         ),
       ],
     );
@@ -255,16 +254,20 @@ class _PicDetailPageState extends State<PicDetailPage> {
         fontSize: ScreenUtil().setWidth(8),
         color: Colors.blue[300],
         decoration: TextDecoration.none);
+    StrutStyle strutStyle = StrutStyle(
+        fontSize: ScreenUtil().setWidth(8),
+        height: ScreenUtil().setWidth(1.3),
+    );
     List tags = widget._picData['tags'];
     List<Widget> tagsRow = [];
 
     for (var item in tags) {
-      tagsRow.add(Text('#${item['name']}', style: tagTextStyle));
+      tagsRow.add(Text('#${item['name']}', style: tagTextStyle, strutStyle: strutStyle,));
       tagsRow.add(SizedBox(
         width: ScreenUtil().setWidth(4),
       ));
       if (item['translatedName'] != '') {
-        tagsRow.add(Text(item['translatedName'], style: translateTextStyle));
+        tagsRow.add(Text(item['translatedName'], style: translateTextStyle, strutStyle: strutStyle,));
         tagsRow.add(SizedBox(
           width: ScreenUtil().setWidth(4),
         ));

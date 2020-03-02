@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:pixivic/page/search_page.dart';
 
 import 'widget/nav_bar.dart';
 import 'widget/papp_bar.dart';
@@ -47,7 +48,6 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _menuButtonVisible = true;
   bool _menuListActive = false;
   
-  bool _picModeIsSearch = false;
   DateTime _picDate = DateTime.now().subtract(Duration(days: 3));
   String _picDateStr = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(Duration(days: 3)));
   String _picMode = 'day';
@@ -67,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: PappBar(
         title: widget.title,
         backgroundColor: Colors.white,
+        contentHeight: ScreenUtil().setHeight(28),
       ),
       body: Stack(
         children: <Widget>[
@@ -91,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
   StatefulWidget _getPageByIndex(int index) {
     switch (index) {
       case 0:
-        return PicPage.home(_picDateStr, _picMode, _picModeIsSearch);
+        return PicPage.home(picDate: _picDateStr, picMode: _picMode);
       case 1:
         return CenterPage();
       case 2:
@@ -99,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 3:
         return UserPage();
       default:
-        return PicPage.home(_picDateStr, _picMode, _picModeIsSearch);
+        return PicPage.home(picDate: _picDateStr, picMode: _picMode);
     }
   }
 
@@ -144,14 +145,15 @@ class _MyHomePageState extends State<MyHomePage> {
         );
         if(newDate != null) {
           setState(() {
-            print(newDate);
+            // print(newDate);
             _picDate = newDate;
             _picDateStr = DateFormat('yyyy-MM-dd').format(_picDate);
             _menuButtonActive = !_menuButtonActive;
             _menuListActive = !_menuListActive;
         });
         }
-      }else if(parameter == 'search') {
+      }
+      else if(parameter == 'search') {
         showDialog(context: context,builder: (context) {
           return AlertDialog(
             title: Text('搜索关键词'),
@@ -163,13 +165,17 @@ class _MyHomePageState extends State<MyHomePage> {
               new FlatButton(
                 child: new Text('提交'),
                 onPressed: () {
-                  if(_textFieldController.text == '') {
+                  String input = _textFieldController.text;
+                  if(input == '') {
                     Navigator.of(context).pop();
                   } else {
                     Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => SearchPage(searchKeywordsIn: input)
+                      ),
+                    );
                     setState(() {
-                      _picModeIsSearch = true;
-                      _picMode = _textFieldController.text;
                       _textFieldController.clear();
                       _menuButtonActive = !_menuButtonActive;
                       _menuListActive = !_menuListActive; 
@@ -183,7 +189,6 @@ class _MyHomePageState extends State<MyHomePage> {
       }else {
         setState(() {
           _picMode = parameter;
-          _picModeIsSearch = false;
           _menuButtonActive = !_menuButtonActive;
           _menuListActive = !_menuListActive; 
         });
