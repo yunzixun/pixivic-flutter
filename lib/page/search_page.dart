@@ -24,11 +24,11 @@ class _SearchPageState extends State<SearchPage> {
   String searchKeywords;
   PicPage picPage;
   List suggestions;
+  bool searchManga = false;
 
   @override
   void initState() {
     searchKeywords = widget.searchKeywordsIn;
-    picPage = PicPage.search(searchKeywords: searchKeywords);
     _loadSuggestions().then((value) {
       setState(() {
         suggestions = value;
@@ -44,13 +44,14 @@ class _SearchPageState extends State<SearchPage> {
   
   @override
   Widget build(BuildContext context) {
-    picPage = PicPage.search(searchKeywords: searchKeywords);
+    picPage = PicPage.search(searchKeywords: searchKeywords, searchManga: searchManga,);
 
     return Scaffold(
       appBar: PappBar.search(
               contentHeight: ScreenUtil().setHeight(38),
               searchKeywordsIn: searchKeywords, 
               searchFucntion: _onSearch,
+              trailingWidget: trailingWidget(),
             ),
       body: ListView(
         children: <Widget>[
@@ -58,7 +59,7 @@ class _SearchPageState extends State<SearchPage> {
           Center(
             child: Container(
               width: ScreenUtil().setWidth(324),
-              height: ScreenUtil().setHeight(500),
+              height: ScreenUtil().setHeight(576),
               color: Colors.white,
               child: picPage,
             ),
@@ -131,6 +132,30 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
   
+  Widget trailingWidget() {
+    return DropdownButton(
+        value: '插画',
+        items:
+            <String>['插画', '漫画'].map<DropdownMenuItem<String>>((String vaule) {
+          return DropdownMenuItem<String>(
+            value: vaule,
+            child: Text(vaule),
+          );
+        }).toList(),
+        onChanged: (value) {
+          if(value == '漫画' && !searchManga) {
+            setState(() {
+              searchManga = true;
+            });
+          }
+          else if(value == '插画' && searchManga) {
+            setState(() {
+              searchManga = false;
+            });
+          }
+        },
+      );
+  }
 
   _onSearch(String value) {
     searchKeywords = value;

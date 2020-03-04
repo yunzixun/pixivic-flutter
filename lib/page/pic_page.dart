@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-// import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:requests/requests.dart';
 import 'package:random_color/random_color.dart';
+import 'package:bot_toast/bot_toast.dart';
 
 import 'pic_detail_page.dart';
 
@@ -66,6 +66,7 @@ class _PicPageState extends State<PicPage> {
   List picList;
   int picTotalNum;
   RandomColor _randomColor = RandomColor();
+  bool haveConnected = false;
 
   @override
   void initState() {
@@ -76,7 +77,11 @@ class _PicPageState extends State<PicPage> {
       });
     })
     .catchError((error) {
+      print('======================');
       print(error);
+      print('======================');
+      if(error.toString().contains('NoSuchMethodError'))
+        picList = null; 
     });
     
     super.initState();
@@ -91,9 +96,14 @@ class _PicPageState extends State<PicPage> {
       });
     })
     .catchError((error) {
+      print('======================');
       print(error);
+      print('======================');
+      if(error.toString().contains('NoSuchMethodError'))
+        picList = null;
+        haveConnected = true;
     });
-    
+
     super.didUpdateWidget(oldWidget);
   }
 
@@ -101,7 +111,13 @@ class _PicPageState extends State<PicPage> {
   Widget build(BuildContext context) {
     if (picList == null) {
       return Center();
-    } else {
+    }
+    else if (picList == null && haveConnected) {
+      return Center(
+        child: Text('啊，你想访问的图片并不存在(´-ι_-｀)'),
+      );
+    } 
+    else {
       return Container(
         child: StaggeredGridView.countBuilder(
           crossAxisCount: 2,
@@ -123,17 +139,29 @@ class _PicPageState extends State<PicPage> {
         url = 'https://api.pixivic.com/ranks?page=1&date=${widget.picDate}&mode=${widget.picMode}&pageSize=500';
     }
     else if(widget.jsonMode == 'search') {
-      url =
+      if(!widget.searchManga)
+        url =
         'https://api.pixivic.com/illustrations?illustType=illust&searchType=original&maxSanityLevel=6&page=1&keyword=${widget.searchKeywords}&pageSize=30';
+      else
+        url =
+        'https://api.pixivic.com/illustrations?illustType=manga&searchType=original&maxSanityLevel=6&page=1&keyword=${widget.searchKeywords}&pageSize=30';
     }
     else if(widget.jsonMode == 'related') {
       url = 'https://api.pixivic.com/illusts/${widget.relatedId}/related?page=1&pageSize=300';
     }
 
-    var requests = await Requests.get(url);
-    requests.raiseForStatus();
-    jsonList = jsonDecode(requests.content())['data'];
-    return (jsonList);
+    try {
+      var requests = await Requests.get(url);
+      requests.raiseForStatus();
+      jsonList = jsonDecode(requests.content())['data'];
+      return (jsonList);
+    } catch(error) {
+      print('======================');
+      print(error);
+      print('======================');
+      BotToast.showSimpleNotification(title: '网络异常，请检查网络(´·_·`)'); 
+    }
+    
   }
 
   List _reviewPicUrlNumAspectRatio(int index) {
@@ -147,7 +175,7 @@ class _PicPageState extends State<PicPage> {
   }
 
   Widget imageCell(int index) {
-    Color color = _randomColor.randomColor();
+    final Color color = _randomColor.randomColor();
     Map picMapData = Map.from(picList[index]);
     return ClipRRect(
       clipBehavior: Clip.antiAlias,

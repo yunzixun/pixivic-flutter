@@ -5,23 +5,25 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MenuList extends StatefulWidget {
   @override
-  _MenuListState createState() => _MenuListState();
+  MenuListState createState() => MenuListState();
 
-  MenuList(this.active, this.onTap);
+  MenuList(this.onTap, this.key);
 
-  final bool active;
   final ValueChanged<String> onTap;
+  final Key key;
 }
 
-class _MenuListState extends State<MenuList> {
+class MenuListState extends State<MenuList> {
   List<double> leftList = [0, 0, 0];
   int numOftotalCell = 4;
   List<int> durations = [300, 350, 400, 450];
   List<int> heightNumOfCell = [91, 183, 275, 329];
+  
+  bool active = false;
 
   @override
   Widget build(BuildContext context) {
-    if (widget.active) {
+    if (active) {
       leftList = List.filled(numOftotalCell, ScreenUtil().setHeight(12));
     } else {
       leftList = List.filled(numOftotalCell, ScreenUtil().setHeight(-300));
@@ -188,7 +190,8 @@ class _MenuListState extends State<MenuList> {
   }
 
   Widget independentOption(
-      IconData icon, String parameter, String text) {
+    // 没有子标签卡的选项，例如 搜索、选择日期
+    IconData icon, String parameter, String text) {
     return GestureDetector(
       onTap: () {
         widget.onTap(parameter);
@@ -209,5 +212,17 @@ class _MenuListState extends State<MenuList> {
         ],
       ),
     );
+  }
+
+  void flipActive() {
+    setState(() {
+      active = !active;
+    });
+  }
+
+  void changeActive(bool state) {
+    setState(() {
+      active = state;
+    });
   }
 }

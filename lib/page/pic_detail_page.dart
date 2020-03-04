@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:pixivic/page/search_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'pic_page.dart';
@@ -124,7 +125,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
                           width: ScreenUtil().setWidth(12),
                         ),
                         Text(
-                          widget._picData['createDate'],
+                          widget._picData['createDate'].toString(),
                           style: smallTextStyle,
                         ),
                       ],
@@ -209,6 +210,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
   }
 
   Widget _picBanner() {
+    // 图片滚动条
     if (picTotalNum == 1) {
       return Hero(
           tag: 'imageHero' +
@@ -262,7 +264,19 @@ class _PicDetailPageState extends State<PicDetailPage> {
     List<Widget> tagsRow = [];
 
     for (var item in tags) {
-      tagsRow.add(Text('#${item['name']}', style: tagTextStyle, strutStyle: strutStyle,));
+      tagsRow.add(GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) =>
+              SearchPage(searchKeywordsIn: item['name'])
+            )
+          );
+        },
+        child: Text(
+          '#${item['name']}', style: tagTextStyle, strutStyle: strutStyle,
+          )
+        )
+      );
       tagsRow.add(SizedBox(
         width: ScreenUtil().setWidth(4),
       ));

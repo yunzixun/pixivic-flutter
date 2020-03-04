@@ -17,22 +17,22 @@ class PappBar extends StatefulWidget implements PreferredSizeWidget {
     @required this.title,
     @required this.contentHeight,
     this.backgroundColor = Colors.white,
-    this.trailingWidget,
     this.mode = 'default',
     this.searchKeywordsIn,
     this.searchFucntion,
+    this.trailingWidget
   }) : super();
 
-  PappBar.search({
-    this.leadingWidget,
-    this.title,
-    @required this.contentHeight,
-    this.backgroundColor = Colors.white,
-    this.trailingWidget,
-    this.mode = 'search',
-    @required this.searchKeywordsIn,
-    @required this.searchFucntion
-  }) : super();
+  PappBar.search(
+      {@required this.trailingWidget,
+      this.leadingWidget,
+      this.title,
+      @required this.contentHeight,
+      this.backgroundColor = Colors.white,
+      this.mode = 'search',
+      @required this.searchKeywordsIn,
+      @required this.searchFucntion})
+      : super();
 
   @override
   _PappBarState createState() => _PappBarState();
@@ -84,28 +84,29 @@ class _PappBarState extends State<PappBar> {
             style: TextStyle(
                 fontSize: 14, color: Color.fromRGBO(255, 182, 193, 1.0))),
       );
-    }
-    else if(widget.mode == 'search') {
-      TextEditingController _textFieldController = TextEditingController(text: widget.searchKeywordsIn);
-      return Material(
-        child: Container(
-          height: ScreenUtil().setHeight(25),
-          width: ScreenUtil().setWidth(260),
-          child: TextField(
-            controller: _textFieldController,
-            decoration: InputDecoration(
-              hintText: "输入关键词",
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.all(8)
+    } else if (widget.mode == 'search') {
+      TextEditingController _textFieldController =
+          TextEditingController(text: widget.searchKeywordsIn);
+      return Positioned(
+        left: ScreenUtil().setWidth(10),
+        child: Material(
+          child: Container(
+            height: ScreenUtil().setHeight(25),
+            width: ScreenUtil().setWidth(230),
+            child: TextField(
+              controller: _textFieldController,
+              decoration: InputDecoration(
+                  hintText: "输入关键词",
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(8)),
+              onSubmitted: (value) {
+                widget.searchFucntion(value);
+              },
             ),
-            onSubmitted: (value) {
-              widget.searchFucntion(value);
-            },
           ),
         ),
       );
-    }
-    else {
+    } else {
       return Container(
         child: Text(widget.title,
             style: TextStyle(

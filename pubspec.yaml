@@ -35,6 +35,8 @@ dev_dependencies:
   flutter_html: ^0.11.1
   flutter_swiper : ^1.1.6
   url_launcher: ^5.4.2
+  bot_toast: ^2.2.1
+  provider: ^4.0.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

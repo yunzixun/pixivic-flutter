@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:pixivic/page/search_page.dart';
+import 'package:bot_toast/bot_toast.dart';
 
 import 'widget/nav_bar.dart';
 import 'widget/papp_bar.dart';
@@ -19,12 +21,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Pixivic',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return BotToastInit(
+      child: MaterialApp(
+        navigatorObservers: [BotToastNavigatorObserver()],
+        title: 'Pixivic',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: MyHomePage(title: 'Pixivic'),
       ),
-      home: MyHomePage(title: 'Pixivic'),
     );
   }
 }
@@ -44,15 +49,15 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   bool _navBarAlone = false;
   var _pageController = PageController(initialPage: 0);
-  bool _menuButtonActive = false;
-  bool _menuButtonVisible = true;
-  bool _menuListActive = false;
   
   DateTime _picDate = DateTime.now().subtract(Duration(days: 3));
   String _picDateStr = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(Duration(days: 3)));
   String _picMode = 'day';
   DateTime _picLastDate = DateTime.now().subtract(Duration(days: 3));
   DateTime _picFirstDate = DateTime(2008, 1, 1);
+
+  GlobalKey<MenuButtonState> _menuButtonKey = GlobalKey();
+  GlobalKey<MenuListState> _menuListKey = GlobalKey();
 
   @override
   void initState() {
@@ -82,8 +87,8 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           ),
           NavBar(_currentIndex, _onNavbarTap, _navBarAlone),
-          MenuButton(_menuButtonActive, _menuButtonVisible, _onMenuButoonTap),
-          MenuList(_menuListActive, _onMenuListCellTap),
+          MenuButton(_onMenuButoonTap, _menuButtonKey),
+          MenuList(_onMenuListCellTap, _menuListKey),
         ],
       ),
     );
@@ -116,22 +121,21 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       // print('_onPageChanged: $index');
       _currentIndex = index;
-      _menuButtonActive = false;
+      _menuButtonKey.currentState.changeTapState(false);
+      _menuListKey.currentState.changeActive(false);
       if(index == 0) {
         _navBarAlone = false;
-        _menuButtonVisible = true;
+        _menuButtonKey.currentState.changeVisible(true);
       }else {
         _navBarAlone = true;
-        _menuButtonVisible = false;
+        _menuButtonKey.currentState.changeVisible(false);
       }
     });
   }
 
   void _onMenuButoonTap() {
-    setState(() {
-      _menuButtonActive = !_menuButtonActive;
-      _menuListActive = !_menuListActive;
-    });
+    _menuButtonKey.currentState.flipTapState();
+    _menuListKey.currentState.flipActive();
   }
 
   void _onMenuListCellTap(String parameter) async{
@@ -144,12 +148,12 @@ class _MyHomePageState extends State<MyHomePage> {
           // locale: Locale('zh')
         );
         if(newDate != null) {
+          _menuButtonKey.currentState.flipTapState();
+          _menuListKey.currentState.flipActive();
           setState(() {
             // print(newDate);
             _picDate = newDate;
             _picDateStr = DateFormat('yyyy-MM-dd').format(_picDate);
-            _menuButtonActive = !_menuButtonActive;
-            _menuListActive = !_menuListActive;
         });
         }
       }
@@ -175,11 +179,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         builder: (context) => SearchPage(searchKeywordsIn: input)
                       ),
                     );
-                    setState(() {
-                      _textFieldController.clear();
-                      _menuButtonActive = !_menuButtonActive;
-                      _menuListActive = !_menuListActive; 
-                    });
+                    _menuButtonKey.currentState.flipTapState();
+                    _menuListKey.currentState.flipActive();
+                    _textFieldController.clear();
                   }
                 },
               )
@@ -187,10 +189,10 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },);
       }else {
+        _menuButtonKey.currentState.flipTapState();
+        _menuListKey.currentState.flipActive();
         setState(() {
           _picMode = parameter;
-          _menuButtonActive = !_menuButtonActive;
-          _menuListActive = !_menuListActive; 
         });
       }     
   }
