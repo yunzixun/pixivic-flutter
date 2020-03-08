@@ -7,6 +7,7 @@ import 'package:pixivic/page/search_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'pic_page.dart';
+import 'artist_page.dart';
 
 class PicDetailPage extends StatefulWidget {
   @override
@@ -143,12 +144,28 @@ class _PicDetailPageState extends State<PicDetailPage> {
                         Positioned(
                           child: Row(
                             children: <Widget>[
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  widget._picData['artistPreView']['avatar'],
-                                  headers: {
-                                    'Referer': 'https://app-api.pixiv.net'
-                                  },
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return ArtistPage(widget._picData['artistPreView']['avatar'],
+                                          widget._picData['artistPreView']['name'],
+                                          widget._picData['artistPreView']['id'].toString());
+                                      },
+                                    )
+                                  );
+                                },
+                                child: Hero(
+                                  tag: widget._picData['artistPreView']['avatar'],
+                                  child: CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                      widget._picData['artistPreView']['avatar'],
+                                      headers: {
+                                        'Referer': 'https://app-api.pixiv.net'
+                                      },
+                                    ),
+                                  ),
                                 ),
                               ),
                               SizedBox(
