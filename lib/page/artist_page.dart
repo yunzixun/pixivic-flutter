@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pixivic/page/pic_page.dart';
 import 'package:requests/requests.dart';
 import 'package:bot_toast/bot_toast.dart';
 
@@ -28,11 +29,12 @@ class _ArtistPageState extends State<ArtistPage> {
 
   String numOfFollower = '';
   String numOfBookmarksPublic = '';
-  String numOfIllust = '';
-  String numOfManga = '';
+  String numOfIllust = '0';
+  String numOfManga = '0';
   String comment = '';
   String urlTwitter = '';
   String urlWebPage = '';
+  List<Tab> tabs;
 
   @override
   void initState() {
@@ -137,6 +139,11 @@ class _ArtistPageState extends State<ArtistPage> {
               ],
             ),
           ),
+          Container(
+            height: ScreenUtil().setHeight(400),
+            width: ScreenUtil().setWidth(324),
+            child: _tabViewer(),
+          )
         ],
       ),
     );
@@ -169,6 +176,10 @@ class _ArtistPageState extends State<ArtistPage> {
           this.numOfManga = item['sum'].toString();
         }
       }
+      this.tabs = <Tab> [
+        Tab(text: '插画(${this.numOfIllust})',),
+        Tab(text: '漫画(${this.numOfManga})',),
+      ];
 
     } catch(error) {
       print('======================');
@@ -178,5 +189,45 @@ class _ArtistPageState extends State<ArtistPage> {
     }
 
     return('finished');
+  }
+
+   Widget _tabViewer() {
+    if(tabs != null) {
+      return(
+      DefaultTabController(
+        length: 2,
+        child: Stack(
+          children: <Widget>[
+            Material(
+              child: Container(
+                color: Colors.blueAccent[200],
+                height: ScreenUtil().setHeight(30),
+                child: TabBar(
+                  tabs: tabs,
+                )
+              )
+            ),
+            Positioned(
+              top: ScreenUtil().setHeight(30),
+              child: Container(
+                height: ScreenUtil().setHeight(370),
+                width: ScreenUtil().setWidth(324),
+                child: TabBarView(
+                  children: tabs.map((Tab tab) {
+                    return PicPage.artist(artistId: widget.artistId, searchManga: tab.text.contains('漫画') ? true : false,);
+                  }
+                  ).toList(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      )
+    );
+    }
+    else {
+      return(Container());
+    }
+    
   }
 }

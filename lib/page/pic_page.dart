@@ -19,7 +19,8 @@ class PicPage extends StatefulWidget {
     this.relatedId = 0, 
     this.jsonMode = 'home',
     this.searchKeywords,
-    this.searchManga
+    this.searchManga,
+    this.artistId
   });
   
   PicPage.home({
@@ -28,7 +29,8 @@ class PicPage extends StatefulWidget {
     this.relatedId, 
     this.jsonMode = 'home',
     this.searchKeywords,
-    this.searchManga
+    this.searchManga,
+    this.artistId
   });
   
   PicPage.related({
@@ -37,7 +39,8 @@ class PicPage extends StatefulWidget {
     this.picMode,
     this.jsonMode = 'related',
     this.searchKeywords,
-    this.searchManga
+    this.searchManga,
+    this.artistId
   });
   
   PicPage.search({
@@ -47,12 +50,26 @@ class PicPage extends StatefulWidget {
     this.jsonMode = 'search',
     this.relatedId,
     this.searchManga = false,
+    this.artistId
   }
   );
+
+  PicPage.artist({
+    this.searchKeywords,
+    this.picDate,
+    this.picMode,
+    this.jsonMode = 'artist',
+    this.relatedId,
+    this.searchManga = false,
+    @required this.artistId
+  }
+  );
+
 
   final String picDate;
   final String picMode;
   final num relatedId;
+  final String artistId;
   final String searchKeywords;
   final bool searchManga;
   // jsonMode could be set to 'home, related, Spotlight, tag, artist, search'
@@ -148,6 +165,14 @@ class _PicPageState extends State<PicPage> {
     }
     else if(widget.jsonMode == 'related') {
       url = 'https://api.pixivic.com/illusts/${widget.relatedId}/related?page=1&pageSize=300';
+    }
+    else if(widget.jsonMode == 'artist') {
+      if(!widget.searchManga) {
+        url = 'https://api.pixivic.com/artists/${widget.artistId}/illusts/illust?page=1&pageSize=30&maxSanityLevel=10';
+      }
+      else {
+        url = 'https://api.pixivic.com/artists/${widget.artistId}/illusts/manga?page=1&pageSize=30&maxSanityLevel=10';
+      }
     }
 
     try {
