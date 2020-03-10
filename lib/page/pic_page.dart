@@ -79,14 +79,20 @@ class PicPage extends StatefulWidget {
 class _PicPageState extends State<PicPage> {
   // picList - 图片的JSON文件列表
   // picTotalNum - picList 中项目的总数（非图片总数，因为单个项目有可能有多个图片）
-
   List picList;
   int picTotalNum;
   RandomColor _randomColor = RandomColor();
   bool haveConnected = false;
 
+  ScrollController scrollController;
+  int currentPage;
+  bool loadMoreAble = true;
+
   @override
   void initState() {
+    scrollController = ScrollController()..addListener(_autoLoadMore);
+    currentPage = 1;
+
     _getJsonList().then((value) {
       setState(() {
         picList = value;
@@ -106,6 +112,13 @@ class _PicPageState extends State<PicPage> {
 
   @override
   void didUpdateWidget(PicPage oldWidget) {
+    currentPage = 1;
+    BotToast.showSimpleNotification(title: '图片重新装载中(ﾉ>ω<)ﾉ');
+    scrollController.animateTo(
+      0.0, 
+      duration: const Duration(milliseconds: 500), 
+      curve: Curves.easeOut,);
+
     _getJsonList().then((value) {
       setState(() {
         picList = value;
@@ -125,6 +138,12 @@ class _PicPageState extends State<PicPage> {
   }
 
   @override
+  void dispose() {
+    scrollController.removeListener(_autoLoadMore);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (picList == null) {
       return Center();
@@ -137,6 +156,7 @@ class _PicPageState extends State<PicPage> {
     else {
       return Container(
         child: StaggeredGridView.countBuilder(
+          controller: scrollController,
           crossAxisCount: 2,
           itemCount: picTotalNum,
           itemBuilder: (BuildContext context, int index) => imageCell(index),
@@ -153,25 +173,25 @@ class _PicPageState extends State<PicPage> {
     String url;
     List jsonList;
     if (widget.jsonMode == 'home') {
-        url = 'https://api.pixivic.com/ranks?page=1&date=${widget.picDate}&mode=${widget.picMode}&pageSize=500';
+        url = 'https://api.pixivic.com/ranks?page=$currentPage&date=${widget.picDate}&mode=${widget.picMode}&pageSize=30';
     }
     else if(widget.jsonMode == 'search') {
       if(!widget.searchManga)
         url =
-        'https://api.pixivic.com/illustrations?illustType=illust&searchType=original&maxSanityLevel=6&page=1&keyword=${widget.searchKeywords}&pageSize=30';
+        'https://api.pixivic.com/illustrations?illustType=illust&searchType=original&maxSanityLevel=6&page=$currentPage&keyword=${widget.searchKeywords}&pageSize=30';
       else
         url =
-        'https://api.pixivic.com/illustrations?illustType=manga&searchType=original&maxSanityLevel=6&page=1&keyword=${widget.searchKeywords}&pageSize=30';
+        'https://api.pixivic.com/illustrations?illustType=manga&searchType=original&maxSanityLevel=6&page=$currentPage&keyword=${widget.searchKeywords}&pageSize=30';
     }
     else if(widget.jsonMode == 'related') {
-      url = 'https://api.pixivic.com/illusts/${widget.relatedId}/related?page=1&pageSize=300';
+      url = 'https://api.pixivic.com/illusts/${widget.relatedId}/related?page=$currentPage&pageSize=30';
     }
     else if(widget.jsonMode == 'artist') {
       if(!widget.searchManga) {
-        url = 'https://api.pixivic.com/artists/${widget.artistId}/illusts/illust?page=1&pageSize=30&maxSanityLevel=10';
+        url = 'https://api.pixivic.com/artists/${widget.artistId}/illusts/illust?page=$currentPage&pageSize=30&maxSanityLevel=10';
       }
       else {
-        url = 'https://api.pixivic.com/artists/${widget.artistId}/illusts/manga?page=1&pageSize=30&maxSanityLevel=10';
+        url = 'https://api.pixivic.com/artists/${widget.artistId}/illusts/manga?page=$currentPage&pageSize=30&maxSanityLevel=10';
       }
     }
 
@@ -197,6 +217,23 @@ class _PicPageState extends State<PicPage> {
     double width = picList[index]['width'].toDouble();
     double height = picList[index]['height'].toDouble();
     return [url, number, width, height];
+  }
+
+  _autoLoadMore() {
+    if ((scrollController.position.extentAfter < 350) && (currentPage < 30) && loadMoreAble) {
+      currentPage ++;
+      loadMoreAble = false;
+      print('current page is $currentPage');
+      _getJsonList().then((value) {
+        setState(() {
+          picList = picList + value;
+          picTotalNum = picTotalNum + value.length;
+          print(picTotalNum);
+          loadMoreAble = true;
+          BotToast.showSimpleNotification(title: '摩多摩多!!!(つ´ω`)つ'); 
+        });
+      });
+    }
   }
 
   Widget imageCell(int index) {
