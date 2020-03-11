@@ -37,6 +37,7 @@ dev_dependencies:
   url_launcher: ^5.4.2
   bot_toast: ^2.2.1
   provider: ^4.0.4
+  flutter_downloader: ^1.4.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
