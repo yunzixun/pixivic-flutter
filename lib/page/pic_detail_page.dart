@@ -5,6 +5,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:pixivic/page/search_page.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 
 import 'pic_page.dart';
 import 'artist_page.dart';
@@ -39,9 +40,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
     return ListView(
       shrinkWrap: true,
       children: <Widget>[
-        Stack(
-          children: <Widget>[
-            Positioned(
+        Container(
               child: Column(
                 children: <Widget>[
                   // 图片视图
@@ -213,8 +212,6 @@ class _PicDetailPageState extends State<PicDetailPage> {
                 ],
               ),
             ),
-          ],
-        ),
         Center(
           child: Container(
             width: ScreenUtil().setWidth(324),
@@ -229,17 +226,22 @@ class _PicDetailPageState extends State<PicDetailPage> {
   Widget _picBanner() {
     // 图片滚动条
     if (picTotalNum == 1) {
-      return Hero(
-          tag: 'imageHero' +
-              widget._picData['imageUrls'][0]['medium'], //medium large
-          child: Image.network(
-            widget._picData['imageUrls'][0]['medium'],
-            headers: {'Referer': 'https://app-api.pixiv.net'},
-            width: ScreenUtil().setWidth(324),
-            height: ScreenUtil().setWidth(324) /
-                widget._picData['width'] *
-                widget._picData['height'],
-          ));
+      return GestureDetector(
+        onLongPress: () {
+          _downloadPic('url');
+        },
+        child: Hero(
+            tag: 'imageHero' +
+                widget._picData['imageUrls'][0]['medium'], //medium large
+            child: Image.network(
+              widget._picData['imageUrls'][0]['medium'],
+              headers: {'Referer': 'https://app-api.pixiv.net'},
+              width: ScreenUtil().setWidth(324),
+              height: ScreenUtil().setWidth(324) /
+                  widget._picData['width'] *
+                  widget._picData['height'],
+            )),
+      );
     } else if (picTotalNum > 1) {
       return Swiper(
         pagination: SwiperPagination(),
@@ -308,5 +310,26 @@ class _PicDetailPageState extends State<PicDetailPage> {
     return Wrap(
       children: tagsRow,
     );
+  }
+
+  _downloadPic(String url) async{
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext buildContext) {
+        return Container(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                title: Text('下载原图'),
+                leading: Icon(Icons.cloud_download),
+              )
+            ],
+          ),
+        );
+      }
+    );
+    // WidgetsFlutterBinding.ensureInitialized();
+    // await FlutterDownloader.initialize();
+    
   }
 }

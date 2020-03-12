@@ -200,9 +200,9 @@ class _ArtistPageState extends State<ArtistPage> {
           children: <Widget>[
             Material(
               child: Container(
-                color: Colors.blueAccent[200],
                 height: ScreenUtil().setHeight(30),
                 child: TabBar(
+                  labelColor: Colors.blueAccent[200],
                   tabs: tabs,
                 )
               )
