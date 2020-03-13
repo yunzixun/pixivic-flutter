@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:url_launcher/url_launcher.dart';
+
 class CenterPage extends StatefulWidget {
   @override
   _CenterPageState createState() => _CenterPageState();

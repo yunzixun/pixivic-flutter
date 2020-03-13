@@ -113,7 +113,7 @@ class _PicPageState extends State<PicPage> {
   @override
   void didUpdateWidget(PicPage oldWidget) {
     currentPage = 1;
-    BotToast.showSimpleNotification(title: '图片重新装载中(ﾉ>ω<)ﾉ');
+    // BotToast.showSimpleNotification(title: '图片重新装载中(ﾉ>ω<)ﾉ');
     scrollController.animateTo(
       0.0, 
       duration: const Duration(milliseconds: 500), 

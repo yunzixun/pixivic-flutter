@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:pixivic/page/search_page.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 
 import 'widget/nav_bar.dart';
 import 'widget/papp_bar.dart';
@@ -61,6 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    WidgetsFlutterBinding.ensureInitialized();
+    FlutterDownloader.initialize();
     super.initState();
   }
 

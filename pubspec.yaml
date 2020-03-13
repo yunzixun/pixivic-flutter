@@ -38,6 +38,8 @@ dev_dependencies:
   bot_toast: ^2.2.1
   # provider: ^4.0.4
   flutter_downloader: ^1.4.1
+  path_provider: ^1.6.5
+  permission_handler: '^4.4.0'
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
