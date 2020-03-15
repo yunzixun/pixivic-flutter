@@ -5,6 +5,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:requests/requests.dart';
 import 'package:random_color/random_color.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'pic_detail_page.dart';
 
@@ -90,7 +91,7 @@ class _PicPageState extends State<PicPage> {
 
   @override
   void initState() {
-    scrollController = ScrollController()..addListener(_autoLoadMore);
+    scrollController = ScrollController(initialScrollOffset: 0.0)..addListener(_autoLoadMore);
     currentPage = 1;
 
     _getJsonList().then((value) {
@@ -114,11 +115,14 @@ class _PicPageState extends State<PicPage> {
   void didUpdateWidget(PicPage oldWidget) {
     currentPage = 1;
     // BotToast.showSimpleNotification(title: '图片重新装载中(ﾉ>ω<)ﾉ');
-    scrollController.animateTo(
+    try {
+      scrollController.animateTo(
       0.0, 
       duration: const Duration(milliseconds: 500), 
       curve: Curves.easeOut,);
-
+    } catch(error) {
+      scrollController = ScrollController(initialScrollOffset: 0.0)..addListener(_autoLoadMore);
+    }
     _getJsonList().then((value) {
       setState(() {
         picList = value;
@@ -239,52 +243,84 @@ class _PicPageState extends State<PicPage> {
   Widget imageCell(int index) {
     final Color color = _randomColor.randomColor();
     Map picMapData = Map.from(picList[index]);
-    return ClipRRect(
-      clipBehavior: Clip.antiAlias,
-      borderRadius: BorderRadius.circular(15),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => PicDetailPage(picMapData)));
-        },
-        child: Container(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.width *
-                0.49 /
-                _reviewPicUrlNumAspectRatio(index)[2] *
-                _reviewPicUrlNumAspectRatio(index)[3],
-            minWidth: MediaQuery.of(context).size.width * 0.41,
-          ),
-          child: Hero(
-            tag: 'imageHero' + _reviewPicUrlNumAspectRatio(index)[0],
-            child: Image.network(
-              _reviewPicUrlNumAspectRatio(index)[0],
-              headers: {'Referer': 'https://app-api.pixiv.net'},
-              fit: BoxFit.fill,
-              height: MediaQuery.of(context).size.width *
-                  0.49 /
-                  _reviewPicUrlNumAspectRatio(index)[2] *
-                  _reviewPicUrlNumAspectRatio(index)[3],
-              width: MediaQuery.of(context).size.width * 0.41,
-              frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                if (wasSynchronouslyLoaded) {
-                  return child;
-                }
-                return Container(
-                  child: AnimatedOpacity(
-                    child: frame == null ? Container(color: color) : child,
-                    opacity: frame == null ? 0.3 : 1,
-                    duration: const Duration(seconds: 1),
-                    curve: Curves.easeOut,
-                  ),
-                );
+    return Stack(
+      children: <Widget>[
+        Positioned(
+          child: ClipRRect(
+            clipBehavior: Clip.antiAlias,
+            borderRadius: BorderRadius.circular(15),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PicDetailPage(picMapData)));
               },
+              child: Container(
+                // 限定constraints用于占用位置,经调试后以0.5为基准可以保证加载图片后不产生位移
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.width *
+                      0.5 /
+                      _reviewPicUrlNumAspectRatio(index)[2] *
+                      _reviewPicUrlNumAspectRatio(index)[3],
+                  minWidth: MediaQuery.of(context).size.width * 0.41,
+                ),
+                child: Hero(
+                  tag: 'imageHero' + _reviewPicUrlNumAspectRatio(index)[0],
+                  child: Image.network(
+                    _reviewPicUrlNumAspectRatio(index)[0],
+                    headers: {'Referer': 'https://app-api.pixiv.net'},
+                    fit: BoxFit.fill,
+                    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                      if (wasSynchronouslyLoaded) {
+                        return child;
+                      }
+                      return Container(
+                        child: AnimatedOpacity(
+                          child: frame == null ? Container(color: color) : child,
+                          opacity: frame == null ? 0.3 : 1,
+                          duration: const Duration(seconds: 1),
+                          curve: Curves.easeOut,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
             ),
           ),
         ),
-      ),
+        Positioned(
+          child: numberViewer(_reviewPicUrlNumAspectRatio(index)[1]),
+          right: ScreenUtil().setWidth(10),
+          top: ScreenUtil().setWidth(5),
+        )
+      ],
     );
+  }
+
+  Widget numberViewer(num numberOfPic) {
+    return (numberOfPic != 1) ? 
+      Container(
+        padding: EdgeInsets.all(ScreenUtil().setWidth(2)),
+        decoration: BoxDecoration(
+          color: Colors.black38,
+          borderRadius: BorderRadius.circular(3)
+        ),
+        child: Row(
+          children: <Widget>[
+            Icon(
+              Icons.content_copy, 
+              color: Colors.white,
+              size: ScreenUtil().setWidth(10),),
+            Text(
+              '$numberOfPic',
+              style: TextStyle(
+                color: Colors.white
+              ),),
+          ],
+        ),
+      ) :
+      Container();
   }
 }

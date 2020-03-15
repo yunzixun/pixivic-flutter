@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context, width: 324, height: 576);
-
+    
     return Scaffold(
       appBar: PappBar(
         title: widget.title,
