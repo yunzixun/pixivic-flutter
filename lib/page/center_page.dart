@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../widget/texts.dart';
+import '../data/texts.dart';
 
 class CenterPage extends StatefulWidget {
   @override

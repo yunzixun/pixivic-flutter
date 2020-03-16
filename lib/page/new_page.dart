@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'login_page.dart';
+
 class NewPage extends StatefulWidget {
   @override
   _NewPageState createState() => _NewPageState();
@@ -8,8 +10,6 @@ class NewPage extends StatefulWidget {
 class _NewPageState extends State<NewPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text('3-NewPage'),
-    );
+    return LoginPage();
   }
 }

@@ -14,3 +14,11 @@ class TextZhForCenterPage {
 
   String friend = '友链';
 }
+
+class TextZhLoginPage {
+  String userName = '用户名';
+  String password = '密码';
+  String button = '立即登录';
+  String buttonLoading = '登录中';
+  String verification = '验证码';
+}
