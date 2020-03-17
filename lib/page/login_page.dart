@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import '../data/texts.dart';
 
@@ -105,10 +106,26 @@ class _LoginPageState extends State<LoginPage> {
               style: TextStyle(color: Colors.white),
             ))
         : FlatButton(
-            onPressed: () {
+            onPressed: () async{
               setState(() {
-                loginOnLoading = true;
+                // loginOnLoading = true;
+                _getVerificationCode();
               });
+              String url = 'https://api.pixivic.com/users/token?vid=${verificationCode}&value=${_verificationController.text}';
+              Map<String, String> body = {
+                'username': _userNameController.text,
+                'password': _userPasswordController.text
+              };
+              Map<String, String> header = {
+                'Content-Type': 'application/json'
+              };
+              var encoder = JsonEncoder.withIndent("     ");
+              var client = http.Client();
+              var reponse = await client.post(url, headers: header, body: encoder.convert(body));
+              print(reponse.statusCode);
+              print(reponse.request.headers);
+              print(reponse.headers);
+              print(utf8.decode(reponse.bodyBytes, allowMalformed: true));
             },
             color: Colors.blueAccent[200],
             child: Text(
