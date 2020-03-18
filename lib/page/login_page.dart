@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../data/texts.dart';
+import '../data/common.dart';
+import '../function/call.dart' as call;
 
 import 'package:requests/requests.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,9 +26,20 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _getVerificationCode().then((value) {
+    if(tempVerificationCode != null) {
+      verificationImage = tempVerificationImage;
+      verificationCode = tempVerificationCode;
+    }
+    else {
+      _getVerificationCode().then((value) {
       setState(() {});
     });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -76,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
         inputCell(text.verification, controller, false, length: 120),
         Container(
           constraints: BoxConstraints(
-              minWidth: ScreenUtil().setWidth(70),
+              minWidth: ScreenUtil().setWidth(85),
               minHeight: ScreenUtil().setHeight(40)),
           padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
           child: GestureDetector(
@@ -111,21 +124,8 @@ class _LoginPageState extends State<LoginPage> {
                 // loginOnLoading = true;
                 _getVerificationCode();
               });
-              String url = 'https://api.pixivic.com/users/token?vid=${verificationCode}&value=${_verificationController.text}';
-              Map<String, String> body = {
-                'username': _userNameController.text,
-                'password': _userPasswordController.text
-              };
-              Map<String, String> header = {
-                'Content-Type': 'application/json'
-              };
-              var encoder = JsonEncoder.withIndent("     ");
-              var client = http.Client();
-              var reponse = await client.post(url, headers: header, body: encoder.convert(body));
-              print(reponse.statusCode);
-              print(reponse.request.headers);
-              print(reponse.headers);
-              print(utf8.decode(reponse.bodyBytes, allowMalformed: true));
+              int loginResult = await call.login(_userNameController.text, _userPasswordController.text, verificationCode, _verificationController.text);
+              print(loginResult);
             },
             color: Colors.blueAccent[200],
             child: Text(
@@ -141,12 +141,12 @@ class _LoginPageState extends State<LoginPage> {
       dynamic json = r.json();
       verificationCode = json['data']['vid'];
       verificationImage = json['data']['imageBase64'];
+      tempVerificationImage = verificationImage;
+      tempVerificationCode = verificationCode;
       return true;
     } else {
       print('无法获取验证码');
       return false;
     }
   }
-
-  _loginSubmit() async {}
 }

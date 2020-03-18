@@ -1,31 +1,27 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 SharedPreferences prefs;
+String tempVerificationCode;
+String tempVerificationImage;
 
-String globalAuthorization;
-String globalUserName;
-String globalUserEmail;
-
-List<String> keywords = ['auth','id', 'name', 'email', 'qqcheck', 'emailcheck', 'avatar',];
+List<String> keywordsString = ['auth', 'name', 'email', 'qqcheck', 'avatarLink', 'gender', 'signature', 'location',];
+List<String> keywordsInt = ['id', 'star'];
+List<String> keywordsBool = ['isBindQQ', 'isCheckEmail'];
 
 
-initData() async{
+Future initData() async{
   prefs = await SharedPreferences.getInstance();
-  try {
-    prefs.getBool('ifInit');
-  } catch (e) {
-    for(var item in keywords) {
-      item.contains('check')
-      ? prefs.setBool(item, false)
-      : prefs.setString(item, '');
-    }
+  print(prefs.getKeys());
+  for(var item in keywordsString) {
+    if(prefs.getString(item) == null)
+      prefs.setString(item, '');
   }
-}
-
-checkData(String label) {
-  try {
-    prefs.getString(label);
-  } catch (e) {
-    prefs.setString(label, '');
+  for(var item in keywordsInt) {
+    if(prefs.getInt(item) == null)
+      prefs.setInt(item, 0);
+  }
+  for(var item in keywordsBool) {
+    if(prefs.getBool(item) == null)
+      prefs.setBool(item, false);
   }
 }

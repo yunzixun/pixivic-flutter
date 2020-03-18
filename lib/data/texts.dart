@@ -3,15 +3,10 @@ class TextZhForCenterPage {
 
   String savePicLabel = '图片的保存';
   String savePic = '在图片详情页中，长按图片即可下载原图';
-
   String forum = '访问论坛';
-
   String rearEnd = '后端源码';
-
   String frontEnd = '前端源码';
-
   String donate = '捐赠我们';
-
   String friend = '友链';
 }
 

@@ -152,8 +152,6 @@ class _ArtistPageState extends State<ArtistPage> {
   _loadArtistData() async{
     String urlId = 'https://api.pixivic.com/artists/${widget.artistId}';
     String urlSummary = 'https://api.pixivic.com/artists/${widget.artistId}/summary';
-    String urlIllust = 'https://api.pixivic.com/artists/${widget.artistId}/illusts/illust?page=1&pageSize=30&maxSanityLevel=10';
-    String urlMange = 'https://api.pixivic.com/artists/${widget.artistId}/illusts/manga?page=1&pageSize=30&maxSanityLevel=10';
     
     try {
       var requests = await Requests.get(urlId);

@@ -15,6 +15,9 @@ import 'page/pic_page.dart';
 import 'page/new_page.dart';
 import 'page/user_page.dart';
 import 'page/center_page.dart';
+import 'page/login_page.dart';
+
+import 'data/common.dart';
 
 void main() => runApp(MyApp());
 
@@ -64,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     WidgetsFlutterBinding.ensureInitialized();
     FlutterDownloader.initialize();
+    initData();
     super.initState();
   }
 
