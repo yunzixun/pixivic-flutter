@@ -18,7 +18,7 @@ class UserPageState extends State<UserPage> {
     if (isLogin) {
       return Container();
     } else {
-      return Container(child: LoginPage());
+      return Container(child: LoginPage(loginPageKey));
     }
   }
 

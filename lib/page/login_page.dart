@@ -10,10 +10,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoginPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
+
+  LoginPage(this.key);
+
+  final Key key;
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   TextEditingController _userNameController = TextEditingController();
   TextEditingController _userPasswordController = TextEditingController();
   TextEditingController _verificationController = TextEditingController();
@@ -44,6 +48,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
+    _userNameController.dispose();
+    _userPasswordController.dispose();
+    _userPasswordRepeatController.dispose();
     super.dispose();
   }
 
@@ -145,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () {},
             color: Colors.orangeAccent[200],
             child: Text(
-              text.buttonRegisterLoading,
+              text.buttonLoginLoading,
               style: TextStyle(color: Colors.white),
             ))
         : FlatButton(
@@ -234,16 +241,21 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  _resetMode(String mode) {
+  resetMode(String mode) {
     switch(mode) {
       case 'login':
         setState(() {
           loginOnLoading = false;
+          _userNameController.text = '';
+          _userPasswordController.text = '';
         });
         break;
       case 'regesiter':
         setState(() {
           regeisterOnLoading = false;
+          _userNameController.text = '';
+          _userPasswordController.text = '';
+          _userPasswordRepeatController.text = '';
         });
         break;
       default:

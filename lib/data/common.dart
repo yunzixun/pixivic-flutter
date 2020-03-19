@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../page/new_page.dart';
 import '../page/user_page.dart';
+import '../page/login_page.dart';
 
 SharedPreferences prefs;
 String tempVerificationCode;
@@ -16,11 +17,13 @@ List<String> keywordsBool = ['isBindQQ', 'isCheckEmail'];
 
 GlobalKey<NewPageState> newPageKey;
 GlobalKey<UserPageState> userPageKey;
+GlobalKey<LoginPageState> loginPageKey;
 
 
 Future initData() async{
   newPageKey = GlobalKey();
   userPageKey = GlobalKey();
+  loginPageKey = GlobalKey();
 
   prefs = await SharedPreferences.getInstance();
   print(prefs.getKeys());
