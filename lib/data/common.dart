@@ -1,15 +1,27 @@
+import 'package:flutter/material.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../page/new_page.dart';
+import '../page/user_page.dart';
 
 SharedPreferences prefs;
 String tempVerificationCode;
 String tempVerificationImage;
+bool isLogin;
 
 List<String> keywordsString = ['auth', 'name', 'email', 'qqcheck', 'avatarLink', 'gender', 'signature', 'location',];
 List<String> keywordsInt = ['id', 'star'];
 List<String> keywordsBool = ['isBindQQ', 'isCheckEmail'];
 
+GlobalKey<NewPageState> newPageKey;
+GlobalKey<UserPageState> userPageKey;
+
 
 Future initData() async{
+  newPageKey = GlobalKey();
+  userPageKey = GlobalKey();
+
   prefs = await SharedPreferences.getInstance();
   print(prefs.getKeys());
   for(var item in keywordsString) {
@@ -24,4 +36,9 @@ Future initData() async{
     if(prefs.getBool(item) == null)
       prefs.setBool(item, false);
   }
+
+  if(prefs.getString('auth') != '')
+    isLogin = true;
+  else 
+    isLogin = false;
 }

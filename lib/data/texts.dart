@@ -13,7 +13,14 @@ class TextZhForCenterPage {
 class TextZhLoginPage {
   String userName = '用户名';
   String password = '密码';
-  String button = '立即登录';
-  String buttonLoading = '登录中';
+  String passwordRepeat = '重复密码';
+  String buttonLogin = '立即登录';
+  String buttonRegister = '立即注册';
+  String buttonLoginLoading = '登录中';
+  String buttonRegisterLoading = '注册中';
   String verification = '验证码';
+  String loginSucceed = '登陆成功(* ॑ᐜ ॑*)';
+  String loginFailed = '登录失败，请检查输入信息和网络(｡ŏ_ŏ)';
+  String loginMode = '登录';
+  String registerMode = '注册';
 }

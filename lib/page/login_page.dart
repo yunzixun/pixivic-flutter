@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 import '../data/texts.dart';
 import '../data/common.dart';
-import '../function/call.dart' as call;
+import '../function/identity.dart' as identity;
 
 import 'package:requests/requests.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,22 +17,28 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController _userNameController = TextEditingController();
   TextEditingController _userPasswordController = TextEditingController();
   TextEditingController _verificationController = TextEditingController();
+  TextEditingController _userPasswordRepeatController = TextEditingController();
+
   String verificationImage = '';
   String verificationCode;
+
   TextZhLoginPage text = TextZhLoginPage();
+
+  // 需设定延时充值按钮
   bool loginOnLoading = false;
+  bool regeisterOnLoading = false;
+  bool modeIsLogin = true;
 
   @override
   void initState() {
     super.initState();
-    if(tempVerificationCode != null) {
+    if (tempVerificationCode != null) {
       verificationImage = tempVerificationImage;
       verificationCode = tempVerificationCode;
-    }
-    else {
+    } else {
       _getVerificationCode().then((value) {
-      setState(() {});
-    });
+        setState(() {});
+      });
     }
   }
 
@@ -44,22 +49,45 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(ScreenUtil().setWidth(20)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          inputCell(text.userName, _userNameController, false),
-          inputCell(text.password, _userPasswordController, true),
-          verificationCell(_verificationController),
-          SizedBox(
-            height: ScreenUtil().setHeight(20),
-          ),
-          loginButton()
-        ],
-      ),
-    );
+    if (modeIsLogin) {
+      return Container(
+        padding: EdgeInsets.all(ScreenUtil().setWidth(20)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            inputCell(text.userName, _userNameController, false),
+            inputCell(text.password, _userPasswordController, true),
+            verificationCell(_verificationController),
+            SizedBox(
+              height: ScreenUtil().setHeight(20),
+            ),
+            loginButton(),
+            modeCell(),
+          ],
+        ),
+      );
+    }
+    else {
+      return Container(
+        padding: EdgeInsets.all(ScreenUtil().setWidth(20)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            inputCell(text.userName, _userNameController, false),
+            inputCell(text.password, _userPasswordController, true),
+            inputCell(text.passwordRepeat, _userPasswordRepeatController, true),
+            verificationCell(_verificationController),
+            SizedBox(
+              height: ScreenUtil().setHeight(20),
+            ),
+            regeisterButton(),
+            modeCell(),
+          ],
+        ),
+      );
+    }
   }
 
   Widget inputCell(
@@ -70,14 +98,16 @@ class _LoginPageState extends State<LoginPage> {
       width: ScreenUtil().setWidth(length),
       height: ScreenUtil().setHeight(40),
       child: TextField(
-          decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(),
-              ),
-              hintText: label),
-          controller: controller,
-          obscureText: isPassword),
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(),
+          ),
+          hintText: label,
+        ),
+        controller: controller,
+        obscureText: isPassword,
+      ),
     );
   }
 
@@ -87,7 +117,8 @@ class _LoginPageState extends State<LoginPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         inputCell(text.verification, controller, false, length: 120),
-        Container(
+        AnimatedContainer(
+          duration: Duration(milliseconds: 300),
           constraints: BoxConstraints(
               minWidth: ScreenUtil().setWidth(85),
               minHeight: ScreenUtil().setHeight(40)),
@@ -102,8 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                       base64Decode(verificationImage),
                       width: ScreenUtil().setWidth(70),
                     )
-                  : Container()
-          ),
+                  : Container()),
         ),
       ],
     );
@@ -115,23 +145,77 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () {},
             color: Colors.orangeAccent[200],
             child: Text(
-              text.buttonLoading,
+              text.buttonRegisterLoading,
               style: TextStyle(color: Colors.white),
             ))
         : FlatButton(
-            onPressed: () async{
+            onPressed: () async {
               setState(() {
-                // loginOnLoading = true;
+                loginOnLoading = true;
                 _getVerificationCode();
               });
-              int loginResult = await call.login(_userNameController.text, _userPasswordController.text, verificationCode, _verificationController.text);
+              int loginResult = await identity.login(
+                  _userNameController.text,
+                  _userPasswordController.text,
+                  verificationCode,
+                  _verificationController.text);
               print(loginResult);
             },
             color: Colors.blueAccent[200],
             child: Text(
-              text.button,
+              text.buttonLogin,
               style: TextStyle(color: Colors.white),
             ));
+  }
+
+  Widget regeisterButton() {
+    return regeisterOnLoading
+        ? FlatButton(
+            onPressed: () {},
+            color: Colors.orangeAccent[200],
+            child: Text(
+              text.buttonRegisterLoading,
+              style: TextStyle(color: Colors.white),
+            ))
+        : FlatButton(
+            onPressed: () async {
+              setState(() {
+                regeisterOnLoading = true;
+                _getVerificationCode();
+              });
+              int loginResult = await identity.login(
+                  _userNameController.text,
+                  _userPasswordController.text,
+                  verificationCode,
+                  _verificationController.text);
+              print(loginResult);
+            },
+            color: Colors.blueAccent[200],
+            child: Text(
+              text.buttonRegister,
+              style: TextStyle(color: Colors.white),
+            ));
+  }
+
+  Widget modeCell() {
+    return Container(
+      padding: EdgeInsets.all(ScreenUtil().setHeight(10)),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            modeIsLogin = !modeIsLogin;
+            _userPasswordController.text = '';
+            _userPasswordController.text = '';
+          });
+        },
+        child: Text(
+          modeIsLogin
+              ? text.registerMode
+              : text.loginMode,
+          style: TextStyle(color: Colors.blueAccent[200]),
+        ),
+      ),
+    );
   }
 
   _getVerificationCode() async {
@@ -147,6 +231,24 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       print('无法获取验证码');
       return false;
+    }
+  }
+
+  _resetMode(String mode) {
+    switch(mode) {
+      case 'login':
+        setState(() {
+          loginOnLoading = false;
+        });
+        break;
+      case 'regesiter':
+        setState(() {
+          regeisterOnLoading = false;
+        });
+        break;
+      default:
+        print('loginpage mode pramater error');
+        
     }
   }
 }

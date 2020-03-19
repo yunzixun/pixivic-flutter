@@ -5,15 +5,27 @@ import '../data/common.dart';
 
 class UserPage extends StatefulWidget {
   @override
-  _UserPageState createState() => _UserPageState();
+  UserPageState createState() => UserPageState();
 
+  UserPage(this.key);
+
+  final Key key;
 }
 
-class _UserPageState extends State<UserPage> {
+class UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: LoginPage()
-    );
+    if (isLogin) {
+      return Container();
+    } else {
+      return Container(child: LoginPage());
+    }
+  }
+
+  checkLoginState() {
+    print('userpage check login state');
+    setState(() {
+      
+    });
   }
 }

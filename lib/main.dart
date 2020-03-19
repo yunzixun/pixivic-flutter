@@ -15,7 +15,6 @@ import 'page/pic_page.dart';
 import 'page/new_page.dart';
 import 'page/user_page.dart';
 import 'page/center_page.dart';
-import 'page/login_page.dart';
 
 import 'data/common.dart';
 
@@ -108,9 +107,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         return CenterPage();
       case 2:
-        return NewPage();
+        return NewPage(newPageKey);
       case 3:
-        return UserPage();
+        return UserPage(userPageKey);
       default:
         return PicPage.home(picDate: _picDateStr, picMode: _picMode);
     }
