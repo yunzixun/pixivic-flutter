@@ -166,14 +166,8 @@ class _ArtistPageState extends State<ArtistPage> {
       requests = await Requests.get(urlSummary);
       requests.raiseForStatus();
       jsonList = jsonDecode(requests.content())['data'];
-      for(var item in jsonList) {
-        if(item['type'] == 'illust') {
-          this.numOfIllust = item['sum'].toString();
-        }  
-        else if(item['type'] == 'manga') {
-          this.numOfManga = item['sum'].toString();
-        }
-      }
+      this.numOfIllust = jsonList['illustSum'].toString();
+      this.numOfManga = jsonList['mangaSum'].toString();
       this.tabs = <Tab> [
         Tab(text: '插画(${this.numOfIllust})',),
         Tab(text: '漫画(${this.numOfManga})',),

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:bot_toast/bot_toast.dart';
+import 'package:requests/requests.dart';
 
 import '../data/common.dart';
 import '../data/texts.dart';
@@ -19,18 +20,18 @@ login(String userName, String pwd, String verificationCode,
   var client = http.Client();
   var reponse =
       await client.post(url, headers: header, body: encoder.convert(body));
-  if(reponse.statusCode == 200) {
+  if (reponse.statusCode == 200) {
     prefs.setString('auth', reponse.headers['authorization']);
     print(prefs.getString('auth'));
-    Map data = jsonDecode(utf8.decode(reponse.bodyBytes, allowMalformed: true))['data'];
+    Map data = jsonDecode(
+        utf8.decode(reponse.bodyBytes, allowMalformed: true))['data'];
     prefs.setInt('id', data['id']);
     prefs.setString('name', data['username']);
     prefs.setString('email', data['email']);
     prefs.setString('avatarLink', data['avatar']);
     if (data['signature'] != null)
       prefs.setString('signature', data['signature']);
-    if (data['location'] != null)
-      prefs.setString('location', data['location']);
+    if (data['location'] != null) prefs.setString('location', data['location']);
     prefs.setInt('star', data['star']);
     prefs.setBool('isBindQQ', data['isBindQQ']);
     prefs.setBool('isCheckEmail', data['isCheckEmail']);
@@ -38,10 +39,9 @@ login(String userName, String pwd, String verificationCode,
     BotToast.showSimpleNotification(title: TextZhLoginPage().loginSucceed);
     newPageKey.currentState.checkLoginState();
     userPageKey.currentState.checkLoginState();
-  }else {
+  } else {
     // isLogin = false;
     BotToast.showSimpleNotification(title: TextZhLoginPage().loginFailed);
-    loginPageKey.currentState.resetMode('login');
   }
   tempVerificationCode = null;
   tempVerificationImage = null;
@@ -49,7 +49,6 @@ login(String userName, String pwd, String verificationCode,
 }
 
 logout() {
-  loginPageKey.currentState.resetMode('login');
   prefs.setString('auth', '');
   isLogin = false;
   newPageKey.currentState.checkLoginState();
@@ -58,38 +57,62 @@ logout() {
 
 updateAuth(String auth) {
   String authStored = prefs.getString('auth');
-  if (authStored != auth) 
-    prefs.setString('auth', auth);
+  if (authStored != auth) prefs.setString('auth', auth);
 }
 
-register(String userName, String pwd, String verificationCode,
+register(String userName, String pwd, String pwdRepeat, String verificationCode,
     String verificationInput, String emailInput) async {
-      // 检查用户名和邮箱，密码（新建邮箱controller)
+  // 检查用户名和邮箱，密码（新建邮箱controller)
   String url =
       'https://api.pixivic.com/users/token?vid=$verificationCode&value=$verificationInput';
-  Map<String, String> body = {'username': userName, 'password': pwd, 'email': emailInput};
+  Map<String, String> body = {
+    'username': userName,
+    'password': pwd,
+    'email': emailInput
+  };
   Map<String, String> header = {'Content-Type': 'application/json'};
   var encoder = JsonEncoder.withIndent("     ");
   var client = http.Client();
   var reponse =
       await client.post(url, headers: header, body: encoder.convert(body));
-  if(reponse.statusCode == 200) {
+  if (reponse.statusCode == 200) {
     // 切换至login界面，并给出提示
-    
-    BotToast.showSimpleNotification(title: TextZhLoginPage().loginSucceed);
-    newPageKey.currentState.checkLoginState();
-    userPageKey.currentState.checkLoginState();
-  }else {
+    BotToast.showSimpleNotification(title: TextZhLoginPage().registerSucceed);
+  } else {
     // isLogin = false;
-    BotToast.showSimpleNotification(title: TextZhLoginPage().loginFailed);
-    loginPageKey.currentState.resetMode('regesiter');
+    BotToast.showSimpleNotification(title: TextZhLoginPage().registerFailed);
   }
   tempVerificationCode = null;
   tempVerificationImage = null;
   return reponse.statusCode;
 }
 
-changeAvatar() {
+checkRegisterInfo(
+    String userName, String pwd, String pwdRepeat, String email) async {
+  if (pwd != pwdRepeat) {
+    return TextZhLoginPage().errorPwdNotSame;
+  }
+  if (pwd.length < 8 || pwd.length > 20) {
+    return TextZhLoginPage().errorPwdLength;
+  }
+  if (!email.contains('@') || !email.contains('.')) {
+    return TextZhLoginPage().errorEmail;
+  }
+  if (userName.length < 4 || userName.length > 10) {
+    return TextZhLoginPage().errorNameLength;
+  }
 
+  String url = 'https://api.pixivic.com/users/usernames/$userName';
+  try {
+    var r = await Requests.get(url);
+    if (r.statusCode == 409) {
+      return TextZhLoginPage().errorNameUsed;
+    } else {
+      return true;
+    }
+  } catch (e) {
+    return TextZhLoginPage().registerFailed;
+  }
 }
 
+changeAvatar() {}

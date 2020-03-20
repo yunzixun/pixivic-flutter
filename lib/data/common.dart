@@ -4,12 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../page/new_page.dart';
 import '../page/user_page.dart';
-import '../page/login_page.dart';
 
 SharedPreferences prefs;
 String tempVerificationCode;
 String tempVerificationImage;
-bool isLogin;
+bool isLogin;    // 记录登录状态（已登录，未登录）用于控制是否展示loginPage
 
 List<String> keywordsString = ['auth', 'name', 'email', 'qqcheck', 'avatarLink', 'gender', 'signature', 'location',];
 List<String> keywordsInt = ['id', 'star'];
@@ -17,13 +16,10 @@ List<String> keywordsBool = ['isBindQQ', 'isCheckEmail'];
 
 GlobalKey<NewPageState> newPageKey;
 GlobalKey<UserPageState> userPageKey;
-GlobalKey<LoginPageState> loginPageKey;
-
 
 Future initData() async{
   newPageKey = GlobalKey();
   userPageKey = GlobalKey();
-  loginPageKey = GlobalKey();
 
   prefs = await SharedPreferences.getInstance();
   print(prefs.getKeys());

@@ -14,6 +14,7 @@ class TextZhLoginPage {
   String userName = '用户名';
   String password = '密码';
   String passwordRepeat = '重复密码';
+  String email = '邮箱';
   String buttonLogin = '立即登录';
   String buttonRegister = '立即注册';
   String buttonLoginLoading = '登录中';
@@ -23,4 +24,11 @@ class TextZhLoginPage {
   String loginFailed = '登录失败，请检查输入信息和网络(｡ŏ_ŏ)';
   String loginMode = '登录';
   String registerMode = '注册';
+  String registerFailed = '注册失败，请检查网络';
+  String registerSucceed = '注册成功，返回登录页面';
+  String errorPwdNotSame = '两次输入的密码不一致，请检查';
+  String errorNameUsed = '此用户名已有人使用，请进行更换';
+  String errorEmail = '邮箱格式输入错误，请检查';
+  String errorNameLength = '用户名长度需4-10位';
+  String errorPwdLength = '密码长度需8-20位';
 }

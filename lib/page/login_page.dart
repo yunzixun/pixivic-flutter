@@ -7,14 +7,13 @@ import '../function/identity.dart' as identity;
 
 import 'package:requests/requests.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:bot_toast/bot_toast.dart';
 
 class LoginPage extends StatefulWidget {
   @override
   LoginPageState createState() => LoginPageState();
 
-  LoginPage(this.key);
-
-  final Key key;
+  LoginPage();
 }
 
 class LoginPageState extends State<LoginPage> {
@@ -22,6 +21,7 @@ class LoginPageState extends State<LoginPage> {
   TextEditingController _userPasswordController = TextEditingController();
   TextEditingController _verificationController = TextEditingController();
   TextEditingController _userPasswordRepeatController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
 
   String verificationImage = '';
   String verificationCode;
@@ -30,7 +30,7 @@ class LoginPageState extends State<LoginPage> {
 
   // 需设定延时充值按钮
   bool loginOnLoading = false;
-  bool regeisterOnLoading = false;
+  bool registerOnLoading = false;
   bool modeIsLogin = true;
 
   @override
@@ -74,8 +74,7 @@ class LoginPageState extends State<LoginPage> {
           ],
         ),
       );
-    }
-    else {
+    } else {
       return Container(
         padding: EdgeInsets.all(ScreenUtil().setWidth(20)),
         child: Column(
@@ -85,11 +84,12 @@ class LoginPageState extends State<LoginPage> {
             inputCell(text.userName, _userNameController, false),
             inputCell(text.password, _userPasswordController, true),
             inputCell(text.passwordRepeat, _userPasswordRepeatController, true),
+            inputCell(text.email, _emailController, false),
             verificationCell(_verificationController),
             SizedBox(
               height: ScreenUtil().setHeight(20),
             ),
-            regeisterButton(),
+            registerButton(),
             modeCell(),
           ],
         ),
@@ -166,7 +166,9 @@ class LoginPageState extends State<LoginPage> {
                   _userPasswordController.text,
                   verificationCode,
                   _verificationController.text);
-              print(loginResult);
+              if (loginResult != 200) {
+                _resetMode('login');
+              }
             },
             color: Colors.blueAccent[200],
             child: Text(
@@ -175,8 +177,8 @@ class LoginPageState extends State<LoginPage> {
             ));
   }
 
-  Widget regeisterButton() {
-    return regeisterOnLoading
+  Widget registerButton() {
+    return registerOnLoading
         ? FlatButton(
             onPressed: () {},
             color: Colors.orangeAccent[200],
@@ -187,15 +189,36 @@ class LoginPageState extends State<LoginPage> {
         : FlatButton(
             onPressed: () async {
               setState(() {
-                regeisterOnLoading = true;
-                _getVerificationCode();
+                registerOnLoading = true;
               });
-              int loginResult = await identity.login(
+              var check = await identity.checkRegisterInfo(
                   _userNameController.text,
                   _userPasswordController.text,
-                  verificationCode,
-                  _verificationController.text);
-              print(loginResult);
+                  _userPasswordRepeatController.text,
+                  _emailController.text);
+              if (check == true) {
+                setState(() {
+                  _getVerificationCode();
+                });
+                int registerResult = await identity.register(
+                    _userNameController.text,
+                    _userPasswordController.text,
+                    _userPasswordRepeatController.text,
+                    verificationCode,
+                    _verificationController.text,
+                    _emailController.text);
+                if (registerResult != 200) {
+                  _resetMode('register');
+                } else {
+                  setState(() {
+                    modeIsLogin = true;
+                  });
+                }
+              }
+              else {
+                BotToast.showSimpleNotification(title: check);
+                _resetMode('register');
+              }
             },
             color: Colors.blueAccent[200],
             child: Text(
@@ -216,9 +239,7 @@ class LoginPageState extends State<LoginPage> {
           });
         },
         child: Text(
-          modeIsLogin
-              ? text.registerMode
-              : text.loginMode,
+          modeIsLogin ? text.registerMode : text.loginMode,
           style: TextStyle(color: Colors.blueAccent[200]),
         ),
       ),
@@ -241,26 +262,27 @@ class LoginPageState extends State<LoginPage> {
     }
   }
 
-  resetMode(String mode) {
-    switch(mode) {
+  // 登录或注册失败后，重置当前页面
+  _resetMode(String mode) {
+    switch (mode) {
       case 'login':
         setState(() {
           loginOnLoading = false;
-          _userNameController.text = '';
+          // _userNameController.text = '';
           _userPasswordController.text = '';
         });
         break;
-      case 'regesiter':
+      case 'register':
         setState(() {
-          regeisterOnLoading = false;
-          _userNameController.text = '';
+          registerOnLoading = false;
+          // _userNameController.text = '';
           _userPasswordController.text = '';
           _userPasswordRepeatController.text = '';
+          // _emailController.text = '';
         });
         break;
       default:
         print('loginpage mode pramater error');
-        
     }
   }
 }
