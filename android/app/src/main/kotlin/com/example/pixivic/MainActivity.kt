@@ -1,4 +1,4 @@
-package com.example.pixivic
+package com.app.pixivic
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
