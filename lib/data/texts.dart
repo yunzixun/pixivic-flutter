@@ -32,3 +32,11 @@ class TextZhLoginPage {
   String errorNameLength = '用户名长度需4-10位';
   String errorPwdLength = '密码长度需8-20位';
 }
+
+class TextZhUserPage {
+  String info = '消息';
+  String fans = '粉丝';
+  String favorite = '我的收藏';
+  String follow = '我的关注';
+  String logout = '退出登录';
+}

@@ -38,13 +38,9 @@ class _ArtistPageState extends State<ArtistPage> {
 
   @override
   void initState() {
-    _loadArtistData().then(
-      (value) {
-        setState(() {
-          
-        });
-      }
-    );
+    _loadArtistData().then((value) {
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -57,47 +53,47 @@ class _ArtistPageState extends State<ArtistPage> {
         children: <Widget>[
           // 头像、名称、关注按钮
           Container(
-            padding: EdgeInsets.all(ScreenUtil().setHeight(10)), 
-            margin: EdgeInsets.all(ScreenUtil().setHeight(20)), 
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Hero(
-                  tag: widget.artistAvatar,
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      widget.artistAvatar,
-                      headers: {'Referer': 'https://app-api.pixiv.net'},
+              padding: EdgeInsets.all(ScreenUtil().setHeight(10)),
+              margin: EdgeInsets.all(ScreenUtil().setHeight(20)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Hero(
+                    tag: widget.artistAvatar,
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        widget.artistAvatar,
+                        headers: {'Referer': 'https://app-api.pixiv.net'},
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: ScreenUtil().setHeight(20),
-                ),
-                Text(
-                  widget.artistName,
-                  style: normalTextStyle,
-                ),
-                SizedBox(
-                  height: ScreenUtil().setHeight(25),
-                ),
-                FlatButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18.0),),
-                  color: Colors.blueAccent[200],
-                  onPressed: () {
-                    print('关注画师');
-                  },
-                  child: Text(
-                    '关注画师',
-                    style: TextStyle(
-                        fontSize: ScreenUtil().setWidth(10),
-                        color: Colors.white),
+                  SizedBox(
+                    height: ScreenUtil().setHeight(20),
                   ),
-                ),
-              ],
-            )
-          ),
+                  Text(
+                    widget.artistName,
+                    style: normalTextStyle,
+                  ),
+                  SizedBox(
+                    height: ScreenUtil().setHeight(25),
+                  ),
+                  FlatButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                    color: Colors.blueAccent[200],
+                    onPressed: () {
+                      print('关注画师');
+                    },
+                    child: Text(
+                      '关注画师',
+                      style: TextStyle(
+                          fontSize: ScreenUtil().setWidth(10),
+                          color: Colors.white),
+                    ),
+                  ),
+                ],
+              )),
           // 个人网站和 Twitter
           Container(
             padding: EdgeInsets.all(ScreenUtil().setHeight(0)),
@@ -105,20 +101,20 @@ class _ArtistPageState extends State<ArtistPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 GestureDetector(
-                  onTap: () {
-                    
-                  },
-                  child: Icon(Icons.home, color: Colors.blue,
-                  )
+                    onTap: () {},
+                    child: Icon(
+                      Icons.home,
+                      color: Colors.blue,
+                    )),
+                SizedBox(
+                  width: ScreenUtil().setWidth(5),
                 ),
-                SizedBox(width: ScreenUtil().setWidth(5),),
                 GestureDetector(
-                  onTap: () {
-                    
-                  },
-                  child: Icon(Icons.group, color: Colors.blue,
-                  )
-                )
+                    onTap: () {},
+                    child: Icon(
+                      Icons.group,
+                      color: Colors.blue,
+                    ))
               ],
             ),
           ),
@@ -126,19 +122,24 @@ class _ArtistPageState extends State<ArtistPage> {
           Container(
             alignment: Alignment.center,
             padding: EdgeInsets.all(ScreenUtil().setHeight(10)),
-            child: (
-              Text('$numOfFollower 关注', style: smallTextStyle,)
-            ),
+            child: (Text(
+              '$numOfFollower 关注',
+              style: smallTextStyle,
+            )),
           ),
           // 简介
           Container(
             margin: EdgeInsets.all(ScreenUtil().setHeight(20)),
             child: Wrap(
               children: <Widget>[
-                Text('$comment', style: smallTextStyle,),
+                Text(
+                  '$comment',
+                  style: smallTextStyle,
+                ),
               ],
             ),
           ),
+          // 相关图片
           Container(
             height: ScreenUtil().setHeight(400),
             width: ScreenUtil().setWidth(324),
@@ -149,10 +150,11 @@ class _ArtistPageState extends State<ArtistPage> {
     );
   }
 
-  _loadArtistData() async{
+  _loadArtistData() async {
     String urlId = 'https://api.pixivic.com/artists/${widget.artistId}';
-    String urlSummary = 'https://api.pixivic.com/artists/${widget.artistId}/summary';
-    
+    String urlSummary =
+        'https://api.pixivic.com/artists/${widget.artistId}/summary';
+
     try {
       var requests = await Requests.get(urlId);
       requests.raiseForStatus();
@@ -168,37 +170,38 @@ class _ArtistPageState extends State<ArtistPage> {
       jsonList = jsonDecode(requests.content())['data'];
       this.numOfIllust = jsonList['illustSum'].toString();
       this.numOfManga = jsonList['mangaSum'].toString();
-      this.tabs = <Tab> [
-        Tab(text: '插画(${this.numOfIllust})',),
-        Tab(text: '漫画(${this.numOfManga})',),
+      this.tabs = <Tab>[
+        Tab(
+          text: '插画(${this.numOfIllust})',
+        ),
+        Tab(
+          text: '漫画(${this.numOfManga})',
+        ),
       ];
-
-    } catch(error) {
+    } catch (error) {
       print('======================');
       print(error);
       print('======================');
-      BotToast.showSimpleNotification(title: '网络异常，请检查网络(´·_·`)'); 
+      BotToast.showSimpleNotification(title: '网络异常，请检查网络(´·_·`)');
     }
 
-    return('finished');
+    return ('finished');
   }
 
-   Widget _tabViewer() {
-    if(tabs != null) {
-      return(
-      DefaultTabController(
+  Widget _tabViewer() {
+    // 初始化时 tabs 为 null，获取结果后被赋值
+    if (tabs != null) {
+      return DefaultTabController(
         length: 2,
         child: Stack(
           children: <Widget>[
             Material(
-              child: Container(
-                height: ScreenUtil().setHeight(30),
-                child: TabBar(
-                  labelColor: Colors.blueAccent[200],
-                  tabs: tabs,
-                )
-              )
-            ),
+                child: Container(
+                    height: ScreenUtil().setHeight(30),
+                    child: TabBar(
+                      labelColor: Colors.blueAccent[200],
+                      tabs: tabs,
+                    ))),
             Positioned(
               top: ScreenUtil().setHeight(30),
               child: Container(
@@ -206,20 +209,19 @@ class _ArtistPageState extends State<ArtistPage> {
                 width: ScreenUtil().setWidth(324),
                 child: TabBarView(
                   children: tabs.map((Tab tab) {
-                    return PicPage.artist(artistId: widget.artistId, searchManga: tab.text.contains('漫画') ? true : false,);
-                  }
-                  ).toList(),
+                    return PicPage.artist(
+                      artistId: widget.artistId,
+                      searchManga: tab.text.contains('漫画') ? true : false,
+                    );
+                  }).toList(),
                 ),
               ),
             ),
           ],
         ),
-      )
-    );
+      );
+    } else {
+      return (Container());
     }
-    else {
-      return(Container());
-    }
-    
   }
 }

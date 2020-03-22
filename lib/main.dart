@@ -52,9 +52,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   bool _navBarAlone = false;
   var _pageController = PageController(initialPage: 0);
-  
+
   DateTime _picDate = DateTime.now().subtract(Duration(days: 3));
-  String _picDateStr = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(Duration(days: 3)));
+  String _picDateStr = DateFormat('yyyy-MM-dd')
+      .format(DateTime.now().subtract(Duration(days: 3)));
   String _picMode = 'day';
   DateTime _picLastDate = DateTime.now().subtract(Duration(days: 3));
   DateTime _picFirstDate = DateTime(2008, 1, 1);
@@ -71,18 +72,22 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     WidgetsFlutterBinding.ensureInitialized();
     FlutterDownloader.initialize();
-    initData();
-    picPage = PicPage.home(picDate: _picDateStr, picMode: _picMode);
-    userPage = UserPage(userPageKey);
-    newPage = NewPage(newPageKey);
-    centerPage  = CenterPage();
+    initData().then((value) {
+      setState(() {
+        picPage = PicPage.home(picDate: _picDateStr, picMode: _picMode);
+        userPage = UserPage(userPageKey);
+        newPage = NewPage(newPageKey);
+        centerPage = CenterPage();
+      });
+    });
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context, width: 324, height: 576);
-    
+
     return Scaffold(
       appBar: PappBar(
         title: widget.title,
@@ -92,12 +97,12 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Stack(
         children: <Widget>[
           PageView.builder(
-            itemCount: 4,                          //页面数量
-            onPageChanged: _onPageChanged,         //页面切换
+            itemCount: 4, //页面数量
+            onPageChanged: _onPageChanged, //页面切换
             controller: _pageController,
             itemBuilder: (context, index) {
               return Center(
-                child: _getPageByIndex(index),     //每个页面展示的组件
+                child: _getPageByIndex(index), //每个页面展示的组件
               );
             },
           ),
@@ -127,8 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onNavbarTap(int index) {
     // print('tap $index');
     setState(() {
-      _pageController.jumpToPage(
-        index);
+      _pageController.jumpToPage(index);
     });
   }
 
@@ -138,10 +142,10 @@ class _MyHomePageState extends State<MyHomePage> {
       _currentIndex = index;
       _menuButtonKey.currentState.changeTapState(false);
       _menuListKey.currentState.changeActive(false);
-      if(index == 0) {
+      if (index == 0) {
         _navBarAlone = false;
         _menuButtonKey.currentState.changeVisible(true);
-      }else {
+      } else {
         _navBarAlone = true;
         _menuButtonKey.currentState.changeVisible(false);
       }
@@ -153,27 +157,28 @@ class _MyHomePageState extends State<MyHomePage> {
     _menuListKey.currentState.flipActive();
   }
 
-  void _onMenuListCellTap(String parameter) async{
-    if(parameter == 'new_date') {
-        DateTime newDate = await showDatePicker(
-          context: context,
-          initialDate: _picDate,
-          firstDate: _picFirstDate,
-          lastDate: _picLastDate,
-          // locale: Locale('zh')
-        );
-        if(newDate != null) {
-          _menuButtonKey.currentState.flipTapState();
-          _menuListKey.currentState.flipActive();
-          setState(() {
-            // print(newDate);
-            _picDate = newDate;
-            _picDateStr = DateFormat('yyyy-MM-dd').format(_picDate);
+  void _onMenuListCellTap(String parameter) async {
+    if (parameter == 'new_date') {
+      DateTime newDate = await showDatePicker(
+        context: context,
+        initialDate: _picDate,
+        firstDate: _picFirstDate,
+        lastDate: _picLastDate,
+        // locale: Locale('zh')
+      );
+      if (newDate != null) {
+        _menuButtonKey.currentState.flipTapState();
+        _menuListKey.currentState.flipActive();
+        setState(() {
+          // print(newDate);
+          _picDate = newDate;
+          _picDateStr = DateFormat('yyyy-MM-dd').format(_picDate);
         });
-        }
       }
-      else if(parameter == 'search') {
-        showDialog(context: context,builder: (context) {
+    } else if (parameter == 'search') {
+      showDialog(
+        context: context,
+        builder: (context) {
           return AlertDialog(
             title: Text('搜索关键词'),
             content: TextField(
@@ -185,14 +190,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: new Text('提交'),
                 onPressed: () {
                   String input = _textFieldController.text;
-                  if(input == '') {
+                  if (input == '') {
                     Navigator.of(context).pop();
                   } else {
                     Navigator.of(context).pop();
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => SearchPage(searchKeywordsIn: input)
-                      ),
+                          builder: (context) =>
+                              SearchPage(searchKeywordsIn: input)),
                     );
                     _menuButtonKey.currentState.flipTapState();
                     _menuListKey.currentState.flipActive();
@@ -202,13 +207,14 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             ],
           );
-        },);
-      }else {
-        _menuButtonKey.currentState.flipTapState();
-        _menuListKey.currentState.flipActive();
-        setState(() {
-          _picMode = parameter;
-        });
-      }     
+        },
+      );
+    } else {
+      _menuButtonKey.currentState.flipTapState();
+      _menuListKey.currentState.flipActive();
+      setState(() {
+        _picMode = parameter;
+      });
+    }
   }
 }

@@ -63,7 +63,6 @@ login(String userName, String pwd, String verificationCode,
 logout() {
   prefs.setString('auth', '');
   isLogin = false;
-  newPageKey.currentState.checkLoginState();
   userPageKey.currentState.checkLoginState();
 }
 
