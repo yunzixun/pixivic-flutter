@@ -9,11 +9,14 @@ import 'package:requests/requests.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bot_toast/bot_toast.dart';
 
+
 class LoginPage extends StatefulWidget {
   @override
   LoginPageState createState() => LoginPageState();
 
-  LoginPage();
+  LoginPage({this.widgetFrom});
+
+  final String widgetFrom;
 }
 
 class LoginPageState extends State<LoginPage> {
@@ -165,7 +168,8 @@ class LoginPageState extends State<LoginPage> {
                   _userNameController.text,
                   _userPasswordController.text,
                   verificationCode,
-                  _verificationController.text);
+                  _verificationController.text,
+                  widgetFrom: widget.widgetFrom);
               if (loginResult != 200) {
                 _resetMode('login');
               }
@@ -210,9 +214,7 @@ class LoginPageState extends State<LoginPage> {
                 if (registerResult != 200) {
                   _resetMode('register');
                 } else {
-                  setState(() {
-                    modeIsLogin = true;
-                  });
+                  _resetMode('afterRegister');
                 }
               }
               else {
@@ -279,6 +281,16 @@ class LoginPageState extends State<LoginPage> {
           _userPasswordController.text = '';
           _userPasswordRepeatController.text = '';
           // _emailController.text = '';
+        });
+        break;
+      case 'afterRegister':
+        setState(() {
+          modeIsLogin = true;
+          _userNameController.text = '';
+          _userPasswordController.text = '';
+          _userPasswordRepeatController.text = '';
+          _emailController.text = '';
+          _verificationController.text = '';
         });
         break;
       default:

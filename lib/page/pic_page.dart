@@ -91,6 +91,7 @@ class _PicPageState extends State<PicPage> {
 
   @override
   void initState() {
+    print('PicPage Created');
     scrollController = ScrollController(initialScrollOffset: 0.0)..addListener(_autoLoadMore);
     currentPage = 1;
 
@@ -143,7 +144,9 @@ class _PicPageState extends State<PicPage> {
 
   @override
   void dispose() {
+    print('PicPage Disposed');
     scrollController.removeListener(_autoLoadMore);
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -316,7 +319,9 @@ class _PicPageState extends State<PicPage> {
             Text(
               '$numberOfPic',
               style: TextStyle(
-                color: Colors.white
+                color: Colors.white,
+                fontSize: ScreenUtil().setHeight(10),
+                decoration: TextDecoration.none
               ),),
           ],
         ),

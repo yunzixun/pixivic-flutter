@@ -62,11 +62,20 @@ class _MyHomePageState extends State<MyHomePage> {
   GlobalKey<MenuButtonState> _menuButtonKey = GlobalKey();
   GlobalKey<MenuListState> _menuListKey = GlobalKey();
 
+  PicPage picPage;
+  UserPage userPage;
+  CenterPage centerPage;
+  NewPage newPage;
+
   @override
   void initState() {
     WidgetsFlutterBinding.ensureInitialized();
     FlutterDownloader.initialize();
     initData();
+    picPage = PicPage.home(picDate: _picDateStr, picMode: _picMode);
+    userPage = UserPage(userPageKey);
+    newPage = NewPage(newPageKey);
+    centerPage  = CenterPage();
     super.initState();
   }
 
@@ -103,15 +112,15 @@ class _MyHomePageState extends State<MyHomePage> {
   StatefulWidget _getPageByIndex(int index) {
     switch (index) {
       case 0:
-        return PicPage.home(picDate: _picDateStr, picMode: _picMode);
+        return picPage;
       case 1:
-        return CenterPage();
+        return centerPage;
       case 2:
-        return NewPage(newPageKey);
+        return newPage;
       case 3:
-        return UserPage(userPageKey);
+        return userPage;
       default:
-        return PicPage.home(picDate: _picDateStr, picMode: _picMode);
+        return picPage;
     }
   }
 

@@ -13,12 +13,25 @@ class UserPage extends StatefulWidget {
 }
 
 class UserPageState extends State<UserPage> {
+
+  @override
+  void initState() {
+    print('UserPage Created');
+    print(widget.key);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    print('UserPage Disposed');
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     if (isLogin) {
       return Container();
     } else {
-      return Container(child: LoginPage());
+      return Container(child: LoginPage(widgetFrom: 'userPage',));
     }
   }
 

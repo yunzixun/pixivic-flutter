@@ -13,9 +13,18 @@ class NewPage extends StatefulWidget {
 }
 
 class NewPageState extends State<NewPage> {
+
   @override
   void initState() {
+    print('NewPage Created');
+    print(widget.key);
     super.initState();
+  }
+
+  @override
+  void dispose() { 
+    print('NewPage Disposed');
+    super.dispose();
   }
 
   @override
@@ -23,7 +32,7 @@ class NewPageState extends State<NewPage> {
     if (isLogin) {
       return Container();
     } else {
-      return Container(child: LoginPage());
+      return Container(child: LoginPage(widgetFrom: 'newPage',));
     }
   }
 

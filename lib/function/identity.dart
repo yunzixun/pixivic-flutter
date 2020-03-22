@@ -11,7 +11,7 @@ import '../data/texts.dart';
 
 // 缺少刷新流程
 login(String userName, String pwd, String verificationCode,
-    String verificationInput) async {
+    String verificationInput, {String widgetFrom}) async {
   String url =
       'https://api.pixivic.com/users/token?vid=$verificationCode&value=$verificationInput';
   Map<String, String> body = {'username': userName, 'password': pwd};
@@ -37,8 +37,20 @@ login(String userName, String pwd, String verificationCode,
     prefs.setBool('isCheckEmail', data['isCheckEmail']);
     isLogin = true;
     BotToast.showSimpleNotification(title: TextZhLoginPage().loginSucceed);
-    newPageKey.currentState.checkLoginState();
-    userPageKey.currentState.checkLoginState();
+    print(newPageKey);
+    print(userPageKey);
+    if(widgetFrom != null) {
+      switch(widgetFrom) {
+        case 'newPage':
+          newPageKey.currentState.checkLoginState();
+          break;
+        case 'userPage':
+          userPageKey.currentState.checkLoginState();
+          break;
+        default:
+          break;
+      }
+    }
   } else {
     // isLogin = false;
     BotToast.showSimpleNotification(title: TextZhLoginPage().loginFailed);
@@ -64,27 +76,26 @@ register(String userName, String pwd, String pwdRepeat, String verificationCode,
     String verificationInput, String emailInput) async {
   // 检查用户名和邮箱，密码（新建邮箱controller)
   String url =
-      'https://api.pixivic.com/users/token?vid=$verificationCode&value=$verificationInput';
+      'https://api.pixivic.com/users/?vid=$verificationCode&value=$verificationInput';
   Map<String, String> body = {
     'username': userName,
+    'email': emailInput,
     'password': pwd,
-    'email': emailInput
   };
-  Map<String, String> header = {'Content-Type': 'application/json'};
-  var encoder = JsonEncoder.withIndent("     ");
-  var client = http.Client();
-  var reponse =
-      await client.post(url, headers: header, body: encoder.convert(body));
-  if (reponse.statusCode == 200) {
+  print(body);
+  var response =
+      await Requests.post(url, body: body, bodyEncoding: RequestBodyEncoding.JSON);
+  if (response.statusCode == 200) {
     // 切换至login界面，并给出提示
     BotToast.showSimpleNotification(title: TextZhLoginPage().registerSucceed);
   } else {
     // isLogin = false;
+    print(response.content());
     BotToast.showSimpleNotification(title: TextZhLoginPage().registerFailed);
   }
   tempVerificationCode = null;
   tempVerificationImage = null;
-  return reponse.statusCode;
+  return response.statusCode;
 }
 
 checkRegisterInfo(
