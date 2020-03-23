@@ -85,6 +85,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void didUpdateWidget(MyHomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context, width: 324, height: 576);
 
@@ -173,6 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // print(newDate);
           _picDate = newDate;
           _picDateStr = DateFormat('yyyy-MM-dd').format(_picDate);
+          picPage = PicPage.home(picDate: _picDateStr, picMode: _picMode);
         });
       }
     } else if (parameter == 'search') {
@@ -214,6 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _menuListKey.currentState.flipActive();
       setState(() {
         _picMode = parameter;
+        picPage = PicPage.home(picDate: _picDateStr, picMode: _picMode);
       });
     }
   }
