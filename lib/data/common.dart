@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../page/new_page.dart';
 import '../page/user_page.dart';
 
+double homeScrollerPosition = 0;
 SharedPreferences prefs;
 String tempVerificationCode;
 String tempVerificationImage;

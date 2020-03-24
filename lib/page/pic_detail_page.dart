@@ -240,9 +240,9 @@ class _PicDetailPageState extends State<PicDetailPage> {
         },
         child: Hero(
             tag: 'imageHero' +
-                widget._picData['imageUrls'][0]['medium'], //medium large
+                widget._picData['imageUrls'][0]['large'], //medium large
             child: Image.network(
-              widget._picData['imageUrls'][0]['medium'],
+              widget._picData['imageUrls'][0]['large'],
               headers: {'Referer': 'https://app-api.pixiv.net'},
               width: ScreenUtil().setWidth(324),
               height: ScreenUtil().setWidth(324) /
@@ -263,9 +263,9 @@ class _PicDetailPageState extends State<PicDetailPage> {
             child: Hero(
                 tag: 'imageHero' +
                     widget._picData['imageUrls'][index]
-                        ['medium'], //medium large
+                        ['large'], //medium large
                 child: Image.network(
-                  widget._picData['imageUrls'][index]['medium'],
+                  widget._picData['imageUrls'][index]['large'],
                   headers: {'Referer': 'https://app-api.pixiv.net'},
                   width: ScreenUtil().setWidth(324),
                   height: ScreenUtil().setWidth(324) /
