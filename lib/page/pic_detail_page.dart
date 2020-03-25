@@ -9,18 +9,22 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:bot_toast/bot_toast.dart';
-
+import 'package:requests/requests.dart';
 
 import 'pic_page.dart';
 import 'artist_page.dart';
-import 'package:pixivic/page/search_page.dart';
+import 'search_page.dart';
+import '../data/common.dart';
+import '../data/texts.dart';
 
 class PicDetailPage extends StatefulWidget {
   @override
   _PicDetailPageState createState() => _PicDetailPageState();
 
-  PicDetailPage(this._picData);
+  PicDetailPage(this._picData, this.index);
+
   final Map _picData;
+  final int index;
 }
 
 class _PicDetailPageState extends State<PicDetailPage> {
@@ -33,6 +37,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
       color: Colors.black,
       decoration: TextDecoration.none);
   int picTotalNum;
+  TextZhPicDetailPage text = TextZhPicDetailPage();
 
   @override
   void initState() {
@@ -184,23 +189,9 @@ class _PicDetailPageState extends State<PicDetailPage> {
                       ),
                     ),
                     Positioned(
-                      right: ScreenUtil().setWidth(5),
-                      bottom: ScreenUtil().setHeight(-2),
-                      child: FlatButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0)),
-                        color: Colors.blueAccent[200],
-                        onPressed: () {
-                          print('关注画师');
-                        },
-                        child: Text(
-                          '关注画师',
-                          style: TextStyle(
-                              fontSize: ScreenUtil().setWidth(10),
-                              color: Colors.white),
-                        ),
-                      ),
-                    )
+                        right: ScreenUtil().setWidth(5),
+                        bottom: ScreenUtil().setHeight(-2),
+                        child: _subscribeButton())
                   ],
                 ),
               ),
@@ -262,8 +253,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
             },
             child: Hero(
                 tag: 'imageHero' +
-                    widget._picData['imageUrls'][index]
-                        ['large'], //medium large
+                    widget._picData['imageUrls'][index]['large'], //medium large
                 child: Image.network(
                   widget._picData['imageUrls'][index]['large'],
                   headers: {'Referer': 'https://app-api.pixiv.net'},
@@ -328,6 +318,60 @@ class _PicDetailPageState extends State<PicDetailPage> {
     );
   }
 
+  Widget _subscribeButton() {
+    bool currentFollowedState = widget._picData['artistPreView']['isFollowed'];
+    String buttonText = currentFollowedState ? text.subscribed : text.subscribe;
+
+    return (prefs.getString('auth') != '')
+        ? FlatButton(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0)),
+            color: Colors.blueAccent[200],
+            onPressed: () async{
+              String url = 'https://api.pixivic.com/users/followed';
+              Map<String, String> body = {
+                'artistId': widget._picData['artistPreView']['id'].toString(),
+                'userId': prefs.getInt('id').toString(),
+                'username': prefs.getString('name'),
+              };
+              Map<String, String> headers = {
+                'authorization': prefs.getString('auth')
+              };
+              try {
+                if (currentFollowedState) {
+                  var r = await Requests.delete(url,
+                      body: body,
+                      headers: headers,
+                      bodyEncoding: RequestBodyEncoding.JSON);
+                  r.raiseForStatus();
+                } else {
+                  var r = await Requests.post(url,
+                      body: body,
+                      headers: headers,
+                      bodyEncoding: RequestBodyEncoding.JSON);
+                  r.raiseForStatus();
+                }
+                setState(() {
+                  widget._picData['artistPreView']['isFollowed'] =
+                    !widget._picData['artistPreView']['isFollowed'];
+                });
+                homePicList[widget.index]['artistPreView']['isFollowed'] =
+                    widget._picData['artistPreView']['isFollowed'];
+              } catch (e) {
+                print(e);
+                print(homePicList[widget.index]['artistPreView']['isFollowed']);
+                BotToast.showSimpleNotification(title: text.subscribeError);
+              }
+            },
+            child: Text(
+              buttonText,
+              style: TextStyle(
+                  fontSize: ScreenUtil().setWidth(10), color: Colors.white),
+            ),
+          )
+        : Container();
+  }
+
   _downloadPic(String url) async {
     showModalBottomSheet(
         context: context,
@@ -359,10 +403,11 @@ class _PicDetailPageState extends State<PicDetailPage> {
                           openFileFromNotification: true,
                           headers: {'Referer': 'https://app-api.pixiv.net'},
                         );
-                        BotToast.showSimpleNotification(title: '图片加入了下载列表( • ̀ω•́ )✧');
-                      }
-                      else {
-                        BotToast.showSimpleNotification(title: '请赋予程序下载权限(｡ŏ_ŏ)');
+                        BotToast.showSimpleNotification(
+                            title: '图片加入了下载列表( • ̀ω•́ )✧');
+                      } else {
+                        BotToast.showSimpleNotification(
+                            title: '请赋予程序下载权限(｡ŏ_ŏ)');
                       }
                     });
 

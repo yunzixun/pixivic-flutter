@@ -127,6 +127,7 @@ class _PicPageState extends State<PicPage> {
           // 区分网络问题和结果为无的情况
           picTotalNum = value.length;
         });
+        homePicList = picList;
       }).catchError((error) {
         print('======================');
         print(error);
@@ -146,8 +147,6 @@ class _PicPageState extends State<PicPage> {
 
   @override
   void didUpdateWidget(PicPage oldWidget) {
-    currentPage = 1;
-    homeScrollerPosition = 0;
     // BotToast.showSimpleNotification(title: '图片重新装载中(ﾉ>ω<)ﾉ');
     if (oldWidget.picDate != widget.picDate ||
         oldWidget.picMode != widget.picMode) {
@@ -156,19 +155,25 @@ class _PicPageState extends State<PicPage> {
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeOut,
       );
-    }
-    _getJsonList().then((value) {
-      setState(() {
-        picList = value;
-        picTotalNum = value.length;
+      currentPage = 1;
+      homeCurrentPage = 1;
+      homePicList = [];
+      homeScrollerPosition = 0;
+
+      _getJsonList().then((value) {
+        setState(() {
+          picList = value;
+          picTotalNum = value.length;
+          homePicList = picList;
+        });
+      }).catchError((error) {
+        print('======================');
+        print(error);
+        print('======================');
+        if (error.toString().contains('NoSuchMethodError')) picList = null;
+        haveConnected = true;
       });
-    }).catchError((error) {
-      print('======================');
-      print(error);
-      print('======================');
-      if (error.toString().contains('NoSuchMethodError')) picList = null;
-      haveConnected = true;
-    });
+    }
 
     super.didUpdateWidget(oldWidget);
   }
@@ -233,6 +238,7 @@ class _PicPageState extends State<PicPage> {
             'https://api.pixivic.com/artists/${widget.artistId}/illusts/manga?page=$currentPage&pageSize=30&maxSanityLevel=10';
       }
     } else if (widget.jsonMode == 'followed') {
+      loadMoreAble = false;
       if (!widget.searchManga) {
         url =
             'https://api.pixivic.com/users/${widget.userId}/followed/latest/illust?page=1&pageSize=30';
@@ -290,7 +296,9 @@ class _PicPageState extends State<PicPage> {
         setState(() {
           picList = picList + value;
           picTotalNum = picTotalNum + value.length;
-          print(picTotalNum);
+          // print(picTotalNum);
+          homePicList = picList;
+          homeCurrentPage = currentPage;
           loadMoreAble = true;
           BotToast.showSimpleNotification(title: '摩多摩多!!!(つ´ω`)つ');
         });
@@ -312,7 +320,7 @@ class _PicPageState extends State<PicPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => PicDetailPage(picMapData)));
+                        builder: (context) => PicDetailPage(picMapData, index)));
               },
               child: Container(
                 // 限定constraints用于占用位置,经调试后以0.5为基准可以保证加载图片后不产生位移
@@ -424,13 +432,11 @@ class _PicPageState extends State<PicPage> {
                 body: body,
                 headers: headers,
                 bodyEncoding: RequestBodyEncoding.JSON);
-            isLikedLocalState = false;
           } else {
             var r = await Requests.post(url,
                 body: body,
                 headers: headers,
                 bodyEncoding: RequestBodyEncoding.JSON);
-            isLikedLocalState = true;
           }
           setState(() {
             picList[index]['isLiked'] = !picList[index]['isLiked'];

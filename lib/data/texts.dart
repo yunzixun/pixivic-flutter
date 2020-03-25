@@ -40,3 +40,9 @@ class TextZhUserPage {
   String follow = '我的关注';
   String logout = '退出登录';
 }
+
+class TextZhPicDetailPage {
+  String subscribe = '关注画师';
+  String subscribed = '已关注';
+  String subscribeError = '关注失败，请检查网络是否正常';
+}

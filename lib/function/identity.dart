@@ -7,7 +7,7 @@ import 'package:requests/requests.dart';
 import '../data/common.dart';
 import '../data/texts.dart';
 
-// call.dart 文件包含与用户身份验证相关的所有方法，例如登录，验证 auth 是否过期，注册等等
+// identity.dart 文件包含与用户身份验证相关的所有方法，例如登录，验证 auth 是否过期，注册等等
 
 // 缺少刷新流程
 login(String userName, String pwd, String verificationCode,
