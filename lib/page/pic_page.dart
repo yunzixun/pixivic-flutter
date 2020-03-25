@@ -114,26 +114,32 @@ class _PicPageState extends State<PicPage> {
   @override
   void initState() {
     print('PicPage Created');
+
+    if (homePicList != [] && homeCurrentPage != 1) {
+      picList = homePicList;
+      currentPage = homeCurrentPage;
+    } else {
+      currentPage = 1;
+      _getJsonList().then((value) {
+        setState(() {
+          picList = value;
+          // 待修改，picList 为 null 则显示无的UI, didupdate 与 init 方法抽象出单独方法
+          // 区分网络问题和结果为无的情况
+          picTotalNum = value.length;
+        });
+      }).catchError((error) {
+        print('======================');
+        print(error);
+        print('======================');
+        if (error.toString().contains('NoSuchMethodError')) picList = null;
+        haveConnected = true;
+      });
+    }
+
     scrollController = ScrollController(
         initialScrollOffset:
             widget.jsonMode == 'home' ? homeScrollerPosition : 0.0)
       ..addListener(_autoLoadMore);
-    currentPage = 1;
-
-    _getJsonList().then((value) {
-      setState(() {
-        picList = value;
-        // 待修改，picList 为 null 则显示无的UI, didupdate 与 init 方法抽象出单独方法
-        // 区分网络问题和结果为无的情况
-        picTotalNum = value.length;
-      });
-    }).catchError((error) {
-      print('======================');
-      print(error);
-      print('======================');
-      if (error.toString().contains('NoSuchMethodError')) picList = null;
-      haveConnected = true;
-    });
 
     super.initState();
   }
@@ -172,6 +178,10 @@ class _PicPageState extends State<PicPage> {
     print('PicPage Disposed');
     // scrollController.removeListener(_autoLoadMore);
     // scrollController.dispose();
+    if (widget.jsonMode == 'home') {
+      homePicList = picList;
+      homeCurrentPage = currentPage;
+    }
     super.dispose();
   }
 
@@ -249,9 +259,9 @@ class _PicPageState extends State<PicPage> {
         return (jsonList);
       }
     } catch (error) {
-      print('======================');
+      print('=========getJsonList==========');
       print(error);
-      print('======================');
+      print('==============================');
       if (error.toString().contains('SocketException'))
         BotToast.showSimpleNotification(title: '网络异常，请检查网络(´·_·`)');
     }

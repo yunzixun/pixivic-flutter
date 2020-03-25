@@ -5,7 +5,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../page/new_page.dart';
 import '../page/user_page.dart';
 
+// 用于 PicPage 的临时变量
 double homeScrollerPosition = 0;
+List homePicList = [];
+int homeCurrentPage = 1;
+
 SharedPreferences prefs;
 String tempVerificationCode;
 String tempVerificationImage;
