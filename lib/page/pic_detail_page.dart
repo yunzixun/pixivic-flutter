@@ -41,6 +41,8 @@ class _PicDetailPageState extends State<PicDetailPage> {
 
   @override
   void initState() {
+    print('picDetail Created');
+    print(widget._picData['artistPreView']['isFollowed']);
     picTotalNum = widget._picData['pageCount'];
     super.initState();
   }
@@ -189,9 +191,12 @@ class _PicDetailPageState extends State<PicDetailPage> {
                       ),
                     ),
                     Positioned(
-                        right: ScreenUtil().setWidth(5),
-                        bottom: ScreenUtil().setHeight(-2),
-                        child: _subscribeButton())
+                      right: ScreenUtil().setWidth(5),
+                      bottom: ScreenUtil().setHeight(-2),
+                      child: (prefs.getString('auth') != '')
+                          ? _subscribeButton()
+                          : Container(),
+                    )
                   ],
                 ),
               ),
@@ -322,54 +327,49 @@ class _PicDetailPageState extends State<PicDetailPage> {
     bool currentFollowedState = widget._picData['artistPreView']['isFollowed'];
     String buttonText = currentFollowedState ? text.subscribed : text.subscribe;
 
-    return (prefs.getString('auth') != '')
-        ? FlatButton(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0)),
-            color: Colors.blueAccent[200],
-            onPressed: () async{
-              String url = 'https://api.pixivic.com/users/followed';
-              Map<String, String> body = {
-                'artistId': widget._picData['artistPreView']['id'].toString(),
-                'userId': prefs.getInt('id').toString(),
-                'username': prefs.getString('name'),
-              };
-              Map<String, String> headers = {
-                'authorization': prefs.getString('auth')
-              };
-              try {
-                if (currentFollowedState) {
-                  var r = await Requests.delete(url,
-                      body: body,
-                      headers: headers,
-                      bodyEncoding: RequestBodyEncoding.JSON);
-                  r.raiseForStatus();
-                } else {
-                  var r = await Requests.post(url,
-                      body: body,
-                      headers: headers,
-                      bodyEncoding: RequestBodyEncoding.JSON);
-                  r.raiseForStatus();
-                }
-                setState(() {
-                  widget._picData['artistPreView']['isFollowed'] =
-                    !widget._picData['artistPreView']['isFollowed'];
-                });
-                homePicList[widget.index]['artistPreView']['isFollowed'] =
-                    widget._picData['artistPreView']['isFollowed'];
-              } catch (e) {
-                print(e);
-                print(homePicList[widget.index]['artistPreView']['isFollowed']);
-                BotToast.showSimpleNotification(title: text.subscribeError);
-              }
-            },
-            child: Text(
-              buttonText,
-              style: TextStyle(
-                  fontSize: ScreenUtil().setWidth(10), color: Colors.white),
-            ),
-          )
-        : Container();
+    return FlatButton(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+      color: Colors.blueAccent[200],
+      onPressed: () async {
+        String url = 'https://api.pixivic.com/users/followed';
+        Map<String, String> body = {
+          'artistId': widget._picData['artistPreView']['id'].toString(),
+          'userId': prefs.getInt('id').toString(),
+          'username': prefs.getString('name'),
+        };
+        Map<String, String> headers = {
+          'authorization': prefs.getString('auth')
+        };
+        try {
+          if (currentFollowedState) {
+            var r = await Requests.delete(url,
+                body: body,
+                headers: headers,
+                bodyEncoding: RequestBodyEncoding.JSON);
+            r.raiseForStatus();
+          } else {
+            var r = await Requests.post(url,
+                body: body,
+                headers: headers,
+                bodyEncoding: RequestBodyEncoding.JSON);
+            r.raiseForStatus();
+          }
+          setState(() {
+            widget._picData['artistPreView']['isFollowed'] =
+                !widget._picData['artistPreView']['isFollowed'];
+          });
+        } catch (e) {
+          print(e);
+          print(homePicList[widget.index]['artistPreView']['isFollowed']);
+          BotToast.showSimpleNotification(title: text.subscribeError);
+        }
+      },
+      child: Text(
+        buttonText,
+        style:
+            TextStyle(fontSize: ScreenUtil().setWidth(10), color: Colors.white),
+      ),
+    );
   }
 
   _downloadPic(String url) async {

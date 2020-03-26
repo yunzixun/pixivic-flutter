@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:requests/requests.dart';
@@ -102,6 +103,7 @@ class PicPage extends StatefulWidget {
 class _PicPageState extends State<PicPage> {
   // picList - 图片的JSON文件列表
   // picTotalNum - picList 中项目的总数（非图片总数，因为单个项目有可能有多个图片）
+  // 针对最常访问的 Home 页面，临时变量记录于 common.dart
   List picList;
   int picTotalNum;
   RandomColor _randomColor = RandomColor();
@@ -115,7 +117,7 @@ class _PicPageState extends State<PicPage> {
   void initState() {
     print('PicPage Created');
 
-    if (homePicList != [] && homeCurrentPage != 1) {
+    if ((widget.jsonMode == 'home') && (!listEquals(homePicList, []))) {
       picList = homePicList;
       currentPage = homeCurrentPage;
     } else {
@@ -127,7 +129,7 @@ class _PicPageState extends State<PicPage> {
           // 区分网络问题和结果为无的情况
           picTotalNum = value.length;
         });
-        homePicList = picList;
+        if (widget.jsonMode == 'home') homePicList = picList;
       }).catchError((error) {
         print('======================');
         print(error);
@@ -164,7 +166,8 @@ class _PicPageState extends State<PicPage> {
         setState(() {
           picList = value;
           picTotalNum = value.length;
-          homePicList = picList;
+          if (widget.jsonMode == 'home') homePicList = picList;
+          homeCurrentPage = 1;
         });
       }).catchError((error) {
         print('======================');
@@ -297,8 +300,10 @@ class _PicPageState extends State<PicPage> {
           picList = picList + value;
           picTotalNum = picTotalNum + value.length;
           // print(picTotalNum);
-          homePicList = picList;
-          homeCurrentPage = currentPage;
+          if (widget.jsonMode == 'home') {
+            homePicList = picList;
+            homeCurrentPage = currentPage;
+          }
           loadMoreAble = true;
           BotToast.showSimpleNotification(title: '摩多摩多!!!(つ´ω`)つ');
         });
@@ -320,7 +325,8 @@ class _PicPageState extends State<PicPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => PicDetailPage(picMapData, index)));
+                        builder: (context) =>
+                            PicDetailPage(picMapData, index)));
               },
               child: Container(
                 // 限定constraints用于占用位置,经调试后以0.5为基准可以保证加载图片后不产生位移
@@ -417,7 +423,6 @@ class _PicPageState extends State<PicPage> {
           : ScreenUtil().setWidth(27),
       child: GestureDetector(
         onTap: () async {
-          // 待增加一个状态变更是否成功的提示
           String url = 'https://api.pixivic.com/users/bookmarked';
           Map<String, String> body = {
             'userId': prefs.getInt('id').toString(),
@@ -427,20 +432,24 @@ class _PicPageState extends State<PicPage> {
           Map<String, String> headers = {
             'authorization': prefs.getString('auth')
           };
-          if (isLikedLocalState) {
-            var r = await Requests.delete(url,
-                body: body,
-                headers: headers,
-                bodyEncoding: RequestBodyEncoding.JSON);
-          } else {
-            var r = await Requests.post(url,
-                body: body,
-                headers: headers,
-                bodyEncoding: RequestBodyEncoding.JSON);
+          try {
+            if (isLikedLocalState) {
+              var r = await Requests.delete(url,
+                  body: body,
+                  headers: headers,
+                  bodyEncoding: RequestBodyEncoding.JSON);
+            } else {
+              var r = await Requests.post(url,
+                  body: body,
+                  headers: headers,
+                  bodyEncoding: RequestBodyEncoding.JSON);
+            }
+            setState(() {
+              picList[index]['isLiked'] = !picList[index]['isLiked'];
+            });
+          } catch (e) {
+            print(e);
           }
-          setState(() {
-            picList[index]['isLiked'] = !picList[index]['isLiked'];
-          });
         },
         child: LayoutBuilder(builder: (context, constraint) {
           return Icon(Icons.favorite,
