@@ -16,6 +16,7 @@ class LoginPage extends StatefulWidget {
 
   LoginPage({this.widgetFrom});
 
+  // 锁定loginPage所在的位置
   final String widgetFrom;
 }
 

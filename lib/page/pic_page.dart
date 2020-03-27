@@ -88,6 +88,18 @@ class PicPage extends StatefulWidget {
     this.needAuth = true,
   });
 
+  PicPage.bookmark({
+    this.searchKeywords,
+    this.picDate,
+    this.picMode,
+    this.jsonMode = 'bookmark',
+    this.relatedId,
+    @required this.userId,
+    this.searchManga = false,
+    this.artistId,
+    this.needAuth = true,
+  });
+
   final String picDate;
   final String picMode;
   final num relatedId;
@@ -120,6 +132,7 @@ class _PicPageState extends State<PicPage> {
     if ((widget.jsonMode == 'home') && (!listEquals(homePicList, []))) {
       picList = homePicList;
       currentPage = homeCurrentPage;
+      picTotalNum = picList.length;
     } else {
       currentPage = 1;
       _getJsonList().then((value) {
@@ -205,6 +218,7 @@ class _PicPageState extends State<PicPage> {
       return Container(
           child: StaggeredGridView.countBuilder(
         controller: scrollController,
+        physics: ClampingScrollPhysics(),
         crossAxisCount: 2,
         itemCount: picTotalNum,
         itemBuilder: (BuildContext context, int index) => imageCell(index),
@@ -244,10 +258,18 @@ class _PicPageState extends State<PicPage> {
       loadMoreAble = false;
       if (!widget.searchManga) {
         url =
-            'https://api.pixivic.com/users/${widget.userId}/followed/latest/illust?page=1&pageSize=30';
+            'https://api.pixivic.com/users/${widget.userId}/followed/latest/illust?page=$currentPage&pageSize=30';
       } else {
         url =
-            'https://api.pixivic.com/users/${widget.userId}/followed/latest/manga?page=1&pageSize=30';
+            'https://api.pixivic.com/users/${widget.userId}/followed/latest/manga?page=$currentPage&pageSize=30';
+      }
+    } else if (widget.jsonMode == 'bookmark') {
+      if (!widget.searchManga) {
+        url =
+            'https://api.pixivic.com/users/${widget.userId}/bookmarked/illust?page=$currentPage&pageSize=30';
+      } else {
+        url =
+            'https://api.pixivic.com/users/${widget.userId}/bookmarked/manga?page=$currentPage&pageSize=30';
       }
     }
 
@@ -263,6 +285,7 @@ class _PicPageState extends State<PicPage> {
           'authorization': prefs.getString('auth')
         };
         var requests = await Requests.get(url, headers: headers);
+        // print(requests.content());
         requests.raiseForStatus();
         jsonList = jsonDecode(requests.content())['data'];
         return (jsonList);
@@ -292,13 +315,13 @@ class _PicPageState extends State<PicPage> {
     if ((scrollController.position.extentAfter < 350) &&
         (currentPage < 30) &&
         loadMoreAble) {
-      currentPage++;
       loadMoreAble = false;
+      currentPage++;
       print('current page is $currentPage');
       _getJsonList().then((value) {
+        picList = picList + value;
+        picTotalNum = picTotalNum + value.length;
         setState(() {
-          picList = picList + value;
-          picTotalNum = picTotalNum + value.length;
           // print(picTotalNum);
           if (widget.jsonMode == 'home') {
             homePicList = picList;
@@ -325,8 +348,8 @@ class _PicPageState extends State<PicPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            PicDetailPage(picMapData, index)));
+                        builder: (context) => PicDetailPage(
+                            picMapData, index, _bookmarkRefresh)));
               },
               child: Container(
                 // 限定constraints用于占用位置,经调试后以0.5为基准可以保证加载图片后不产生位移
@@ -457,5 +480,11 @@ class _PicPageState extends State<PicPage> {
         }),
       ),
     );
+  }
+
+  _bookmarkRefresh(int index, bool result) {
+    setState(() {
+      picList[index]['isLiked'] = result;
+    });
   }
 }

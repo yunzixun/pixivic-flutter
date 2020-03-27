@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'login_page.dart';
+import '../micropage/bookmark_page.dart';
 import '../data/common.dart';
 import '../data/texts.dart';
 import '../function/identity.dart';
@@ -153,7 +154,7 @@ class UserPageState extends State<UserPage> {
               color: Colors.red,
             ),
             text.favorite,
-            null),
+            _routeToBookmarkPage),
         _optionCell(
             Icon(
               Icons.face,
@@ -166,10 +167,9 @@ class UserPageState extends State<UserPage> {
               Icons.exit_to_app,
               color: Colors.orange,
             ),
-            text.logout,
-            () {
-              logout();
-            })
+            text.logout, () {
+          logout();
+        })
       ],
     );
   }
@@ -196,5 +196,10 @@ class UserPageState extends State<UserPage> {
   checkLoginState() {
     print('userpage check login state');
     setState(() {});
+  }
+
+  _routeToBookmarkPage() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => bookmarkPage()));
   }
 }

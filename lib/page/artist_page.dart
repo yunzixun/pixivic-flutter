@@ -6,18 +6,28 @@ import 'package:pixivic/page/pic_page.dart';
 import 'package:requests/requests.dart';
 import 'package:bot_toast/bot_toast.dart';
 
+import '../data/common.dart';
+import '../data/texts.dart';
+
 class ArtistPage extends StatefulWidget {
   @override
   _ArtistPageState createState() => _ArtistPageState();
 
-  ArtistPage(this.artistAvatar, this.artistName, this.artistId);
+  ArtistPage(this.artistAvatar, this.artistName, this.artistId, {this.isFollowed,
+      this.followedRefresh});
 
   final String artistAvatar;
   final String artistName;
   final String artistId;
+  final bool isFollowed;
+  final Function(bool) followedRefresh;
 }
 
 class _ArtistPageState extends State<ArtistPage> {
+  bool loginState = prefs.getString('auth') != '' ? true : false;
+  TextZhArtistPage text = TextZhArtistPage();
+  bool isFollowed;
+
   TextStyle smallTextStyle = TextStyle(
       fontSize: ScreenUtil().setWidth(10),
       color: Colors.black,
@@ -38,6 +48,7 @@ class _ArtistPageState extends State<ArtistPage> {
 
   @override
   void initState() {
+    isFollowed = widget.isFollowed;
     _loadArtistData().then((value) {
       setState(() {});
     });
@@ -77,21 +88,7 @@ class _ArtistPageState extends State<ArtistPage> {
                   SizedBox(
                     height: ScreenUtil().setHeight(25),
                   ),
-                  FlatButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18.0),
-                    ),
-                    color: Colors.blueAccent[200],
-                    onPressed: () {
-                      print('关注画师');
-                    },
-                    child: Text(
-                      '关注画师',
-                      style: TextStyle(
-                          fontSize: ScreenUtil().setWidth(10),
-                          color: Colors.white),
-                    ),
-                  ),
+                  loginState ? _subscribeButton() : Container(),
                 ],
               )),
           // 个人网站和 Twitter
@@ -223,5 +220,54 @@ class _ArtistPageState extends State<ArtistPage> {
     } else {
       return (Container());
     }
+  }
+
+  Widget _subscribeButton() {
+    bool currentFollowedState = isFollowed;
+    String buttonText = currentFollowedState ? text.followed : text.follow;
+
+    return FlatButton(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+      color: Colors.blueAccent[200],
+      onPressed: () async {
+        String url = 'https://api.pixivic.com/users/followed';
+        Map<String, String> body = {
+          'artistId': widget.artistId,
+          'userId': prefs.getInt('id').toString(),
+          'username': prefs.getString('name'),
+        };
+        Map<String, String> headers = {
+          'authorization': prefs.getString('auth')
+        };
+        try {
+          if (currentFollowedState) {
+            var r = await Requests.delete(url,
+                body: body,
+                headers: headers,
+                bodyEncoding: RequestBodyEncoding.JSON);
+            r.raiseForStatus();
+          } else {
+            var r = await Requests.post(url,
+                body: body,
+                headers: headers,
+                bodyEncoding: RequestBodyEncoding.JSON);
+            r.raiseForStatus();
+          }
+          setState(() {
+            isFollowed = !isFollowed;
+          });
+          widget.followedRefresh(isFollowed);
+        } catch (e) {
+          print(e);
+          // print(homePicList[widget.index]['artistPreView']['isFollowed']);
+          BotToast.showSimpleNotification(title: text.followError);
+        }
+      },
+      child: Text(
+        buttonText,
+        style:
+            TextStyle(fontSize: ScreenUtil().setWidth(10), color: Colors.white),
+      ),
+    );
   }
 }

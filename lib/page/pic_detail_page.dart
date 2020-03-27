@@ -21,13 +21,15 @@ class PicDetailPage extends StatefulWidget {
   @override
   _PicDetailPageState createState() => _PicDetailPageState();
 
-  PicDetailPage(this._picData, this.index);
+  PicDetailPage(this._picData, this.index, this.bookmarkRefresh);
 
   final Map _picData;
   final int index;
+  final Function(int, bool) bookmarkRefresh;
 }
 
 class _PicDetailPageState extends State<PicDetailPage> {
+  bool loginState = prefs.getString('auth') != '' ? true : false;
   TextStyle normalTextStyle = TextStyle(
       fontSize: ScreenUtil().setWidth(14),
       color: Colors.black,
@@ -51,18 +53,32 @@ class _PicDetailPageState extends State<PicDetailPage> {
   Widget build(BuildContext context) {
     return ListView(
       shrinkWrap: true,
+      physics: ClampingScrollPhysics(),
       children: <Widget>[
         Container(
           child: Column(
             children: <Widget>[
               // 图片视图
-              Container(
-                color: Colors.white,
-                width: ScreenUtil().setWidth(324),
-                height: ScreenUtil().setWidth(324) /
-                    widget._picData['width'] *
-                    widget._picData['height'],
-                child: _picBanner(),
+              Stack(
+                children: <Widget>[
+                  Positioned(
+                    child: Container(
+                      color: Colors.white,
+                      width: ScreenUtil().setWidth(324),
+                      height: ScreenUtil().setWidth(324) /
+                          widget._picData['width'] *
+                          widget._picData['height'],
+                      child: _picBanner(),
+                    ),
+                  ),
+                  loginState
+                      ? Positioned(
+                          bottom: ScreenUtil().setHeight(10),
+                          right: ScreenUtil().setWidth(20),
+                          child: _bookmarkHeart(),
+                        )
+                      : Container(),
+                ],
               ),
               // 标题、副标题、简介、标签
               Container(
@@ -164,7 +180,13 @@ class _PicDetailPageState extends State<PicDetailPage> {
                                           ['avatar'],
                                       widget._picData['artistPreView']['name'],
                                       widget._picData['artistPreView']['id']
-                                          .toString());
+                                          .toString(),
+                                      isFollowed : loginState
+                                          ? widget._picData['artistPreView']
+                                              ['isFollowed']
+                                          : false,
+                                      followedRefresh: _followedRefresh
+                                      );
                                 },
                               ));
                             },
@@ -193,9 +215,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
                     Positioned(
                       right: ScreenUtil().setWidth(5),
                       bottom: ScreenUtil().setHeight(-2),
-                      child: (prefs.getString('auth') != '')
-                          ? _subscribeButton()
-                          : Container(),
+                      child: loginState ? _subscribeButton() : Container(),
                     )
                   ],
                 ),
@@ -325,7 +345,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
 
   Widget _subscribeButton() {
     bool currentFollowedState = widget._picData['artistPreView']['isFollowed'];
-    String buttonText = currentFollowedState ? text.subscribed : text.subscribe;
+    String buttonText = currentFollowedState ? text.followed : text.follow;
 
     return FlatButton(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
@@ -360,14 +380,69 @@ class _PicDetailPageState extends State<PicDetailPage> {
           });
         } catch (e) {
           print(e);
-          print(homePicList[widget.index]['artistPreView']['isFollowed']);
-          BotToast.showSimpleNotification(title: text.subscribeError);
+          // print(homePicList[widget.index]['artistPreView']['isFollowed']);
+          BotToast.showSimpleNotification(title: text.followError);
         }
       },
       child: Text(
         buttonText,
         style:
             TextStyle(fontSize: ScreenUtil().setWidth(10), color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _bookmarkHeart() {
+    bool isLikedLocalState = widget._picData['isLiked'];
+    var color = isLikedLocalState ? Colors.redAccent : Colors.grey[300];
+    String picId = widget._picData['id'].toString();
+
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 500),
+      curve: Curves.fastLinearToSlowEaseIn,
+      alignment: Alignment.center,
+      // color: Colors.white,
+      height: isLikedLocalState
+          ? ScreenUtil().setWidth(35)
+          : ScreenUtil().setWidth(29),
+      width: isLikedLocalState
+          ? ScreenUtil().setWidth(35)
+          : ScreenUtil().setWidth(29),
+      child: GestureDetector(
+        onTap: () async {
+          String url = 'https://api.pixivic.com/users/bookmarked';
+          Map<String, String> body = {
+            'userId': prefs.getInt('id').toString(),
+            'illustId': picId.toString(),
+            'username': prefs.getString('name')
+          };
+          Map<String, String> headers = {
+            'authorization': prefs.getString('auth')
+          };
+          try {
+            if (isLikedLocalState) {
+              var r = await Requests.delete(url,
+                  body: body,
+                  headers: headers,
+                  bodyEncoding: RequestBodyEncoding.JSON);
+            } else {
+              var r = await Requests.post(url,
+                  body: body,
+                  headers: headers,
+                  bodyEncoding: RequestBodyEncoding.JSON);
+            }
+            setState(() {
+              widget._picData['isLiked'] = !widget._picData['isLiked'];
+            });
+            widget.bookmarkRefresh(widget.index, widget._picData['isLiked']);
+          } catch (e) {
+            print(e);
+          }
+        },
+        child: LayoutBuilder(builder: (context, constraint) {
+          return Icon(Icons.favorite,
+              color: color, size: constraint.biggest.height);
+        }),
       ),
     );
   }
@@ -439,4 +514,11 @@ class _PicDetailPageState extends State<PicDetailPage> {
     }
     return false;
   }
+
+  _followedRefresh(bool result) {
+    setState(() {
+      widget._picData['artistPreView']['isFollowed'] = result;
+    });
+  }
 }
+  

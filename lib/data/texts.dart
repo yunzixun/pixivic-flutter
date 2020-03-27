@@ -42,7 +42,17 @@ class TextZhUserPage {
 }
 
 class TextZhPicDetailPage {
-  String subscribe = '关注画师';
-  String subscribed = '已关注';
-  String subscribeError = '关注失败，请检查网络是否正常';
+  String follow = '关注画师';
+  String followed = '已关注';
+  String followError = '关注失败，请检查网络是否正常';
+}
+
+class TextZhArtistPage {
+  String follow = '关注画师';
+  String followed = '已关注';
+  String followError = '关注失败，请检查网络是否正常';
+}
+
+class TextZhFollowPage {
+  String title = '关注画师列表';
 }
