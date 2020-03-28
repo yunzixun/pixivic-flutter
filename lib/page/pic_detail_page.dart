@@ -434,7 +434,8 @@ class _PicDetailPageState extends State<PicDetailPage> {
             setState(() {
               widget._picData['isLiked'] = !widget._picData['isLiked'];
             });
-            widget.bookmarkRefresh(widget.index, widget._picData['isLiked']);
+            if(widget.bookmarkRefresh != null)
+              widget.bookmarkRefresh(widget.index, widget._picData['isLiked']);
           } catch (e) {
             print(e);
           }

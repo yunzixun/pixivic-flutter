@@ -256,7 +256,8 @@ class _ArtistPageState extends State<ArtistPage> {
           setState(() {
             isFollowed = !isFollowed;
           });
-          widget.followedRefresh(isFollowed);
+          if(widget.followedRefresh != null)
+            widget.followedRefresh(isFollowed);
         } catch (e) {
           print(e);
           // print(homePicList[widget.index]['artistPreView']['isFollowed']);

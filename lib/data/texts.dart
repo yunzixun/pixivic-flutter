@@ -55,4 +55,8 @@ class TextZhArtistPage {
 
 class TextZhFollowPage {
   String title = '关注画师列表';
+  String httpLoadError = '加载错误，请检查网络';
+  String follow = '+关注';
+  String followed = '已关注';
+  String followError = '操作失败，请检查网络是否正常';
 }

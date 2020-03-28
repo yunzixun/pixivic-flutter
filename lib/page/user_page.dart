@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'login_page.dart';
 import '../micropage/bookmark_page.dart';
+import '../micropage/follow_page.dart';
+
 import '../data/common.dart';
 import '../data/texts.dart';
 import '../function/identity.dart';
@@ -161,7 +163,7 @@ class UserPageState extends State<UserPage> {
               color: Colors.blue,
             ),
             text.follow,
-            null),
+            _routeToFollowPage),
         _optionCell(
             Icon(
               Icons.exit_to_app,
@@ -200,6 +202,11 @@ class UserPageState extends State<UserPage> {
 
   _routeToBookmarkPage() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => bookmarkPage()));
+        context, MaterialPageRoute(builder: (context) => BookmarkPage()));
+  }
+
+  _routeToFollowPage() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => FollowPage()));
   }
 }

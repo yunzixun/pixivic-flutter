@@ -5,14 +5,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../page/pic_page.dart';
 import '../data/common.dart';
 
-class bookmarkPage extends StatefulWidget {
+class BookmarkPage extends StatefulWidget {
   @override
-  bookmarkPageState createState() => bookmarkPageState();
+  BookmarkPageState createState() => BookmarkPageState();
 
-  bookmarkPage();
+  BookmarkPage();
 }
 
-class bookmarkPageState extends State<bookmarkPage> {
+class BookmarkPageState extends State<BookmarkPage> {
   List<Tab> tabs = <Tab>[
     Tab(
       text: '插画',
@@ -24,14 +24,14 @@ class bookmarkPageState extends State<bookmarkPage> {
 
   @override
   void initState() {
-    print('bookmarkPage Created');
+    print('BookmarkPage Created');
     print(widget.key);
     super.initState();
   }
 
   @override
   void dispose() {
-    print('bookmarkPage Disposed');
+    print('BookmarkPage Disposed');
     super.dispose();
   }
 
