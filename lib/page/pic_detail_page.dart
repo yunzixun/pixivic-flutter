@@ -394,7 +394,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
 
   Widget _bookmarkHeart() {
     bool isLikedLocalState = widget._picData['isLiked'];
-    var color = isLikedLocalState ? Colors.redAccent : Colors.grey[300];
+    var color = isLikedLocalState ? Colors.redAccent : Colors.grey[400];
     String picId = widget._picData['id'].toString();
 
     return AnimatedContainer(
@@ -403,11 +403,11 @@ class _PicDetailPageState extends State<PicDetailPage> {
       alignment: Alignment.center,
       // color: Colors.white,
       height: isLikedLocalState
-          ? ScreenUtil().setWidth(35)
-          : ScreenUtil().setWidth(29),
+          ? ScreenUtil().setWidth(40)
+          : ScreenUtil().setWidth(37),
       width: isLikedLocalState
-          ? ScreenUtil().setWidth(35)
-          : ScreenUtil().setWidth(29),
+          ? ScreenUtil().setWidth(40)
+          : ScreenUtil().setWidth(37),
       child: GestureDetector(
         onTap: () async {
           String url = 'https://api.pixivic.com/users/bookmarked';
@@ -421,12 +421,12 @@ class _PicDetailPageState extends State<PicDetailPage> {
           };
           try {
             if (isLikedLocalState) {
-              var r = await Requests.delete(url,
+              await Requests.delete(url,
                   body: body,
                   headers: headers,
                   bodyEncoding: RequestBodyEncoding.JSON);
             } else {
-              var r = await Requests.post(url,
+              await Requests.post(url,
                   body: body,
                   headers: headers,
                   bodyEncoding: RequestBodyEncoding.JSON);

@@ -8,18 +8,21 @@ class NavBar extends StatefulWidget {
   _NavBarState createState() => _NavBarState();
 
   final int currentIndex;
-  final ValueChanged<int> onTap; 
+  final ValueChanged<int> onTap;
   final bool alone;
+  final bool isScrolling;
 
-  NavBar(this.currentIndex, this.onTap, this.alone);
+  NavBar(this.currentIndex, this.onTap, this.alone, this.isScrolling);
 }
 
 class _NavBarState extends State<NavBar> {
   List<bool> activeList = new List();
   double containerLeft;
   double containerRight;
+  double containerBottom;
   double iconsLeft;
   double iconsRight;
+  double iconsBottom;
 
   @override
   void initState() {
@@ -30,7 +33,7 @@ class _NavBarState extends State<NavBar> {
   Widget build(BuildContext context) {
     activeList = List.filled(4, false);
     activeList[widget.currentIndex] = true;
-    if(widget.alone) {
+    if (widget.alone) {
       containerLeft = ScreenUtil().setWidth(44);
       containerRight = ScreenUtil().setWidth(44);
       iconsLeft = ScreenUtil().setWidth(65);
@@ -41,6 +44,13 @@ class _NavBarState extends State<NavBar> {
       iconsLeft = ScreenUtil().setWidth(103);
       iconsRight = ScreenUtil().setWidth(27);
     }
+    if (widget.isScrolling) {
+      containerBottom = ScreenUtil().setHeight(-47);
+      iconsBottom = ScreenUtil().setHeight(-66);
+    } else {
+      containerBottom = ScreenUtil().setHeight(17);
+      iconsBottom = ScreenUtil().setHeight(26);
+    }
     return navBar(context);
   }
 
@@ -50,13 +60,13 @@ class _NavBarState extends State<NavBar> {
         AnimatedPositioned(
           // 底部椭圆
           duration: Duration(milliseconds: 400),
-          bottom: ScreenUtil().setHeight(17),
+          bottom: containerBottom,
           left: containerLeft,
           right: containerRight,
           child: Material(
             child: Container(
               width: ScreenUtil().setWidth(236),
-              height: ScreenUtil().setHeight(50),
+              height: ScreenUtil().setHeight(40),
             ),
             elevation: 2.0,
             borderRadius: BorderRadius.circular(32.0),
@@ -65,12 +75,12 @@ class _NavBarState extends State<NavBar> {
         // 图标组
         AnimatedPositioned(
           duration: Duration(milliseconds: 400),
-          bottom: ScreenUtil().setHeight(26),
+          bottom: iconsBottom,
           left: iconsLeft,
           right: iconsRight,
           child: Container(
             width: ScreenUtil().setWidth(194),
-            height: ScreenUtil().setHeight(33),
+            height: ScreenUtil().setHeight(23),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -87,13 +97,13 @@ class _NavBarState extends State<NavBar> {
   }
 
   Widget navItem(BuildContext context, String src, int seq) {
-    num width;   //width for image
+    num width; //width for image
 
     if (activeList[seq] == true) {
-      width = ScreenUtil().setHeight(38);
+      width = ScreenUtil().setHeight(23);
       src = 'icon/' + src + '_active.png';
     } else {
-      width = ScreenUtil().setHeight(30);
+      width = ScreenUtil().setHeight(20);
       src = 'icon/' + src + '.png';
     }
 
@@ -120,15 +130,11 @@ class _NavBarState extends State<NavBar> {
               });
             }
             // 外部方法
-            if(widget.onTap != null) {
+            if (widget.onTap != null) {
               widget.onTap(seq);
             }
           },
-          child: Image.asset(
-              src,
-              height: width,
-              width: width
-          ),
+          child: Image.asset(src, height: width, width: width),
         ),
       ),
     );

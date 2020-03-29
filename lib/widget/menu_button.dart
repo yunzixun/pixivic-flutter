@@ -22,7 +22,7 @@ class MenuButtonState extends State<MenuButton> {
   @override
   Widget build(BuildContext context) {
     if (visible) {
-      imgWidth = ScreenUtil().setWidth(50);
+      imgWidth = ScreenUtil().setWidth(40);
     } else {
       imgWidth = ScreenUtil().setWidth(0);
     }

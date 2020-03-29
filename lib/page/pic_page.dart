@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:requests/requests.dart';
 import 'package:random_color/random_color.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'pic_detail_page.dart';
 import '../data/common.dart';
@@ -25,7 +27,8 @@ class PicPage extends StatefulWidget {
     this.searchManga,
     this.artistId,
     this.userId,
-    this.needAuth = false,
+    this.spotlightId,
+    @required this.onPageScrolling,
   });
 
   PicPage.home({
@@ -37,7 +40,8 @@ class PicPage extends StatefulWidget {
     this.searchManga,
     this.artistId,
     this.userId,
-    this.needAuth = false,
+    this.spotlightId,
+    @required this.onPageScrolling,
   });
 
   PicPage.related({
@@ -49,7 +53,8 @@ class PicPage extends StatefulWidget {
     this.searchManga,
     this.artistId,
     this.userId,
-    this.needAuth = false,
+    this.spotlightId,
+    this.onPageScrolling,
   });
 
   PicPage.search({
@@ -61,7 +66,8 @@ class PicPage extends StatefulWidget {
     this.userId,
     this.searchManga = false,
     this.artistId,
-    this.needAuth = false,
+    this.spotlightId,
+    this.onPageScrolling,
   });
 
   PicPage.artist({
@@ -73,7 +79,8 @@ class PicPage extends StatefulWidget {
     this.userId,
     this.searchManga = false,
     @required this.artistId,
-    this.needAuth = false,
+    this.spotlightId,
+    this.onPageScrolling,
   });
 
   PicPage.followed({
@@ -85,7 +92,8 @@ class PicPage extends StatefulWidget {
     @required this.userId,
     this.searchManga = false,
     this.artistId,
-    this.needAuth = true,
+    this.spotlightId,
+    this.onPageScrolling,
   });
 
   PicPage.bookmark({
@@ -97,19 +105,35 @@ class PicPage extends StatefulWidget {
     @required this.userId,
     this.searchManga = false,
     this.artistId,
-    this.needAuth = true,
+    this.spotlightId,
+    this.onPageScrolling,
+  });
+
+  PicPage.spotlight({
+    this.searchKeywords,
+    this.picDate,
+    this.picMode,
+    this.jsonMode = 'spotlight',
+    this.relatedId,
+    this.userId,
+    @required this.spotlightId,
+    this.searchManga = false,
+    this.artistId,
+    this.onPageScrolling,
   });
 
   final String picDate;
   final String picMode;
   final num relatedId;
   final String artistId;
+  final String spotlightId;
   final String userId;
   final String searchKeywords;
   final bool searchManga;
-  final bool needAuth;
-  // jsonMode could be set to 'home, related, Spotlight, tag, artist, search'
+  // jsonMode could be set to 'home, related, Spotlight, tag, artist, search...'
   final String jsonMode;
+
+  final ValueChanged<bool> onPageScrolling;
 }
 
 class _PicPageState extends State<PicPage> {
@@ -118,12 +142,13 @@ class _PicPageState extends State<PicPage> {
   // 针对最常访问的 Home 页面，临时变量记录于 common.dart
   List picList;
   int picTotalNum;
+  int currentPage;
   RandomColor _randomColor = RandomColor();
   bool haveConnected = false;
-
-  ScrollController scrollController;
-  int currentPage;
   bool loadMoreAble = true;
+  bool isScrolling = false;
+  ScrollController scrollController;
+  
 
   @override
   void initState() {
@@ -271,16 +296,18 @@ class _PicPageState extends State<PicPage> {
         url =
             'https://api.pixivic.com/users/${widget.userId}/bookmarked/manga?page=$currentPage&pageSize=30';
       }
+    } else if (widget.jsonMode == 'spotlight') {
+      loadMoreAble = false;
+      url =
+          'https://api.pixivic.com/spotlights/${widget.spotlightId}/illustrations';
     }
 
     try {
       if (prefs.getString('auth') == '') {
-        //!widget.needAuth
         var requests = await Requests.get(url);
         requests.raiseForStatus();
         jsonList = jsonDecode(requests.content())['data'];
-        if(jsonList.length < 30) 
-          loadMoreAble = false;
+        if (jsonList.length < 30) loadMoreAble = false;
         return (jsonList);
       } else {
         Map<String, String> headers = {
@@ -290,8 +317,7 @@ class _PicPageState extends State<PicPage> {
         // print(requests.content());
         requests.raiseForStatus();
         jsonList = jsonDecode(requests.content())['data'];
-        if(jsonList.length < 30) 
-          loadMoreAble = false;
+        if (jsonList.length < 30) loadMoreAble = false;
         return (jsonList);
       }
     } catch (error) {
@@ -314,8 +340,25 @@ class _PicPageState extends State<PicPage> {
   }
 
   _autoLoadMore() {
-    if (widget.jsonMode == 'home')
+    // 如果为主页面 picPage，则记录滑动位置、判断滑动
+    if (widget.jsonMode == 'home') {
       homeScrollerPosition = scrollController.position.extentBefore;
+      // 判断是否在滑动，以便隐藏底部控件
+    if(scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+      if(!isScrolling) {
+        isScrolling = true;
+        widget.onPageScrolling(isScrolling);
+      }
+    }
+    if(scrollController.position.userScrollDirection == ScrollDirection.forward) {
+      if(isScrolling) {
+        isScrolling = false;
+        widget.onPageScrolling(isScrolling);
+      }
+    }
+    }
+      
+    
     if ((scrollController.position.extentAfter < 350) &&
         (currentPage < 30) &&
         loadMoreAble) {
@@ -348,12 +391,20 @@ class _PicPageState extends State<PicPage> {
             clipBehavior: Clip.antiAlias,
             borderRadius: BorderRadius.circular(15),
             child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => PicDetailPage(
-                            picMapData, index, _bookmarkRefresh)));
+              onTap: () async {
+                // 对广告图片做区分判断
+                if (picMapData['type'] == 'ad_image') {
+                  if (await canLaunch(picMapData['link'])) {
+                    await launch(picMapData['link']);
+                  } else {
+                    throw 'Could not launch ${picMapData['link']}';
+                  }
+                } else
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PicDetailPage(
+                              picMapData, index, _bookmarkRefresh)));
               },
               child: Container(
                 // 限定constraints用于占用位置,经调试后以0.5为基准可以保证加载图片后不产生位移
@@ -461,12 +512,12 @@ class _PicPageState extends State<PicPage> {
           };
           try {
             if (isLikedLocalState) {
-              var r = await Requests.delete(url,
+              await Requests.delete(url,
                   body: body,
                   headers: headers,
                   bodyEncoding: RequestBodyEncoding.JSON);
             } else {
-              var r = await Requests.post(url,
+              await Requests.post(url,
                   body: body,
                   headers: headers,
                   bodyEncoding: RequestBodyEncoding.JSON);

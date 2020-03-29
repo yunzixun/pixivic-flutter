@@ -236,8 +236,7 @@ class _FollowPageState extends State<FollowPage> {
             builder: (context) => PicDetailPage(picData, null, null)));
   }
 
-  _autoLoadMore() {
-    
+  _autoLoadMore() { 
     if ((scrollController.position.extentAfter < 350) &&
         (currentPage < 30) &&
         loadMoreAble) {

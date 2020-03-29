@@ -51,6 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int _currentIndex = 0;
   bool _navBarAlone = false;
+  bool _isPageScrolling = false;
   var _pageController = PageController(initialPage: 0);
 
   DateTime _picDate = DateTime.now().subtract(Duration(days: 3));
@@ -74,7 +75,11 @@ class _MyHomePageState extends State<MyHomePage> {
     FlutterDownloader.initialize();
     initData().then((value) {
       setState(() {
-        picPage = PicPage.home(picDate: _picDateStr, picMode: _picMode);
+        picPage = PicPage.home(
+          picDate: _picDateStr,
+          picMode: _picMode,
+          onPageScrolling: _onPageScrolling,
+        );
         userPage = UserPage(userPageKey);
         newPage = NewPage(newPageKey);
         centerPage = CenterPage();
@@ -111,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             },
           ),
-          NavBar(_currentIndex, _onNavbarTap, _navBarAlone),
+          NavBar(_currentIndex, _onNavbarTap, _navBarAlone, _isPageScrolling),
           MenuButton(_onMenuButoonTap, _menuButtonKey),
           MenuList(_onMenuListCellTap, _menuListKey),
         ],
@@ -178,7 +183,11 @@ class _MyHomePageState extends State<MyHomePage> {
           // print(newDate);
           _picDate = newDate;
           _picDateStr = DateFormat('yyyy-MM-dd').format(_picDate);
-          picPage = PicPage.home(picDate: _picDateStr, picMode: _picMode);
+          picPage = PicPage.home(
+            picDate: _picDateStr,
+            picMode: _picMode,
+            onPageScrolling: _onPageScrolling,
+          );
         });
       }
     } else if (parameter == 'search') {
@@ -220,7 +229,23 @@ class _MyHomePageState extends State<MyHomePage> {
       _menuListKey.currentState.flipActive();
       setState(() {
         _picMode = parameter;
-        picPage = PicPage.home(picDate: _picDateStr, picMode: _picMode);
+        picPage = PicPage.home(
+          picDate: _picDateStr,
+          picMode: _picMode,
+          onPageScrolling: _onPageScrolling,
+        );
+      });
+    }
+  }
+
+  _onPageScrolling(bool isScrolling) {
+    if (isScrolling) {
+      setState(() {
+        _isPageScrolling = true;
+      });
+    } else {
+      setState(() {
+        _isPageScrolling = false;
       });
     }
   }

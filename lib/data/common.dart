@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../page/new_page.dart';
 import '../page/user_page.dart';
 
+import '../function/identity.dart';
+
 // 用于 PicPage 的临时变量
 double homeScrollerPosition = 0;
 List homePicList = [];
@@ -22,11 +24,14 @@ List<String> keywordsBool = ['isBindQQ', 'isCheckEmail'];
 GlobalKey<NewPageState> newPageKey;
 GlobalKey<UserPageState> userPageKey;
 
+// 初始化数据
 Future initData() async{
   newPageKey = GlobalKey();
   userPageKey = GlobalKey();
 
   prefs = await SharedPreferences.getInstance();
+
+  // 遍历所有key，对不存在的 key 进行 value 初始化
   print(prefs.getKeys());
   for(var item in keywordsString) {
     if(prefs.getString(item) == null)
@@ -41,8 +46,14 @@ Future initData() async{
       prefs.setBool(item, false);
   }
 
+  // 检查是否登录，若登录则检查是否过期
   if(prefs.getString('auth') != '')
-    isLogin = true;
+    checkAuth().then((result) {
+      if(result)
+        isLogin = true;
+      else
+        isLogin = false;
+    });
   else 
     isLogin = false;
 }

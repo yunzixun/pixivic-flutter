@@ -11,20 +11,21 @@ import '../data/texts.dart';
 
 // 缺少刷新流程
 login(String userName, String pwd, String verificationCode,
-    String verificationInput, {String widgetFrom}) async {
+    String verificationInput,
+    {String widgetFrom}) async {
   String url =
       'https://api.pixivic.com/users/token?vid=$verificationCode&value=$verificationInput';
   Map<String, String> body = {'username': userName, 'password': pwd};
   Map<String, String> header = {'Content-Type': 'application/json'};
   var encoder = JsonEncoder.withIndent("     ");
   var client = http.Client();
-  var reponse =
+  var response =
       await client.post(url, headers: header, body: encoder.convert(body));
-  if (reponse.statusCode == 200) {
-    prefs.setString('auth', reponse.headers['authorization']);
+  if (response.statusCode == 200) {
+    prefs.setString('auth', response.headers['authorization']);
     print(prefs.getString('auth'));
     Map data = jsonDecode(
-        utf8.decode(reponse.bodyBytes, allowMalformed: true))['data'];
+        utf8.decode(response.bodyBytes, allowMalformed: true))['data'];
     prefs.setInt('id', data['id']);
     prefs.setString('name', data['username']);
     prefs.setString('email', data['email']);
@@ -39,8 +40,8 @@ login(String userName, String pwd, String verificationCode,
     BotToast.showSimpleNotification(title: TextZhLoginPage().loginSucceed);
     print(newPageKey);
     print(userPageKey);
-    if(widgetFrom != null) {
-      switch(widgetFrom) {
+    if (widgetFrom != null) {
+      switch (widgetFrom) {
         case 'newPage':
           newPageKey.currentState.checkLoginState();
           break;
@@ -51,24 +52,49 @@ login(String userName, String pwd, String verificationCode,
           break;
       }
     }
+    // 清除 picpage 页面缓存以便重新加载
+    homeScrollerPosition = 0;
+    homePicList = [];
+    homeCurrentPage = 1;
   } else {
     // isLogin = false;
     BotToast.showSimpleNotification(title: TextZhLoginPage().loginFailed);
   }
   tempVerificationCode = null;
   tempVerificationImage = null;
-  return reponse.statusCode;
+  return response.statusCode;
 }
 
 logout() {
   prefs.setString('auth', '');
   isLogin = false;
   userPageKey.currentState.checkLoginState();
+  // 清除 picpage 页面缓存以便重新加载
+  homeScrollerPosition = 0;
+  homePicList = [];
+  homeCurrentPage = 1;
 }
 
-updateAuth(String auth) {
+checkAuth() async {
   String authStored = prefs.getString('auth');
-  if (authStored != auth) prefs.setString('auth', auth);
+  if (authStored == null || authStored == '')
+    return false;
+  else {
+    String url =
+        'https://api-doc.cheerfun.dev/mock/12/users/${prefs.getInt('id').toString()}/isBindQQ';
+    Map<String, String> header = {'Content-Type': 'application/json', 'authorization': authStored};
+    var client = http.Client();
+    var response =
+        await client.post(url, headers: header,);
+    if(response.statusCode == 200) {
+      if(response.headers['authorization'] != null)
+        prefs.setString('auth', response.headers['authorization']);
+      return true;
+    }
+    else if(response.statusCode == 401) {
+      return false;
+    }
+  }
 }
 
 register(String userName, String pwd, String pwdRepeat, String verificationCode,
@@ -82,8 +108,8 @@ register(String userName, String pwd, String pwdRepeat, String verificationCode,
     'password': pwd,
   };
   print(body);
-  var response =
-      await Requests.post(url, body: body, bodyEncoding: RequestBodyEncoding.JSON);
+  var response = await Requests.post(url,
+      body: body, bodyEncoding: RequestBodyEncoding.JSON);
   if (response.statusCode == 200) {
     // 切换至login界面，并给出提示
     BotToast.showSimpleNotification(title: TextZhLoginPage().registerSucceed);
