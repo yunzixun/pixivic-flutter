@@ -259,7 +259,9 @@ class _PicPageState extends State<PicPage> {
   @override
   Widget build(BuildContext context) {
     if (picList == null) {
-      return Center();
+      return Container(
+        color: Colors.white,
+        child: Center());
     } else if (picList == null && haveConnected) {
       return Center(
         child: Text('啊，你想访问的图片并不存在(´-ι_-｀)'),

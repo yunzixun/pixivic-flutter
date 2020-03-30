@@ -38,6 +38,7 @@ class HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.white,
       alignment: Alignment.topCenter,
       child: _tabViewer(),
     );
