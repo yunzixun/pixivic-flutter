@@ -122,6 +122,32 @@ class PicPage extends StatefulWidget {
     this.onPageScrolling,
   });
 
+  PicPage.history({
+    this.searchKeywords,
+    this.picDate,
+    this.picMode,
+    this.jsonMode = 'history',
+    this.relatedId,
+    this.userId,
+    this.spotlightId,
+    this.searchManga = false,
+    this.artistId,
+    this.onPageScrolling,
+  });
+
+  PicPage.oldHistory({
+    this.searchKeywords,
+    this.picDate,
+    this.picMode,
+    this.jsonMode = 'oldhistory',
+    this.relatedId,
+    this.userId,
+    this.spotlightId,
+    this.searchManga = false,
+    this.artistId,
+    this.onPageScrolling,
+  });
+
   final String picDate;
   final String picMode;
   final num relatedId;
@@ -148,7 +174,6 @@ class _PicPageState extends State<PicPage> {
   bool loadMoreAble = true;
   bool isScrolling = false;
   ScrollController scrollController;
-  
 
   @override
   void initState() {
@@ -241,16 +266,17 @@ class _PicPageState extends State<PicPage> {
       );
     } else {
       return Container(
+          color: Colors.white,
           child: StaggeredGridView.countBuilder(
-        controller: scrollController,
-        physics: ClampingScrollPhysics(),
-        crossAxisCount: 2,
-        itemCount: picTotalNum,
-        itemBuilder: (BuildContext context, int index) => imageCell(index),
-        staggeredTileBuilder: (index) => StaggeredTile.fit(1),
-        mainAxisSpacing: 4.0,
-        crossAxisSpacing: 4.0,
-      ));
+            controller: scrollController,
+            physics: ClampingScrollPhysics(),
+            crossAxisCount: 2,
+            itemCount: picTotalNum,
+            itemBuilder: (BuildContext context, int index) => imageCell(index),
+            staggeredTileBuilder: (index) => StaggeredTile.fit(1),
+            mainAxisSpacing: 4.0,
+            crossAxisSpacing: 4.0,
+          ));
     }
   }
 
@@ -300,6 +326,12 @@ class _PicPageState extends State<PicPage> {
       loadMoreAble = false;
       url =
           'https://api.pixivic.com/spotlights/${widget.spotlightId}/illustrations';
+    } else if (widget.jsonMode == 'history') {
+      url =
+          'https://api.pixivic.com/users/${prefs.getInt('id').toString()}/illustHistory?page=$currentPage&pageSize=30';
+    } else if (widget.jsonMode == 'oldhistory') {
+      url =
+          'https://api.pixivic.com/users/${prefs.getInt('id').toString()}/oldIllustHistory?page=$currentPage&pageSize=30';
     }
 
     try {
@@ -344,21 +376,22 @@ class _PicPageState extends State<PicPage> {
     if (widget.jsonMode == 'home') {
       homeScrollerPosition = scrollController.position.extentBefore;
       // 判断是否在滑动，以便隐藏底部控件
-    if(scrollController.position.userScrollDirection == ScrollDirection.reverse) {
-      if(!isScrolling) {
-        isScrolling = true;
-        widget.onPageScrolling(isScrolling);
+      if (scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (!isScrolling) {
+          isScrolling = true;
+          widget.onPageScrolling(isScrolling);
+        }
+      }
+      if (scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (isScrolling) {
+          isScrolling = false;
+          widget.onPageScrolling(isScrolling);
+        }
       }
     }
-    if(scrollController.position.userScrollDirection == ScrollDirection.forward) {
-      if(isScrolling) {
-        isScrolling = false;
-        widget.onPageScrolling(isScrolling);
-      }
-    }
-    }
-      
-    
+
     if ((scrollController.position.extentAfter < 350) &&
         (currentPage < 30) &&
         loadMoreAble) {

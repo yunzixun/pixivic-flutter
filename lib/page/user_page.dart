@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'login_page.dart';
 import '../micropage/bookmark_page.dart';
 import '../micropage/follow_page.dart';
+import '../micropage/history_page.dart';
 
 import '../data/common.dart';
 import '../data/texts.dart';
@@ -97,8 +98,9 @@ class UserPageState extends State<UserPage> {
               child: CircleAvatar(
                   backgroundColor: Colors.white,
                   radius: ScreenUtil().setHeight(25),
-                  backgroundImage: NetworkImage(prefs.getString('avatarLink'),
-                      ))),
+                  backgroundImage: NetworkImage(
+                    prefs.getString('avatarLink'),
+                  ))),
           Positioned(
             top: ScreenUtil().setHeight(33),
             left: ScreenUtil().setWidth(90),
@@ -166,6 +168,13 @@ class UserPageState extends State<UserPage> {
             _routeToFollowPage),
         _optionCell(
             Icon(
+              Icons.history,
+              color: Colors.grey,
+            ),
+            text.history,
+            _routeToHistoryPage),
+        _optionCell(
+            Icon(
               Icons.exit_to_app,
               color: Colors.orange,
             ),
@@ -208,5 +217,10 @@ class UserPageState extends State<UserPage> {
   _routeToFollowPage() {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => FollowPage()));
+  }
+
+  _routeToHistoryPage() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => HistoryPage()));
   }
 }

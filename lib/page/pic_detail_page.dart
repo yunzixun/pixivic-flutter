@@ -46,6 +46,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
     print('picDetail Created');
     print(widget._picData['artistPreView']['isFollowed']);
     picTotalNum = widget._picData['pageCount'];
+    _uploadHistory();
     super.initState();
   }
 
@@ -181,12 +182,11 @@ class _PicDetailPageState extends State<PicDetailPage> {
                                       widget._picData['artistPreView']['name'],
                                       widget._picData['artistPreView']['id']
                                           .toString(),
-                                      isFollowed : loginState
+                                      isFollowed: loginState
                                           ? widget._picData['artistPreView']
                                               ['isFollowed']
                                           : false,
-                                      followedRefresh: _followedRefresh
-                                      );
+                                      followedRefresh: _followedRefresh);
                                 },
                               ));
                             },
@@ -434,7 +434,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
             setState(() {
               widget._picData['isLiked'] = !widget._picData['isLiked'];
             });
-            if(widget.bookmarkRefresh != null)
+            if (widget.bookmarkRefresh != null)
               widget.bookmarkRefresh(widget.index, widget._picData['isLiked']);
           } catch (e) {
             print(e);
@@ -521,5 +521,17 @@ class _PicDetailPageState extends State<PicDetailPage> {
       widget._picData['artistPreView']['isFollowed'] = result;
     });
   }
+
+  _uploadHistory() async{
+    if (prefs.getString('auth') != '') {
+      String url =
+          'https://api.pixivic.com/users/${widget._picData['id'].toString()}/illustHistory';
+      Map<String, String> headers = {'authorization': prefs.getString('auth')};
+      Map<String, String> body = {
+        'userId': prefs.getInt('id').toString(),
+        'illustId': widget._picData['id'].toString()
+      };
+      await Requests.post(url, headers: headers, body: body, bodyEncoding: RequestBodyEncoding.JSON);
+    }
+  }
 }
-  

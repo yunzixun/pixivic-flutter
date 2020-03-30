@@ -159,6 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _navBarAlone = true;
         _menuButtonKey.currentState.changeVisible(false);
       }
+      _onPageScrolling(false);
     });
   }
 
