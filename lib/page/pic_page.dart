@@ -189,12 +189,11 @@ class _PicPageState extends State<PicPage> {
         setState(() {
           print('getJsonListL: $picList');
           picList = value;
-          if(picList == null) {
+          if (picList == null) {
             haveConnected = true;
           } else {
             picTotalNum = value.length;
           }
-          
         });
         if (widget.jsonMode == 'home') homePicList = picList;
       }).catchError((error) {
@@ -275,6 +274,7 @@ class _PicPageState extends State<PicPage> {
       );
     } else {
       return Container(
+        padding: EdgeInsets.only(left: ScreenUtil().setWidth(5.5), right: ScreenUtil().setWidth(5.5)),
           color: Colors.white,
           child: StaggeredGridView.countBuilder(
             controller: scrollController,
@@ -348,10 +348,10 @@ class _PicPageState extends State<PicPage> {
         var requests = await Requests.get(url);
         requests.raiseForStatus();
         jsonList = jsonDecode(requests.content())['data'];
-        if(jsonList != null)
-          if (jsonList.length < 30) loadMoreAble = false;
-        else
+        if (jsonList != null) if (jsonList.length < 30)
           loadMoreAble = false;
+        else
+          loadMoreAble = true;
         return (jsonList);
       } else {
         Map<String, String> headers = {
@@ -361,10 +361,10 @@ class _PicPageState extends State<PicPage> {
         // print(requests.content());
         requests.raiseForStatus();
         jsonList = jsonDecode(requests.content())['data'];
-        if(jsonList != null)
-          if (jsonList.length < 30) loadMoreAble = false;
-        else
+        if (jsonList != null) if (jsonList.length < 30)
           loadMoreAble = false;
+        else
+          loadMoreAble = true;
         return (jsonList);
       }
     } catch (error) {
@@ -432,76 +432,80 @@ class _PicPageState extends State<PicPage> {
   Widget imageCell(int index) {
     final Color color = _randomColor.randomColor();
     Map picMapData = Map.from(picList[index]);
-    return Stack(
-      children: <Widget>[
-        Positioned(
-          child: ClipRRect(
-            clipBehavior: Clip.antiAlias,
-            borderRadius: BorderRadius.circular(15),
-            child: GestureDetector(
-              onTap: () async {
-                // 对广告图片做区分判断
-                if (picMapData['type'] == 'ad_image') {
-                  if (await canLaunch(picMapData['link'])) {
-                    await launch(picMapData['link']);
-                  } else {
-                    throw 'Could not launch ${picMapData['link']}';
-                  }
-                } else
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PicDetailPage(
-                              picMapData, index, _bookmarkRefresh)));
-              },
-              child: Container(
-                // 限定constraints用于占用位置,经调试后以0.5为基准可以保证加载图片后不产生位移
-                constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.width *
-                      0.5 /
-                      _picMainParameter(index)[2] *
-                      _picMainParameter(index)[3],
-                  minWidth: MediaQuery.of(context).size.width * 0.41,
-                ),
-                child: Hero(
-                  tag: 'imageHero' + _picMainParameter(index)[0],
-                  child: Image.network(
-                    _picMainParameter(index)[0],
-                    headers: {'Referer': 'https://app-api.pixiv.net'},
-                    fit: BoxFit.fill,
-                    frameBuilder:
-                        (context, child, frame, wasSynchronouslyLoaded) {
-                      if (wasSynchronouslyLoaded) {
-                        return child;
-                      }
-                      return Container(
-                        child: AnimatedOpacity(
-                          child:
-                              frame == null ? Container(color: color) : child,
-                          opacity: frame == null ? 0.3 : 1,
-                          duration: const Duration(seconds: 1),
-                          curve: Curves.easeOut,
-                        ),
-                      );
-                    },
+    return Container(
+      padding: EdgeInsets.only(left: ScreenUtil().setWidth(4), right: ScreenUtil().setWidth(4),
+      top: ScreenUtil().setWidth(3.9), bottom: ScreenUtil().setWidth(3.9)),
+      child: Stack(
+        children: <Widget>[
+          Positioned(
+            child: ClipRRect(
+              clipBehavior: Clip.antiAlias,
+              borderRadius: BorderRadius.circular(15),
+              child: GestureDetector(
+                onTap: () async {
+                  // 对广告图片做区分判断
+                  if (picMapData['type'] == 'ad_image') {
+                    if (await canLaunch(picMapData['link'])) {
+                      await launch(picMapData['link']);
+                    } else {
+                      throw 'Could not launch ${picMapData['link']}';
+                    }
+                  } else
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PicDetailPage(
+                                picMapData, index, _bookmarkRefresh)));
+                },
+                child: Container(
+                  // 限定constraints用于占用位置,经调试后以0.5为基准可以保证加载图片后不产生位移
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.width *
+                        0.5 /
+                        _picMainParameter(index)[2] *
+                        _picMainParameter(index)[3],
+                    minWidth: MediaQuery.of(context).size.width * 0.41,
+                  ),
+                  child: Hero(
+                    tag: 'imageHero' + _picMainParameter(index)[0],
+                    child: Image.network(
+                      _picMainParameter(index)[0],
+                      headers: {'Referer': 'https://app-api.pixiv.net'},
+                      fit: BoxFit.fill,
+                      frameBuilder:
+                          (context, child, frame, wasSynchronouslyLoaded) {
+                        if (wasSynchronouslyLoaded) {
+                          return child;
+                        }
+                        return Container(
+                          child: AnimatedOpacity(
+                            child:
+                                frame == null ? Container(color: color) : child,
+                            opacity: frame == null ? 0.3 : 1,
+                            duration: const Duration(seconds: 1),
+                            curve: Curves.easeOut,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        Positioned(
-          child: numberViewer(_picMainParameter(index)[1]),
-          right: ScreenUtil().setWidth(10),
-          top: ScreenUtil().setHeight(5),
-        ),
-        prefs.getString('auth') != ''
-            ? Positioned(
-                bottom: ScreenUtil().setHeight(5),
-                right: ScreenUtil().setWidth(5),
-                child: bookmarkHeart(index))
-            : Container(),
-      ],
+          Positioned(
+            child: numberViewer(_picMainParameter(index)[1]),
+            right: ScreenUtil().setWidth(10),
+            top: ScreenUtil().setHeight(5),
+          ),
+          prefs.getString('auth') != ''
+              ? Positioned(
+                  bottom: ScreenUtil().setHeight(5),
+                  right: ScreenUtil().setWidth(5),
+                  child: bookmarkHeart(index))
+              : Container(),
+        ],
+      ),
     );
   }
 

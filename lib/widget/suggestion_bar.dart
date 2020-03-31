@@ -58,13 +58,13 @@ class SuggestionBarState extends State<SuggestionBar> {
                 widget.onCellTap(suggestions[index]['keyword']);
               },
               child: Container(
-                margin: EdgeInsets.all(8),
+                margin: EdgeInsets.all(ScreenUtil().setWidth(3)),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(ScreenUtil().setWidth(4)),
                   color: Colors.teal[200],
                 ),
                 // width: ScreenUtil().setWidth(80),
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
                 child: Center(child: keywordsColumn,),
               ),
             );
