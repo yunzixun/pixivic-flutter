@@ -187,10 +187,14 @@ class _PicPageState extends State<PicPage> {
       currentPage = 1;
       _getJsonList().then((value) {
         setState(() {
+          print('getJsonListL: $picList');
           picList = value;
-          // 待修改，picList 为 null 则显示无的UI, didupdate 与 init 方法抽象出单独方法
-          // 区分网络问题和结果为无的情况
-          picTotalNum = value.length;
+          if(picList == null) {
+            haveConnected = true;
+          } else {
+            picTotalNum = value.length;
+          }
+          
         });
         if (widget.jsonMode == 'home') homePicList = picList;
       }).catchError((error) {
@@ -228,9 +232,14 @@ class _PicPageState extends State<PicPage> {
       _getJsonList().then((value) {
         setState(() {
           picList = value;
-          picTotalNum = value.length;
-          if (widget.jsonMode == 'home') homePicList = picList;
-          homeCurrentPage = 1;
+          print('getJsonListL: $picList');
+          if (value == null) {
+            haveConnected = true;
+          } else {
+            picTotalNum = value.length;
+            if (widget.jsonMode == 'home') homePicList = picList;
+            homeCurrentPage = 1;
+          }
         });
       }).catchError((error) {
         print('======================');
@@ -259,9 +268,7 @@ class _PicPageState extends State<PicPage> {
   @override
   Widget build(BuildContext context) {
     if (picList == null) {
-      return Container(
-        color: Colors.white,
-        child: Center());
+      return Container(color: Colors.white, child: Center());
     } else if (picList == null && haveConnected) {
       return Center(
         child: Text('啊，你想访问的图片并不存在(´-ι_-｀)'),
@@ -341,7 +348,10 @@ class _PicPageState extends State<PicPage> {
         var requests = await Requests.get(url);
         requests.raiseForStatus();
         jsonList = jsonDecode(requests.content())['data'];
-        if (jsonList.length < 30) loadMoreAble = false;
+        if(jsonList != null)
+          if (jsonList.length < 30) loadMoreAble = false;
+        else
+          loadMoreAble = false;
         return (jsonList);
       } else {
         Map<String, String> headers = {
@@ -351,7 +361,10 @@ class _PicPageState extends State<PicPage> {
         // print(requests.content());
         requests.raiseForStatus();
         jsonList = jsonDecode(requests.content())['data'];
-        if (jsonList.length < 30) loadMoreAble = false;
+        if(jsonList != null)
+          if (jsonList.length < 30) loadMoreAble = false;
+        else
+          loadMoreAble = false;
         return (jsonList);
       }
     } catch (error) {

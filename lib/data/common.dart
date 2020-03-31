@@ -15,9 +15,18 @@ int homeCurrentPage = 1;
 SharedPreferences prefs;
 String tempVerificationCode;
 String tempVerificationImage;
-bool isLogin;    // 记录登录状态（已登录，未登录）用于控制是否展示loginPage
+bool isLogin; // 记录登录状态（已登录，未登录）用于控制是否展示loginPage
 
-List<String> keywordsString = ['auth', 'name', 'email', 'qqcheck', 'avatarLink', 'gender', 'signature', 'location',];
+List<String> keywordsString = [
+  'auth',
+  'name',
+  'email',
+  'qqcheck',
+  'avatarLink',
+  'gender',
+  'signature',
+  'location',
+];
 List<String> keywordsInt = ['id', 'star'];
 List<String> keywordsBool = ['isBindQQ', 'isCheckEmail'];
 
@@ -25,7 +34,7 @@ GlobalKey<NewPageState> newPageKey;
 GlobalKey<UserPageState> userPageKey;
 
 // 初始化数据
-Future initData() async{
+Future initData() async {
   newPageKey = GlobalKey();
   userPageKey = GlobalKey();
 
@@ -33,27 +42,26 @@ Future initData() async{
 
   // 遍历所有key，对不存在的 key 进行 value 初始化
   print(prefs.getKeys());
-  for(var item in keywordsString) {
-    if(prefs.getString(item) == null)
-      prefs.setString(item, '');
+  for (var item in keywordsString) {
+    if (prefs.getString(item) == null) prefs.setString(item, '');
   }
-  for(var item in keywordsInt) {
-    if(prefs.getInt(item) == null)
-      prefs.setInt(item, 0);
+  for (var item in keywordsInt) {
+    if (prefs.getInt(item) == null) prefs.setInt(item, 0);
   }
-  for(var item in keywordsBool) {
-    if(prefs.getBool(item) == null)
-      prefs.setBool(item, false);
+  for (var item in keywordsBool) {
+    if (prefs.getBool(item) == null) prefs.setBool(item, false);
   }
 
   // 检查是否登录，若登录则检查是否过期
-  if(prefs.getString('auth') != '')
+  if (prefs.getString('auth') != '') {
+    isLogin = true;
     checkAuth().then((result) {
-      if(result)
+      print('Chek auth result is $result');
+      if (result)
         isLogin = true;
       else
         isLogin = false;
     });
-  else 
+  } else
     isLogin = false;
 }
