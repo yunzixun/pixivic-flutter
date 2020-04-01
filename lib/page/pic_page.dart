@@ -9,6 +9,7 @@ import 'package:random_color/random_color.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lottie/lottie.dart';
 
 import 'pic_detail_page.dart';
 import '../data/common.dart';
@@ -187,16 +188,17 @@ class _PicPageState extends State<PicPage> {
       currentPage = 1;
       _getJsonList().then((value) {
         setState(() {
-          print('getJsonListL: $picList');
+          print('picpage init getJsonList: $picList');
           picList = value;
           if (picList == null) {
             haveConnected = true;
           } else {
             picTotalNum = value.length;
+            if (widget.jsonMode == 'home') homePicList = picList;
           }
         });
-        if (widget.jsonMode == 'home') homePicList = picList;
       }).catchError((error) {
+        //稳定后抛弃errorcatch
         print('======================');
         print(error);
         print('======================');
@@ -231,7 +233,7 @@ class _PicPageState extends State<PicPage> {
       _getJsonList().then((value) {
         setState(() {
           picList = value;
-          print('getJsonListL: $picList');
+          print('getJsonList: $picList');
           if (value == null) {
             haveConnected = true;
           } else {
@@ -266,15 +268,35 @@ class _PicPageState extends State<PicPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (picList == null) {
-      return Container(color: Colors.white, child: Center());
+    if (picList == null && !haveConnected) {
+      return Container(
+          color: Colors.white,
+          child: Center(
+            child: Lottie.asset('image/loading-box.json'),
+          ));
     } else if (picList == null && haveConnected) {
       return Center(
-        child: Text('啊，你想访问的图片并不存在(´-ι_-｀)'),
+        child: Container(
+          color: Colors.white,
+          alignment: Alignment.center,
+          child: Column(
+              children: <Widget>[
+                Lottie.asset('image/empty-box.json',
+                    repeat: false, height: ScreenUtil().setHeight(100)),
+                Text(
+                  '这里什么都没有呢',
+                  style: TextStyle(
+                      color: Colors.grey, fontSize: ScreenUtil().setHeight(10)),
+                ),
+              ],
+            ),
+        ),
       );
     } else {
       return Container(
-        padding: EdgeInsets.only(left: ScreenUtil().setWidth(5.5), right: ScreenUtil().setWidth(5.5)),
+          padding: EdgeInsets.only(
+              left: ScreenUtil().setWidth(5.5),
+              right: ScreenUtil().setWidth(5.5)),
           color: Colors.white,
           child: StaggeredGridView.countBuilder(
             controller: scrollController,
@@ -433,8 +455,11 @@ class _PicPageState extends State<PicPage> {
     final Color color = _randomColor.randomColor();
     Map picMapData = Map.from(picList[index]);
     return Container(
-      padding: EdgeInsets.only(left: ScreenUtil().setWidth(4), right: ScreenUtil().setWidth(4),
-      top: ScreenUtil().setWidth(3.9), bottom: ScreenUtil().setWidth(3.9)),
+      padding: EdgeInsets.only(
+          left: ScreenUtil().setWidth(4),
+          right: ScreenUtil().setWidth(4),
+          top: ScreenUtil().setWidth(3.9),
+          bottom: ScreenUtil().setWidth(3.9)),
       child: Stack(
         children: <Widget>[
           Positioned(
