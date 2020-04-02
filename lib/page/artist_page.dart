@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pixivic/page/pic_page.dart';
 import 'package:requests/requests.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter_advanced_networkimage/provider.dart';
 
 import '../data/common.dart';
 import '../data/texts.dart';
@@ -13,8 +14,8 @@ class ArtistPage extends StatefulWidget {
   @override
   _ArtistPageState createState() => _ArtistPageState();
 
-  ArtistPage(this.artistAvatar, this.artistName, this.artistId, {this.isFollowed,
-      this.followedRefresh});
+  ArtistPage(this.artistAvatar, this.artistName, this.artistId,
+      {this.isFollowed, this.followedRefresh});
 
   final String artistAvatar;
   final String artistName;
@@ -72,9 +73,9 @@ class _ArtistPageState extends State<ArtistPage> {
                   Hero(
                     tag: widget.artistAvatar,
                     child: CircleAvatar(
-                      backgroundImage: NetworkImage(
+                      backgroundImage: AdvancedNetworkImage(
                         widget.artistAvatar,
-                        headers: {'Referer': 'https://app-api.pixiv.net'},
+                        header: {'Referer': 'https://app-api.pixiv.net'},
                       ),
                     ),
                   ),
@@ -256,7 +257,7 @@ class _ArtistPageState extends State<ArtistPage> {
           setState(() {
             isFollowed = !isFollowed;
           });
-          if(widget.followedRefresh != null)
+          if (widget.followedRefresh != null)
             widget.followedRefresh(isFollowed);
         } catch (e) {
           print(e);

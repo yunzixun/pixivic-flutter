@@ -10,6 +10,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:requests/requests.dart';
+import 'package:flutter_advanced_networkimage/provider.dart';
 
 import 'pic_page.dart';
 import 'artist_page.dart';
@@ -193,11 +194,14 @@ class _PicDetailPageState extends State<PicDetailPage> {
                             child: Hero(
                               tag: widget._picData['artistPreView']['avatar'],
                               child: CircleAvatar(
-                                backgroundImage: NetworkImage(
+                                backgroundImage: AdvancedNetworkImage(
                                   widget._picData['artistPreView']['avatar'],
-                                  headers: {
+                                  header: {
                                     'Referer': 'https://app-api.pixiv.net'
                                   },
+                                  useDiskCache: true,
+                                  cacheRule: CacheRule(
+                                      maxAge: const Duration(days: 7)),
                                 ),
                               ),
                             ),
@@ -257,9 +261,13 @@ class _PicDetailPageState extends State<PicDetailPage> {
         child: Hero(
             tag: 'imageHero' +
                 widget._picData['imageUrls'][0]['large'], //medium large
-            child: Image.network(
-              widget._picData['imageUrls'][0]['large'],
-              headers: {'Referer': 'https://app-api.pixiv.net'},
+            child: Image(
+              image: AdvancedNetworkImage(
+                widget._picData['imageUrls'][0]['large'],
+                header: {'Referer': 'https://app-api.pixiv.net'},
+                useDiskCache: true,
+                cacheRule: CacheRule(maxAge: const Duration(days: 7)),
+              ),
               width: ScreenUtil().setWidth(324),
               height: ScreenUtil().setWidth(324) /
                   widget._picData['width'] *
@@ -279,9 +287,13 @@ class _PicDetailPageState extends State<PicDetailPage> {
             child: Hero(
                 tag: 'imageHero' +
                     widget._picData['imageUrls'][index]['large'], //medium large
-                child: Image.network(
-                  widget._picData['imageUrls'][index]['large'],
-                  headers: {'Referer': 'https://app-api.pixiv.net'},
+                child: Image(
+                  image: AdvancedNetworkImage(
+                    widget._picData['imageUrls'][index]['large'],
+                    header: {'Referer': 'https://app-api.pixiv.net'},
+                    useDiskCache: true,
+                    cacheRule: CacheRule(maxAge: const Duration(days: 7)),
+                  ),
                   width: ScreenUtil().setWidth(324),
                   height: ScreenUtil().setWidth(324) /
                       widget._picData['width'] *
@@ -522,7 +534,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
     });
   }
 
-  _uploadHistory() async{
+  _uploadHistory() async {
     if (prefs.getString('auth') != '') {
       String url =
           'https://api.pixivic.com/users/${widget._picData['id'].toString()}/illustHistory';
@@ -531,7 +543,8 @@ class _PicDetailPageState extends State<PicDetailPage> {
         'userId': prefs.getInt('id').toString(),
         'illustId': widget._picData['id'].toString()
       };
-      await Requests.post(url, headers: headers, body: body, bodyEncoding: RequestBodyEncoding.JSON);
+      await Requests.post(url,
+          headers: headers, body: body, bodyEncoding: RequestBodyEncoding.JSON);
     }
   }
 }

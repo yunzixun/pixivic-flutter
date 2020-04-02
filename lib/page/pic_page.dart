@@ -10,6 +10,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_advanced_networkimage/provider.dart';
 
 import 'pic_detail_page.dart';
 import '../data/common.dart';
@@ -188,13 +189,14 @@ class _PicPageState extends State<PicPage> {
       currentPage = 1;
       _getJsonList().then((value) {
         setState(() {
-          print('picpage init getJsonList: $picList');
           picList = value;
+          // print('picpage init getJsonList: $picList');
           if (picList == null) {
             haveConnected = true;
           } else {
             picTotalNum = value.length;
             if (widget.jsonMode == 'home') homePicList = picList;
+            haveConnected = true;
           }
         });
       }).catchError((error) {
@@ -229,17 +231,21 @@ class _PicPageState extends State<PicPage> {
       homeCurrentPage = 1;
       homePicList = [];
       homeScrollerPosition = 0;
+      setState(() {
+        haveConnected = false;
+      });
 
       _getJsonList().then((value) {
         setState(() {
           picList = value;
-          print('getJsonList: $picList');
+          // print('getJsonList: $picList');
           if (value == null) {
             haveConnected = true;
           } else {
             picTotalNum = value.length;
             if (widget.jsonMode == 'home') homePicList = picList;
             homeCurrentPage = 1;
+            haveConnected = true;
           }
         });
       }).catchError((error) {
@@ -270,26 +276,34 @@ class _PicPageState extends State<PicPage> {
   Widget build(BuildContext context) {
     if (picList == null && !haveConnected) {
       return Container(
+          height: ScreenUtil().setHeight(576),
+          width: ScreenUtil().setWidth(324),
+          alignment: Alignment.center,
           color: Colors.white,
           child: Center(
             child: Lottie.asset('image/loading-box.json'),
           ));
     } else if (picList == null && haveConnected) {
-      return Center(
-        child: Container(
-          color: Colors.white,
-          alignment: Alignment.center,
-          child: Column(
-              children: <Widget>[
-                Lottie.asset('image/empty-box.json',
-                    repeat: false, height: ScreenUtil().setHeight(100)),
-                Text(
-                  '这里什么都没有呢',
-                  style: TextStyle(
-                      color: Colors.grey, fontSize: ScreenUtil().setHeight(10)),
-                ),
-              ],
+      return Container(
+        height: ScreenUtil().setHeight(576),
+        width: ScreenUtil().setWidth(324),
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Lottie.asset('image/empty-box.json',
+                repeat: false, height: ScreenUtil().setHeight(100)),
+            Text(
+              '这里什么都没有呢',
+              style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: ScreenUtil().setHeight(10),
+                  decoration: TextDecoration.none),
             ),
+            SizedBox(
+              height: ScreenUtil().setHeight(250),
+            )
+          ],
         ),
       );
     } else {
@@ -401,7 +415,7 @@ class _PicPageState extends State<PicPage> {
   List _picMainParameter(int index) {
     // 预览图片的地址、数目、以及长宽比
     // String url = picList[index]['imageUrls'][0]['squareMedium'];
-    String url = picList[index]['imageUrls'][0]['large']; //medium large
+    String url = picList[index]['imageUrls'][0]['medium']; //medium large
     int number = picList[index]['pageCount'];
     double width = picList[index]['width'].toDouble();
     double height = picList[index]['height'].toDouble();
@@ -436,17 +450,31 @@ class _PicPageState extends State<PicPage> {
       currentPage++;
       print('current page is $currentPage');
       _getJsonList().then((value) {
-        picList = picList + value;
-        picTotalNum = picTotalNum + value.length;
-        setState(() {
-          // print(picTotalNum);
-          if (widget.jsonMode == 'home') {
-            homePicList = picList;
-            homeCurrentPage = currentPage;
-          }
-          loadMoreAble = true;
-          BotToast.showSimpleNotification(title: '摩多摩多!!!(つ´ω`)つ');
-        });
+        // print('autoload jsonlist: $value');
+        if (value != null) {
+          picList = picList + value;
+          picTotalNum = picTotalNum + value.length;
+          setState(() {
+            // print(picTotalNum);
+            if (widget.jsonMode == 'home') {
+              homePicList = picList;
+              homeCurrentPage = currentPage;
+            }
+            loadMoreAble = true;
+            BotToast.showSimpleNotification(title: '摩多摩多!!!(つ´ω`)つ');
+          });
+        }
+      }).catchError((error) {
+        {
+          print('=========getJsonList==========');
+          print(error);
+          print('==============================');
+          if (error.toString().contains('SocketException'))
+            BotToast.showSimpleNotification(title: '网络异常，请检查网络(´·_·`)');
+          setState(() {
+            loadMoreAble = true;
+          });
+        }
       });
     }
   }
@@ -493,9 +521,33 @@ class _PicPageState extends State<PicPage> {
                   ),
                   child: Hero(
                     tag: 'imageHero' + _picMainParameter(index)[0],
-                    child: Image.network(
-                      _picMainParameter(index)[0],
-                      headers: {'Referer': 'https://app-api.pixiv.net'},
+                    // child: Image.network(
+                    //   _picMainParameter(index)[0],
+                    //   headers: {'Referer': 'https://app-api.pixiv.net'},
+                    //   fit: BoxFit.fill,
+                    //   frameBuilder:
+                    //       (context, child, frame, wasSynchronouslyLoaded) {
+                    //     if (wasSynchronouslyLoaded) {
+                    //       return child;
+                    //     }
+                    //     return Container(
+                    //       child: AnimatedOpacity(
+                    //         child:
+                    //             frame == null ? Container(color: color) : child,
+                    //         opacity: frame == null ? 0.3 : 1,
+                    //         duration: const Duration(seconds: 1),
+                    //         curve: Curves.easeOut,
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
+                    child: Image(
+                      image: AdvancedNetworkImage(
+                        _picMainParameter(index)[0],
+                        header: {'Referer': 'https://app-api.pixiv.net'},
+                        useDiskCache: true,
+                        cacheRule: CacheRule(maxAge: const Duration(days: 7)),
+                      ),
                       fit: BoxFit.fill,
                       frameBuilder:
                           (context, child, frame, wasSynchronouslyLoaded) {

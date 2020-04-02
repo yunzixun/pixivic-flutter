@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_advanced_networkimage/provider.dart';
 
 import '../page/new_page.dart';
 import '../page/user_page.dart';
@@ -11,6 +12,7 @@ import '../function/identity.dart';
 double homeScrollerPosition = 0;
 List homePicList = [];
 int homeCurrentPage = 1;
+int cacheSize;
 
 SharedPreferences prefs;
 String tempVerificationCode;
@@ -38,8 +40,10 @@ Future initData() async {
   newPageKey = GlobalKey();
   userPageKey = GlobalKey();
 
-  prefs = await SharedPreferences.getInstance();
 
+  prefs = await SharedPreferences.getInstance();
+  cacheSize = await DiskCache().cacheSize();
+  print(cacheSize);
   // 遍历所有key，对不存在的 key 进行 value 初始化
   print(prefs.getKeys());
   for (var item in keywordsString) {
