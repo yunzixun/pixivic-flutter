@@ -218,33 +218,36 @@ class _PicPageState extends State<PicPage> {
   }
 
   @override
+  // 参数更改的逻辑：清空所有的现有参数，进入加载动画。当网络情况不好时，也无法看到之前的内容（更好的用户引导，功能稍缺）
   void didUpdateWidget(PicPage oldWidget) {
     // BotToast.showSimpleNotification(title: '图片重新装载中(ﾉ>ω<)ﾉ');
-    if (oldWidget.picDate != widget.picDate ||
-        oldWidget.picMode != widget.picMode) {
+    print('picPage didUpdateWidget: mode is ${widget.jsonMode}');
+    // 当为 home 模式且切换了参数，则同时更新暂存的相关数据
+    if (widget.jsonMode == 'home' && (oldWidget.picDate != widget.picDate ||
+        oldWidget.picMode != widget.picMode)) {
       scrollController.animateTo(
         0.0,
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeOut,
       );
+      // 清空 Picpage 控件参数和缓存参数
       currentPage = 1;
       homeCurrentPage = 1;
       homePicList = [];
       homeScrollerPosition = 0;
       setState(() {
+        picList = null;       // 清空 picList 以进入加载动画
         haveConnected = false;
       });
 
       _getJsonList().then((value) {
+        haveConnected = true;
         setState(() {
-          picList = value;
           // print('getJsonList: $picList');
-          if (value == null) {
-            haveConnected = true;
-          } else {
+          if (value != null) {
+            picList = value;
             picTotalNum = value.length;
-            if (widget.jsonMode == 'home') homePicList = picList;
-            homeCurrentPage = 1;
+            homePicList = picList;
             haveConnected = true;
           }
         });
@@ -253,7 +256,24 @@ class _PicPageState extends State<PicPage> {
         print(error);
         print('======================');
         if (error.toString().contains('NoSuchMethodError')) picList = null;
+      });
+    }
+    // 当不为 home mode 时，进行常规的更新操作
+    else{
+      currentPage = 1;
+      setState(() {
+        picList = null;
+        haveConnected = false;
+      });
+      _getJsonList().then((value) {
         haveConnected = true;
+        setState(() {
+          // print('getJsonList: $picList');
+          if (value != null) {
+            picList = value;
+            picTotalNum = value.length;
+          }
+        });
       });
     }
 
@@ -384,11 +404,6 @@ class _PicPageState extends State<PicPage> {
         var requests = await Requests.get(url);
         requests.raiseForStatus();
         jsonList = jsonDecode(requests.content())['data'];
-        if (jsonList != null) if (jsonList.length < 30)
-          loadMoreAble = false;
-        else
-          loadMoreAble = true;
-        return (jsonList);
       } else {
         Map<String, String> headers = {
           'authorization': prefs.getString('auth')
@@ -397,12 +412,12 @@ class _PicPageState extends State<PicPage> {
         // print(requests.content());
         requests.raiseForStatus();
         jsonList = jsonDecode(requests.content())['data'];
-        if (jsonList != null) if (jsonList.length < 30)
+      }
+      if (jsonList != null) if (jsonList.length < 30)
           loadMoreAble = false;
         else
           loadMoreAble = true;
         return (jsonList);
-      }
     } catch (error) {
       print('=========getJsonList==========');
       print(error);

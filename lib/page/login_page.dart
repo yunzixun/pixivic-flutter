@@ -9,7 +9,6 @@ import 'package:requests/requests.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bot_toast/bot_toast.dart';
 
-
 class LoginPage extends StatefulWidget {
   @override
   LoginPageState createState() => LoginPageState();
@@ -60,62 +59,88 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (modeIsLogin) {
-      return Container(
-        padding: EdgeInsets.all(ScreenUtil().setWidth(20)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            inputCell(text.userName, _userNameController, false),
-            inputCell(text.password, _userPasswordController, true),
-            verificationCell(_verificationController),
-            SizedBox(
-              height: ScreenUtil().setHeight(20),
-            ),
-            loginButton(),
-            modeCell(),
-          ],
+    return SingleChildScrollView(
+        child: Container(
+          height: ScreenUtil().setHeight(504),
+          padding: EdgeInsets.only(
+              left: ScreenUtil().setWidth(30), top: modeIsLogin ? ScreenUtil().setHeight(40) : ScreenUtil().setHeight(8)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
+                child: Text(
+                  text.head,
+                  style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF515151)),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
+                child: Text(
+                  modeIsLogin ? text.welcomeLogin : text.welcomeRegister,
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w300,
+                      color: Color(0xFF515151)),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(13)),
+                child: Text(
+                  modeIsLogin ? text.tipLogin : text.tipRegister,
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w300,
+                      color: Color(0xFF9E9E9E)),
+                ),
+              ),
+              inputCell(text.userName, _userNameController, false),
+              modeIsLogin
+                  ? Container()
+                  : inputCell(text.email, _emailController, false),
+              inputCell(text.password, _userPasswordController, true),
+              modeIsLogin
+                  ? Container()
+                  : inputCell(
+                      text.passwordRepeat, _userPasswordRepeatController, true),
+              verificationCell(_verificationController),
+              SizedBox(
+                height: ScreenUtil().setHeight(38),
+              ),
+              Container(
+                width: ScreenUtil().setWidth(255),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    modeIsLogin ? loginButton() : registerButton(),
+                    modeCell(),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       );
-    } else {
-      return Container(
-        padding: EdgeInsets.all(ScreenUtil().setWidth(20)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            inputCell(text.userName, _userNameController, false),
-            inputCell(text.password, _userPasswordController, true),
-            inputCell(text.passwordRepeat, _userPasswordRepeatController, true),
-            inputCell(text.email, _emailController, false),
-            verificationCell(_verificationController),
-            SizedBox(
-              height: ScreenUtil().setHeight(20),
-            ),
-            registerButton(),
-            modeCell(),
-          ],
-        ),
-      );
-    }
   }
 
   Widget inputCell(
       String label, TextEditingController controller, bool isPassword,
-      {num length = 210}) {
+      {num length = 245}) {
     return Container(
-      margin: EdgeInsets.all(ScreenUtil().setWidth(5)),
+      margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(10)),
       width: ScreenUtil().setWidth(length),
       height: ScreenUtil().setHeight(40),
       child: TextField(
         decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide(),
-          ),
           hintText: label,
+          focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Color(0xFFF2994A))),
         ),
+        cursorColor: Color(0xFFF2994A),
         controller: controller,
         obscureText: isPassword,
       ),
@@ -123,43 +148,54 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Widget verificationCell(TextEditingController controller) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        inputCell(text.verification, controller, false, length: 120),
-        AnimatedContainer(
-          duration: Duration(milliseconds: 300),
-          constraints: BoxConstraints(
-              minWidth: ScreenUtil().setWidth(85),
-              minHeight: ScreenUtil().setHeight(40)),
-          padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
-          child: GestureDetector(
-              onTap: () async {
-                await _getVerificationCode();
-                setState(() {});
-              },
-              child: verificationImage != ''
-                  ? Image.memory(
-                      base64Decode(verificationImage),
-                      width: ScreenUtil().setWidth(70),
-                    )
-                  : Container()),
-        ),
-      ],
+    return Container(
+      alignment: Alignment.topLeft,
+      height: ScreenUtil().setHeight(40),
+      child: Stack(
+        children: <Widget>[
+          Positioned(
+            left: 0,
+            child: inputCell(text.verification, controller, false),
+          ),
+          Positioned(
+            right: ScreenUtil().setWidth(46),
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 300),
+              constraints: BoxConstraints(
+                  minWidth: ScreenUtil().setWidth(85),
+                  minHeight: ScreenUtil().setHeight(40)),
+              padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
+              child: GestureDetector(
+                  onTap: () async {
+                    await _getVerificationCode();
+                    setState(() {});
+                  },
+                  child: verificationImage != ''
+                      ? Image.memory(
+                          base64Decode(verificationImage),
+                          width: ScreenUtil().setWidth(70),
+                        )
+                      : Container()),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget loginButton() {
     return loginOnLoading
-        ? FlatButton(
+        ? OutlineButton(
             onPressed: () {},
-            color: Colors.orangeAccent[200],
+            borderSide: BorderSide(color: Colors.orange),
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(5.0),
+            ),
             child: Text(
               text.buttonLoginLoading,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.grey),
             ))
-        : FlatButton(
+        : OutlineButton(
             onPressed: () async {
               setState(() {
                 loginOnLoading = true;
@@ -175,23 +211,31 @@ class LoginPageState extends State<LoginPage> {
                 _resetMode('login');
               }
             },
-            color: Colors.blueAccent[200],
+            borderSide: BorderSide(
+              color: Colors.grey,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(5.0),
+            ),
             child: Text(
               text.buttonLogin,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Color(0xFF515151)),
             ));
   }
 
   Widget registerButton() {
     return registerOnLoading
-        ? FlatButton(
+        ? OutlineButton(
             onPressed: () {},
-            color: Colors.orangeAccent[200],
+            borderSide: BorderSide(color: Colors.orange),
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(5.0),
+            ),
             child: Text(
               text.buttonRegisterLoading,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.grey),
             ))
-        : FlatButton(
+        : OutlineButton(
             onPressed: () async {
               setState(() {
                 registerOnLoading = true;
@@ -217,22 +261,26 @@ class LoginPageState extends State<LoginPage> {
                 } else {
                   _resetMode('afterRegister');
                 }
-              }
-              else {
+              } else {
                 BotToast.showSimpleNotification(title: check);
                 _resetMode('register');
               }
             },
-            color: Colors.blueAccent[200],
+            borderSide: BorderSide(
+              color: Colors.grey,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(5.0),
+            ),
             child: Text(
               text.buttonRegister,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Color(0xFF515151)),
             ));
   }
 
+  // 注册、登陆的切换按钮
   Widget modeCell() {
     return Container(
-      padding: EdgeInsets.all(ScreenUtil().setHeight(10)),
       child: GestureDetector(
         onTap: () {
           setState(() {

@@ -17,7 +17,7 @@ class MenuButtonState extends State<MenuButton> {
   bool visible = true;
   String imgUrl;
   double imgWidth;
-  double elevation;
+  double blur;
 
   @override
   Widget build(BuildContext context) {
@@ -29,46 +29,55 @@ class MenuButtonState extends State<MenuButton> {
 
     if (_tapStateOn) {
       imgUrl = 'icon/menu_active.png';
-      elevation = 15;
+      blur = 5;
     } else {
       imgUrl = 'icon/menu.png';
-      elevation = 2;
+      blur = 18;
     }
 
-    return (Stack(
+    return Stack(
       children: <Widget>[
         AnimatedPositioned(
           // 底部椭圆
           duration: Duration(milliseconds: 400),
-          bottom: ScreenUtil().setHeight(19),
-          left: ScreenUtil().setWidth(12),
-          right: ScreenUtil().setWidth(262),
-          child: Material(
-            child: AnimatedContainer(
-              decoration: BoxDecoration(shape: BoxShape.circle),
-              padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
-              width: imgWidth,
-              height: imgWidth,
-              child: GestureDetector(
-                child: Image.asset(
-                  imgUrl,
-                ),
-                onTap: () {
-                  // 外部方法
-                  if (widget.onViewTap != null) {
-                    widget.onViewTap();
-                  }
-                },
-              ),
-              duration: Duration(milliseconds: 350),
-              curve: Curves.easeInOut,
+          bottom: ScreenUtil().setHeight(25),
+          left: ScreenUtil().setWidth(22),
+          right: ScreenUtil().setWidth(252),
+          child: AnimatedContainer(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                    blurRadius: 13,
+                    offset: Offset(5, 5),
+                    color: Color(0x73D1D9E6)),
+                BoxShadow(
+                    blurRadius: blur,
+                    offset: Offset(-5, -5),
+                    color: Color(0x73E0E0E0)),
+              ],
             ),
-            elevation: elevation,
-            shape: CircleBorder(),
+            padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
+            width: imgWidth,
+            height: imgWidth,
+            child: GestureDetector(
+              child: Image.asset(
+                imgUrl,
+              ),
+              onTap: () {
+                // 外部方法
+                if (widget.onViewTap != null) {
+                  widget.onViewTap();
+                }
+              },
+            ),
+            duration: Duration(milliseconds: 350),
+            curve: Curves.easeInOut,
           ),
         ),
       ],
-    ));
+    );
   }
 
   void flipTapState() {

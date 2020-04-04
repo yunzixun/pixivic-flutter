@@ -260,7 +260,8 @@ class _PicDetailPageState extends State<PicDetailPage> {
         },
         child: Hero(
             tag: 'imageHero' +
-                widget._picData['imageUrls'][0]['large'], //medium large
+                widget._picData['imageUrls'][0][
+                    'medium'], //medium large, set as medium now for hero switch
             child: Image(
               image: AdvancedNetworkImage(
                 widget._picData['imageUrls'][0]['large'],

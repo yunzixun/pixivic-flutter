@@ -108,7 +108,8 @@ class SuggestionBarState extends State<SuggestionBar> {
     this.searchKeywords = value;
     _loadSuggestions().then((value) {
       setState(() {
-        this.suggestions = value;
+        if(value != null)
+          this.suggestions = value;
       });
     });
   }

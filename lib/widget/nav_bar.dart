@@ -20,9 +20,6 @@ class _NavBarState extends State<NavBar> {
   double containerLeft;
   double containerRight;
   double containerBottom;
-  double iconsLeft;
-  double iconsRight;
-  double iconsBottom;
 
   @override
   void initState() {
@@ -34,22 +31,16 @@ class _NavBarState extends State<NavBar> {
     activeList = List.filled(4, false);
     activeList[widget.currentIndex] = true;
     if (widget.alone) {
-      containerLeft = ScreenUtil().setWidth(44);
-      containerRight = ScreenUtil().setWidth(44);
-      iconsLeft = ScreenUtil().setWidth(65);
-      iconsRight = ScreenUtil().setWidth(65);
+      containerLeft = ScreenUtil().setWidth(62);
+      containerRight = ScreenUtil().setWidth(63);
     } else {
-      containerLeft = ScreenUtil().setWidth(82);
-      containerRight = ScreenUtil().setWidth(6);
-      iconsLeft = ScreenUtil().setWidth(103);
-      iconsRight = ScreenUtil().setWidth(27);
+      containerLeft = ScreenUtil().setWidth(98);
+      containerRight = ScreenUtil().setWidth(27);
     }
     if (widget.isScrolling) {
       containerBottom = ScreenUtil().setHeight(-47);
-      iconsBottom = ScreenUtil().setHeight(-66);
     } else {
-      containerBottom = ScreenUtil().setHeight(17);
-      iconsBottom = ScreenUtil().setHeight(26);
+      containerBottom = ScreenUtil().setHeight(25);
     }
     return navBar(context);
   }
@@ -63,35 +54,36 @@ class _NavBarState extends State<NavBar> {
           bottom: containerBottom,
           left: containerLeft,
           right: containerRight,
-          child: Material(
-            child: Container(
-              width: ScreenUtil().setWidth(236),
-              height: ScreenUtil().setHeight(40),
-            ),
-            elevation: 2.0,
-            borderRadius: BorderRadius.circular(32.0),
-          ),
-        ),
-        // 图标组
-        AnimatedPositioned(
-          duration: Duration(milliseconds: 400),
-          bottom: iconsBottom,
-          left: iconsLeft,
-          right: iconsRight,
           child: Container(
-            width: ScreenUtil().setWidth(194),
-            height: ScreenUtil().setHeight(23),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                navItem(context, 'pic', 0),
-                navItem(context, 'center', 1),
-                navItem(context, 'new', 2),
-                navItem(context, 'user', 3),
-              ],
+              width: ScreenUtil().setWidth(199),
+              height: ScreenUtil().setHeight(35),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(32.0),
+                boxShadow: [
+                  BoxShadow(blurRadius: 13, offset: Offset(5, 5), color: Color(0x73D1D9E6)),
+                  BoxShadow(blurRadius: 18, offset: Offset(-5, -5), color: Color(0x73E0E0E0)),
+                ],
+              ),
+              child: AnimatedContainer(
+                padding: EdgeInsets.only(left: ScreenUtil().setWidth(20), right: ScreenUtil().setWidth(20)),
+                duration: Duration(milliseconds: 400),
+                child: Container(
+                  width: ScreenUtil().setWidth(161),
+                  height: ScreenUtil().setHeight(27),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      navItem(context, 'pic', 0),
+                      navItem(context, 'center', 1),
+                      navItem(context, 'new', 2),
+                      navItem(context, 'user', 3),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ),
-        )
+        ),
       ],
     );
   }
@@ -100,10 +92,10 @@ class _NavBarState extends State<NavBar> {
     num width; //width for image
 
     if (activeList[seq] == true) {
-      width = ScreenUtil().setHeight(23);
+      width = ScreenUtil().setWidth(27);
       src = 'icon/' + src + '_active.png';
     } else {
-      width = ScreenUtil().setHeight(20);
+      width = ScreenUtil().setWidth(24);
       src = 'icon/' + src + '.png';
     }
 
@@ -117,6 +109,7 @@ class _NavBarState extends State<NavBar> {
       child: AnimatedContainer(
         width: width,
         height: width,
+        color: Colors.white,
         duration: Duration(milliseconds: 400),
         curve: Curves.easeIn,
         child: GestureDetector(

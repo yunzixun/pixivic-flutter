@@ -33,11 +33,6 @@ class _SearchPageState extends State<SearchPage> {
     suggestionBar = SuggestionBar(searchKeywords, _onSearch, _suggestionBarKey);
     super.initState();
   }
-
-  @override
-  void didUpdateWidget(SearchPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-  }
   
   @override
   Widget build(BuildContext context) {

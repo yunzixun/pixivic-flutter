@@ -46,6 +46,7 @@ Future initData() async {
   print(cacheSize);
   // 遍历所有key，对不存在的 key 进行 value 初始化
   print(prefs.getKeys());
+  print(prefs.getString('name'));
   for (var item in keywordsString) {
     if (prefs.getString(item) == null) prefs.setString(item, '');
   }
