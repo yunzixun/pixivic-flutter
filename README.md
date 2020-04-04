@@ -1,8 +1,8 @@
-<center>
+<p align="center">
 <img src="https://i.jue.sh/i1/2020/04/04/6qwf4H.png" width = "100" height = "100" alt="pixivic_icon"/>
-</center>
+</p>
 
-<center> Pixivic v0.0.1 </center>
+<p align="center">Pixivic v0.0.1</p>
 
 # Pixivic
 [![Gitter](https://badges.gitter.im/pixivic-flutter/community.svg)](https://gitter.im/pixivic-flutter/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
