@@ -100,9 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: PappBar(
-        title: widget.title,
+        title: '日排行',
         backgroundColor: Colors.white,
-        contentHeight: ScreenUtil().setHeight(28),
+        contentHeight: ScreenUtil().setHeight(32),
       ),
       body: Stack(
         children: <Widget>[

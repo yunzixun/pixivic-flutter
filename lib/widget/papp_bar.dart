@@ -3,25 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PappBar extends StatefulWidget implements PreferredSizeWidget {
-  final double contentHeight; //从外部指定高度
-  final Color backgroundColor; //设置导航栏背景的颜色
-  final Widget leadingWidget;
-  final Widget trailingWidget;
+  final double contentHeight; //删去
+  final Color backgroundColor; //删去
+  final Widget leadingWidget; //删去
+  final Widget trailingWidget; //删去
   final String title;
   final String mode;
   final String searchKeywordsIn;
   final ValueChanged<String> searchFucntion;
 
-  PappBar({
-    this.leadingWidget,
-    @required this.title,
-    @required this.contentHeight,
-    this.backgroundColor = Colors.white,
-    this.mode = 'default',
-    this.searchKeywordsIn,
-    this.searchFucntion,
-    this.trailingWidget
-  }) : super();
+  PappBar(
+      {this.leadingWidget,
+      @required this.title,
+      this.contentHeight,
+      this.backgroundColor = Colors.white,
+      this.mode = 'default',
+      this.searchKeywordsIn,
+      this.searchFucntion,
+      this.trailingWidget})
+      : super();
 
   PappBar.search(
       {@required this.trailingWidget,
@@ -38,21 +38,36 @@ class PappBar extends StatefulWidget implements PreferredSizeWidget {
   _PappBarState createState() => _PappBarState();
 
   @override
-  Size get preferredSize => new Size.fromHeight(contentHeight);
+  Size get preferredSize => Size.fromHeight(ScreenUtil().setHeight(35));
 }
 
 class _PappBarState extends State<PappBar> {
+  double contentHeight;
+
+  @override
+  void initState() {
+    contentHeight = ScreenUtil().setHeight(35);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       color: widget.backgroundColor,
       child: SafeArea(
         top: true,
-        child: new Container(
-            decoration: UnderlineTabIndicator(
-              borderSide: BorderSide(width: 0, color: Color(0xFFeeeeee)),
+        child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+              boxShadow: [
+                BoxShadow(
+                    blurRadius: 13,
+                    offset: Offset(5, 5),
+                    color: Color(0x73E5E5E5)),
+              ],
             ),
-            height: widget.contentHeight,
+            height: contentHeight,
             child: Stack(
               alignment: Alignment.center,
               children: <Widget>[
@@ -81,8 +96,7 @@ class _PappBarState extends State<PappBar> {
     if (widget.mode == 'default') {
       return Container(
         child: Text(widget.title,
-            style: TextStyle(
-                fontSize: 14, color: Color.fromRGBO(255, 182, 193, 1.0))),
+            style: TextStyle(fontSize: 14, color: Color(0xFF515151), fontWeight: FontWeight.w700)),
       );
     } else if (widget.mode == 'search') {
       TextEditingController _textFieldController =

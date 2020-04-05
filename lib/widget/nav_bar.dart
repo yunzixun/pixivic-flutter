@@ -55,34 +55,42 @@ class _NavBarState extends State<NavBar> {
           left: containerLeft,
           right: containerRight,
           child: Container(
-              width: ScreenUtil().setWidth(199),
-              height: ScreenUtil().setHeight(35),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(32.0),
-                boxShadow: [
-                  BoxShadow(blurRadius: 13, offset: Offset(5, 5), color: Color(0x73D1D9E6)),
-                  BoxShadow(blurRadius: 18, offset: Offset(-5, -5), color: Color(0x73E0E0E0)),
-                ],
-              ),
-              child: AnimatedContainer(
-                padding: EdgeInsets.only(left: ScreenUtil().setWidth(20), right: ScreenUtil().setWidth(20)),
-                duration: Duration(milliseconds: 400),
-                child: Container(
-                  width: ScreenUtil().setWidth(161),
-                  height: ScreenUtil().setHeight(27),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      navItem(context, 'pic', 0),
-                      navItem(context, 'center', 1),
-                      navItem(context, 'new', 2),
-                      navItem(context, 'user', 3),
-                    ],
-                  ),
+            width: ScreenUtil().setWidth(199),
+            height: ScreenUtil().setHeight(35),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(32.0),
+              boxShadow: [
+                BoxShadow(
+                    blurRadius: 13,
+                    offset: Offset(5, 5),
+                    color: Color(0x73D1D9E6)),
+                BoxShadow(
+                    blurRadius: 18,
+                    offset: Offset(-5, -5),
+                    color: Color(0x73E0E0E0)),
+              ],
+            ),
+            child: AnimatedContainer(
+              padding: EdgeInsets.only(
+                  left: ScreenUtil().setWidth(20),
+                  right: ScreenUtil().setWidth(20)),
+              duration: Duration(milliseconds: 400),
+              child: Container(
+                width: ScreenUtil().setWidth(161),
+                height: ScreenUtil().setHeight(27),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    navItem(context, 'pic', 0),
+                    navItem(context, 'center', 1),
+                    navItem(context, 'new', 2),
+                    navItem(context, 'user', 3),
+                  ],
                 ),
               ),
             ),
+          ),
         ),
       ],
     );

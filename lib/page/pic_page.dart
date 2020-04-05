@@ -331,7 +331,7 @@ class _PicPageState extends State<PicPage> {
           padding: EdgeInsets.only(
               left: ScreenUtil().setWidth(5.5),
               right: ScreenUtil().setWidth(5.5)),
-          color: Colors.white,
+          color: Colors.grey[50],
           child: StaggeredGridView.countBuilder(
             controller: scrollController,
             physics: ClampingScrollPhysics(),
@@ -501,8 +501,8 @@ class _PicPageState extends State<PicPage> {
       padding: EdgeInsets.only(
           left: ScreenUtil().setWidth(4),
           right: ScreenUtil().setWidth(4),
-          top: ScreenUtil().setWidth(3.9),
-          bottom: ScreenUtil().setWidth(3.9)),
+          top: ScreenUtil().setWidth(10),
+          ),
       child: Stack(
         children: <Widget>[
           Positioned(
