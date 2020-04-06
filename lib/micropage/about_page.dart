@@ -15,7 +15,7 @@ class _AboutPageState extends State<AboutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PappBar(title: 'About Us', contentHeight: ScreenUtil().setHeight(28),),
+      appBar: PappBar(title: 'About Us'),
       body: Container(
         height: ScreenUtil().setHeight(530),
         child: Wrap(

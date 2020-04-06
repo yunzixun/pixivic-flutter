@@ -223,8 +223,9 @@ class _PicPageState extends State<PicPage> {
     // BotToast.showSimpleNotification(title: '图片重新装载中(ﾉ>ω<)ﾉ');
     print('picPage didUpdateWidget: mode is ${widget.jsonMode}');
     // 当为 home 模式且切换了参数，则同时更新暂存的相关数据
-    if (widget.jsonMode == 'home' && (oldWidget.picDate != widget.picDate ||
-        oldWidget.picMode != widget.picMode)) {
+    if (widget.jsonMode == 'home' &&
+        (oldWidget.picDate != widget.picDate ||
+            oldWidget.picMode != widget.picMode)) {
       scrollController.animateTo(
         0.0,
         duration: const Duration(milliseconds: 500),
@@ -236,7 +237,7 @@ class _PicPageState extends State<PicPage> {
       homePicList = [];
       homeScrollerPosition = 0;
       setState(() {
-        picList = null;       // 清空 picList 以进入加载动画
+        picList = null; // 清空 picList 以进入加载动画
         haveConnected = false;
       });
 
@@ -259,7 +260,7 @@ class _PicPageState extends State<PicPage> {
       });
     }
     // 当不为 home mode 时，进行常规的更新操作
-    else{
+    else if (widget.jsonMode == 'search') {
       currentPage = 1;
       setState(() {
         picList = null;
@@ -414,10 +415,10 @@ class _PicPageState extends State<PicPage> {
         jsonList = jsonDecode(requests.content())['data'];
       }
       if (jsonList != null) if (jsonList.length < 30)
-          loadMoreAble = false;
-        else
-          loadMoreAble = true;
-        return (jsonList);
+        loadMoreAble = false;
+      else
+        loadMoreAble = true;
+      return (jsonList);
     } catch (error) {
       print('=========getJsonList==========');
       print(error);
@@ -499,10 +500,10 @@ class _PicPageState extends State<PicPage> {
     Map picMapData = Map.from(picList[index]);
     return Container(
       padding: EdgeInsets.only(
-          left: ScreenUtil().setWidth(4),
-          right: ScreenUtil().setWidth(4),
-          top: ScreenUtil().setWidth(10),
-          ),
+        left: ScreenUtil().setWidth(4),
+        right: ScreenUtil().setWidth(4),
+        top: ScreenUtil().setWidth(10),
+      ),
       child: Stack(
         children: <Widget>[
           Positioned(

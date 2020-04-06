@@ -44,7 +44,6 @@ class _SpotlightPageState extends State<SpotlightPage> {
     return Scaffold(
       appBar: PappBar(
         title: text.title,
-        contentHeight: ScreenUtil().setHeight(28),
       ),
       body: spotlightList != null
           ? Container(

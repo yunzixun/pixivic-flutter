@@ -40,10 +40,8 @@ class _SearchPageState extends State<SearchPage> {
 
     return Scaffold(
       appBar: PappBar.search(
-              contentHeight: ScreenUtil().setHeight(38),
               searchKeywordsIn: searchKeywords, 
               searchFucntion: _onSearch,
-              trailingWidget: trailingWidget(),
             ),
       body: ListView(
         children: <Widget>[

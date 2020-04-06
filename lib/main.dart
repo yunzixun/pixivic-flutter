@@ -68,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   UserPage userPage;
   CenterPage centerPage;
   NewPage newPage;
+  PappBar pappBar;
 
   @override
   void initState() {
@@ -83,6 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
         userPage = UserPage(userPageKey);
         newPage = NewPage(newPageKey);
         centerPage = CenterPage();
+        pappBar = PappBar.home(title: '日排行',);
       });
     });
 
@@ -99,11 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ScreenUtil.init(context, width: 324, height: 576);
 
     return Scaffold(
-      appBar: PappBar(
-        title: '日排行',
-        backgroundColor: Colors.white,
-        contentHeight: ScreenUtil().setHeight(32),
-      ),
+      appBar: pappBar,
       body: Stack(
         children: <Widget>[
           PageView.builder(
@@ -155,9 +153,11 @@ class _MyHomePageState extends State<MyHomePage> {
       if (index == 0) {
         _navBarAlone = false;
         _menuButtonKey.currentState.changeVisible(true);
+        pappBar = PappBar(title: '首页',);
       } else {
         _navBarAlone = true;
         _menuButtonKey.currentState.changeVisible(false);
+        pappBar = PappBar(title: 'test',);
       }
       _onPageScrolling(false);
     });
