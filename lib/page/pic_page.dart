@@ -217,10 +217,10 @@ class _PicPageState extends State<PicPage> {
     super.initState();
   }
 
-  @override
   // 参数更改的逻辑：清空所有的现有参数，进入加载动画。当网络情况不好时，也无法看到之前的内容（更好的用户引导，功能稍缺）
+  @override
   void didUpdateWidget(PicPage oldWidget) {
-    // BotToast.showSimpleNotification(title: '图片重新装载中(ﾉ>ω<)ﾉ');
+    
     print('picPage didUpdateWidget: mode is ${widget.jsonMode}');
     // 当为 home 模式且切换了参数，则同时更新暂存的相关数据
     if (widget.jsonMode == 'home' &&
@@ -259,7 +259,7 @@ class _PicPageState extends State<PicPage> {
         if (error.toString().contains('NoSuchMethodError')) picList = null;
       });
     }
-    // 当不为 home mode 时，进行常规的更新操作
+    // 当为 search mode 时，进行刷新操作
     else if (widget.jsonMode == 'search') {
       currentPage = 1;
       setState(() {
@@ -286,7 +286,7 @@ class _PicPageState extends State<PicPage> {
     print('PicPage Disposed');
     // scrollController.removeListener(_autoLoadMore);
     // scrollController.dispose();
-    if (widget.jsonMode == 'home') {
+    if (widget.jsonMode == 'home' && picList != null) {
       homePicList = picList;
       homeCurrentPage = currentPage;
     }

@@ -9,26 +9,30 @@ class PappBar extends StatefulWidget implements PreferredSizeWidget {
   final String mode;
   final String searchKeywordsIn;
   final ValueChanged<String> searchFucntion;
+  final ValueChanged<String> homeModeOptionsFucntion;
 
   PappBar({
-    @required this.title,
+    this.title,
     this.mode = 'default',
     this.searchKeywordsIn,
     this.searchFucntion,
+    this.homeModeOptionsFucntion,
   }) : super();
 
-  PappBar.search(
-      {this.title,
-      this.mode = 'search',
-      @required this.searchKeywordsIn,
-      @required this.searchFucntion})
-      : super();
+  PappBar.search({
+    this.title,
+    this.mode = 'search',
+    @required this.searchKeywordsIn,
+    @required this.searchFucntion,
+    this.homeModeOptionsFucntion,
+  }) : super();
 
   PappBar.home({
-    @required this.title,
+    this.title,
     this.mode = 'home',
     this.searchKeywordsIn,
     this.searchFucntion,
+    @required this.homeModeOptionsFucntion,
   }) : super();
 
   @override
@@ -40,9 +44,12 @@ class PappBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _PappBarState extends State<PappBar> {
   double contentHeight;
+  String title = '日排行';
+  String lastHomeTitle;
 
   @override
   void initState() {
+    lastHomeTitle = title;
     contentHeight = ScreenUtil().setHeight(35);
     super.initState();
   }
@@ -82,7 +89,10 @@ class _PappBarState extends State<PappBar> {
             Material(
               color: Colors.white,
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  // Navigator.of(context).pop();
+                  widget.homeModeOptionsFucntion('search');
+                },
                 child: Container(
                   height: contentHeight,
                   alignment: Alignment.center,
@@ -109,7 +119,7 @@ class _PappBarState extends State<PappBar> {
                   height: contentHeight,
                   alignment: Alignment.center,
                   padding: EdgeInsets.only(left: 5, right: 5),
-                  child: Text(widget.title,
+                  child: Text(title,
                       style: TextStyle(
                           fontSize: 14,
                           color: Color(0xFF515151),
@@ -120,7 +130,10 @@ class _PappBarState extends State<PappBar> {
             Material(
               color: Colors.white,
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  // Navigator.of(context).pop();
+                  widget.homeModeOptionsFucntion('new_date');
+                },
                 child: Container(
                   height: contentHeight,
                   alignment: Alignment.center,
@@ -139,7 +152,7 @@ class _PappBarState extends State<PappBar> {
 
   Widget homeBottomSheet() {
     return Container(
-      height: ScreenUtil().setHeight(100),
+      height: ScreenUtil().setHeight(110),
       width: ScreenUtil().setWidth(324),
       child: DefaultTabController(
         length: 2,
@@ -148,21 +161,32 @@ class _PappBarState extends State<PappBar> {
             Container(
               height: ScreenUtil().setHeight(30),
               width: ScreenUtil().setWidth(324),
-              child: TabBar(labelColor: Colors.blueGrey, tabs: [
-                Tab(
-                  child: Text(
-                    '综合',
+              child: TabBar(
+                  indicator: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10)),
                   ),
-                ),
-                Tab(
-                  child: Text(
-                    '漫画',
-                  ),
-                )
-              ]),
+                  labelColor: Colors.orange[300],
+                  unselectedLabelColor: Colors.blueGrey,
+                  tabs: [
+                    Tab(
+                      child: Text(
+                        '综合',
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                        '漫画',
+                      ),
+                    )
+                  ]),
             ),
             Expanded(
-              child: TabBarView(children: <Widget>[]),
+              child: TabBarView(children: <Widget>[
+                selectorContainer('illust'),
+                selectorContainer('manga')
+              ]),
             )
           ],
         ),
@@ -173,18 +197,43 @@ class _PappBarState extends State<PappBar> {
   Widget selectorContainer(String type) {
     if (type == 'illust') {
       return Container(
-        child: Row(
+        child: Column(
           children: <Widget>[
-            Column(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                optionButton('日', 'day'),
-                optionButton('周', 'week'),
-                optionButton('月', 'month'),
+                optionButton('日排行', 'day'),
+                optionButton('周排行', 'week'),
+                optionButton('月排行', 'month'),
               ],
             ),
-            Column(
-              optionButton('日-男性', 'male'),
-              optionButton('日-女性', 'female'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                optionButton('男性日排行', 'male'),
+                optionButton('女性日排行', 'female'),
+              ],
+            )
+          ],
+        ),
+      );
+    } else if (type == 'manga') {
+      return Container(
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                optionButton('日排行', 'day_manga'),
+                optionButton('周排行', 'week_manga'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                optionButton('月排行', 'month_manga'),
+                optionButton('新秀周排行', 'week_rookie_manga'),
+              ],
             )
           ],
         ),
@@ -194,21 +243,48 @@ class _PappBarState extends State<PappBar> {
 
   Widget optionButton(String label, String parameter) {
     return Container(
-      padding: EdgeInsets.all(ScreenUtil().setWidth(3)),
+      padding: EdgeInsets.only(
+          left: ScreenUtil().setWidth(3), right: ScreenUtil().setWidth(3)),
       child: ButtonTheme(
         height: ScreenUtil().setHeight(20),
         minWidth: ScreenUtil().setWidth(2),
         buttonColor: Colors.grey[100],
         splashColor: Colors.grey[100],
         shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(13.0)),
         child: OutlineButton(
           onPressed: () {
-            // widget.onTap(parameter);
+            Navigator.of(context).pop();
+            widget.homeModeOptionsFucntion(parameter);
+            setState(() {
+              title = label;
+              lastHomeTitle = title;
+            });
           },
           child: Text(label),
         ),
       ),
     );
+  }
+
+  void changePappbarMode(int index) {
+    setState(() {
+      switch (index) {
+        case 0:
+          title = lastHomeTitle;
+          break;
+        case 1:
+          title = '功能中心';
+          break;
+        case 2:
+          title = '画师更新';
+          break;
+        case 3:
+          title = '用户中心';
+          break;
+        default:
+          title = '日排行';
+      }
+    });
   }
 }

@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
         userPage = UserPage(userPageKey);
         newPage = NewPage(newPageKey);
         centerPage = CenterPage();
-        pappBar = PappBar.home(title: '日排行',);
+        pappBar = PappBar.home(title: '日排行', homeModeOptionsFucntion: _onOptionCellTap,);
       });
     });
 
@@ -116,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           NavBar(_currentIndex, _onNavbarTap, _navBarAlone, _isPageScrolling),
           MenuButton(_onMenuButoonTap, _menuButtonKey),
-          MenuList(_onMenuListCellTap, _menuListKey),
+          MenuList(_onOptionCellTap, _menuListKey),
         ],
       ),
     );
@@ -168,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _menuListKey.currentState.flipActive();
   }
 
-  void _onMenuListCellTap(String parameter) async {
+  void _onOptionCellTap(String parameter) async {
     if (parameter == 'new_date') {
       DateTime newDate = await showDatePicker(
         context: context,
@@ -178,8 +178,8 @@ class _MyHomePageState extends State<MyHomePage> {
         // locale: Locale('zh')
       );
       if (newDate != null) {
-        _menuButtonKey.currentState.flipTapState();
-        _menuListKey.currentState.flipActive();
+        // _menuButtonKey.currentState.flipTapState();
+        // _menuListKey.currentState.flipActive();
         setState(() {
           // print(newDate);
           _picDate = newDate;
@@ -215,8 +215,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           builder: (context) =>
                               SearchPage(searchKeywordsIn: input)),
                     );
-                    _menuButtonKey.currentState.flipTapState();
-                    _menuListKey.currentState.flipActive();
+                    // _menuButtonKey.currentState.flipTapState();
+                    // _menuListKey.currentState.flipActive();
                     _textFieldController.clear();
                   }
                 },
@@ -226,8 +226,8 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       );
     } else {
-      _menuButtonKey.currentState.flipTapState();
-      _menuListKey.currentState.flipActive();
+      // _menuButtonKey.currentState.flipTapState();
+      // _menuListKey.currentState.flipActive();
       setState(() {
         _picMode = parameter;
         picPage = PicPage.home(
