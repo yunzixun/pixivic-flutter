@@ -102,39 +102,7 @@ class _PappBarState extends State<PappBar> {
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext buildContext) {
-                        return Container(
-                          height: ScreenUtil().setHeight(100),
-                          width: ScreenUtil().setWidth(324),
-                          child: DefaultTabController(
-                            length: 2,
-                            child: Column(
-                              children: <Widget>[
-                                Container(
-                                  height: ScreenUtil().setHeight(30),
-                                  width: ScreenUtil().setWidth(324),
-                                  child: TabBar(
-                                      labelColor: Colors.blueGrey,
-                                      tabs: [
-                                        Tab(
-                                          child: Text(
-                                            '综合',
-                                          ),
-                                        ),
-                                        Tab(
-                                          child: Text(
-                                            '漫画',
-                                          ),
-                                        )
-                                      ]),
-                                ),
-                                Expanded(
-                                  child: TabBarView(
-                                      children: <Widget>[Text('1'), Text('2')]),
-                                )
-                              ],
-                            ),
-                          ),
-                        );
+                        return homeBottomSheet();
                       });
                 },
                 child: Container(
@@ -169,67 +137,77 @@ class _PappBarState extends State<PappBar> {
         ));
   }
 
-  Widget defalutWidget() {
+  Widget homeBottomSheet() {
     return Container(
-        child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Material(
-          child: Text(widget.title,
-              style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF515151),
-                  fontWeight: FontWeight.w700)),
+      height: ScreenUtil().setHeight(100),
+      width: ScreenUtil().setWidth(324),
+      child: DefaultTabController(
+        length: 2,
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: ScreenUtil().setHeight(30),
+              width: ScreenUtil().setWidth(324),
+              child: TabBar(labelColor: Colors.blueGrey, tabs: [
+                Tab(
+                  child: Text(
+                    '综合',
+                  ),
+                ),
+                Tab(
+                  child: Text(
+                    '漫画',
+                  ),
+                )
+              ]),
+            ),
+            Expanded(
+              child: TabBarView(children: <Widget>[]),
+            )
+          ],
         ),
-      ],
-    ));
+      ),
+    );
   }
 
-  Widget centerWidget() {
-    if (widget.mode == 'default') {
+  Widget selectorContainer(String type) {
+    if (type == 'illust') {
       return Container(
-        child: Text(widget.title,
-            style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFF515151),
-                fontWeight: FontWeight.w700)),
-      );
-    } else if (widget.mode == 'search') {
-      TextEditingController _textFieldController =
-          TextEditingController(text: widget.searchKeywordsIn);
-      return Positioned(
-        left: ScreenUtil().setWidth(10),
-        child: Material(
-          child: Container(
-            height: ScreenUtil().setHeight(25),
-            width: ScreenUtil().setWidth(230),
-            child: TextField(
-              controller: _textFieldController,
-              decoration: InputDecoration(
-                  hintText: "输入关键词",
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.all(8)),
-              onSubmitted: (value) {
-                widget.searchFucntion(value);
-              },
+        child: Row(
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                optionButton('日', 'day'),
+                optionButton('周', 'week'),
+                optionButton('月', 'month'),
+              ],
             ),
-          ),
+            Column(
+              optionButton('日-男性', 'male'),
+              optionButton('日-女性', 'female'),
+            )
+          ],
         ),
-      );
-    } else {
-      return Container(
-        child: Text(widget.title,
-            style: TextStyle(
-                fontSize: 14, color: Color.fromRGBO(255, 182, 193, 1.0))),
       );
     }
   }
 
-  Widget backButton() {
-    return Material(
-      child: InkWell(
-        child: Icon(Icons.arrow_back),
+  Widget optionButton(String label, String parameter) {
+    return Container(
+      padding: EdgeInsets.all(ScreenUtil().setWidth(3)),
+      child: ButtonTheme(
+        height: ScreenUtil().setHeight(20),
+        minWidth: ScreenUtil().setWidth(2),
+        buttonColor: Colors.grey[100],
+        splashColor: Colors.grey[100],
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+        child: OutlineButton(
+          onPressed: () {
+            // widget.onTap(parameter);
+          },
+          child: Text(label),
+        ),
       ),
     );
   }
