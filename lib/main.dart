@@ -63,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   GlobalKey<MenuButtonState> _menuButtonKey = GlobalKey();
   GlobalKey<MenuListState> _menuListKey = GlobalKey();
+  GlobalKey<PappBarState> _pappBarKey = GlobalKey();
 
   PicPage picPage;
   UserPage userPage;
@@ -84,7 +85,10 @@ class _MyHomePageState extends State<MyHomePage> {
         userPage = UserPage(userPageKey);
         newPage = NewPage(newPageKey);
         centerPage = CenterPage();
-        pappBar = PappBar.home(title: '日排行', homeModeOptionsFucntion: _onOptionCellTap,);
+        pappBar = PappBar.home(
+          homeModeOptionsFucntion: _onOptionCellTap,
+          key: _pappBarKey,
+        );
       });
     });
 
@@ -150,14 +154,13 @@ class _MyHomePageState extends State<MyHomePage> {
       _currentIndex = index;
       _menuButtonKey.currentState.changeTapState(false);
       _menuListKey.currentState.changeActive(false);
+      _pappBarKey.currentState.changePappbarMode(index);
       if (index == 0) {
         _navBarAlone = false;
         _menuButtonKey.currentState.changeVisible(true);
-        pappBar = PappBar(title: '首页',);
       } else {
         _navBarAlone = true;
         _menuButtonKey.currentState.changeVisible(false);
-        pappBar = PappBar(title: 'test',);
       }
       _onPageScrolling(false);
     });

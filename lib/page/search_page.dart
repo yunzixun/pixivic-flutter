@@ -24,6 +24,7 @@ class _SearchPageState extends State<SearchPage> {
   SuggestionBar suggestionBar;
   List suggestions;
   bool searchManga = false;
+  GlobalKey<PappBarState> pappbarKey = GlobalKey();
 
   GlobalKey<SuggestionBarState> _suggestionBarKey = GlobalKey();
 
@@ -42,6 +43,7 @@ class _SearchPageState extends State<SearchPage> {
       appBar: PappBar.search(
               searchKeywordsIn: searchKeywords, 
               searchFucntion: _onSearch,
+              key: pappbarKey,
             ),
       body: ListView(
         children: <Widget>[
@@ -57,31 +59,6 @@ class _SearchPageState extends State<SearchPage> {
         ],
       ),
     );
-  }
-  
-  Widget trailingWidget() {
-    return DropdownButton(
-        value: '插画',
-        items:
-            <String>['插画', '漫画'].map<DropdownMenuItem<String>>((String vaule) {
-          return DropdownMenuItem<String>(
-            value: vaule,
-            child: Text(vaule),
-          );
-        }).toList(),
-        onChanged: (value) {
-          if(value == '漫画' && !searchManga) {
-            setState(() {
-              searchManga = true;
-            });
-          }
-          else if(value == '插画' && searchManga) {
-            setState(() {
-              searchManga = false;
-            });
-          }
-        },
-      );
   }
 
   _onSearch(String value) {

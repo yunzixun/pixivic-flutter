@@ -10,6 +10,7 @@ class PappBar extends StatefulWidget implements PreferredSizeWidget {
   final String searchKeywordsIn;
   final ValueChanged<String> searchFucntion;
   final ValueChanged<String> homeModeOptionsFucntion;
+  final Key key;
 
   PappBar({
     this.title,
@@ -17,39 +18,47 @@ class PappBar extends StatefulWidget implements PreferredSizeWidget {
     this.searchKeywordsIn,
     this.searchFucntion,
     this.homeModeOptionsFucntion,
+    this.key,
   }) : super();
 
-  PappBar.search({
-    this.title,
-    this.mode = 'search',
-    @required this.searchKeywordsIn,
-    @required this.searchFucntion,
-    this.homeModeOptionsFucntion,
-  }) : super();
+  PappBar.search(
+      {this.title,
+      this.mode = 'search',
+      @required this.searchKeywordsIn,
+      @required this.searchFucntion,
+      this.homeModeOptionsFucntion,
+      this.key})
+      : super();
 
-  PappBar.home({
-    this.title,
-    this.mode = 'home',
-    this.searchKeywordsIn,
-    this.searchFucntion,
-    @required this.homeModeOptionsFucntion,
-  }) : super();
+  PappBar.home(
+      {this.title,
+      this.mode = 'home',
+      this.searchKeywordsIn,
+      this.searchFucntion,
+      @required this.homeModeOptionsFucntion,
+      this.key})
+      : super();
 
   @override
-  _PappBarState createState() => _PappBarState();
+  PappBarState createState() => PappBarState();
 
   @override
   Size get preferredSize => Size.fromHeight(ScreenUtil().setHeight(35));
 }
 
-class _PappBarState extends State<PappBar> {
+class PappBarState extends State<PappBar> {
   double contentHeight;
   String title = '日排行';
   String lastHomeTitle;
+  String mode;
+  TextEditingController searchController;
 
   @override
   void initState() {
     lastHomeTitle = title;
+    mode = widget.mode;
+    searchController = TextEditingController(
+        text: widget.searchKeywordsIn != null ? widget.searchKeywordsIn : null);
     contentHeight = ScreenUtil().setHeight(35);
     super.initState();
   }
@@ -72,10 +81,22 @@ class _PappBarState extends State<PappBar> {
             ],
           ),
           height: contentHeight,
-          child: homeWidgets(),
+          child: chooseWidget(),
         ),
       ),
     );
+  }
+
+  Widget chooseWidget() {
+    if (mode == 'home') {
+      return homeWidgets();
+    } else if (mode == 'default') {
+      return defaultWidgets();
+    } else if (mode == 'search') {
+      return searchWidgets();
+    } else {
+      return Container();
+    }
   }
 
   Widget homeWidgets() {
@@ -96,7 +117,7 @@ class _PappBarState extends State<PappBar> {
                 child: Container(
                   height: contentHeight,
                   alignment: Alignment.center,
-                  padding: EdgeInsets.only(right: 8),
+                  padding: EdgeInsets.only(right: 8), //为点击时的效果而设置，无实际意义
                   child: FaIcon(
                     FontAwesomeIcons.search,
                     color: Color(0xFF515151),
@@ -144,6 +165,62 @@ class _PappBarState extends State<PappBar> {
                     size: ScreenUtil().setWidth(15),
                   ),
                 ),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  Widget defaultWidgets() {
+    return Container(
+        alignment: Alignment.center,
+        padding: EdgeInsets.only(
+            left: ScreenUtil().setWidth(18), right: ScreenUtil().setWidth(18)),
+        child: Text(title,
+            style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF515151),
+                fontWeight: FontWeight.w700)));
+  }
+
+  Widget searchWidgets() {
+    return Container(
+        padding: EdgeInsets.only(left: ScreenUtil().setWidth(18)),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Container(
+              height: contentHeight,
+              alignment: Alignment.center,
+              child: FaIcon(
+                FontAwesomeIcons.search,
+                color: Color(0xFF515151),
+                size: ScreenUtil().setWidth(15),
+              ),
+            ),
+            Container(
+              width: ScreenUtil().setWidth(265),
+              height: ScreenUtil().setHeight(25),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Color(0xFFF4F3F3F3),
+              ),
+              margin: EdgeInsets.only(
+                left: ScreenUtil().setWidth(13),
+                right: ScreenUtil().setWidth(12),
+              ),
+              child: TextField(
+                controller: searchController,
+                onSubmitted: (value) {
+                  widget.searchFucntion(searchController.text);
+                },
+                decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: '要搜点什么呢',
+                    contentPadding: EdgeInsets.only(
+                        left: ScreenUtil().setWidth(8),
+                        bottom: ScreenUtil().setHeight(8))),
               ),
             ),
           ],
@@ -238,6 +315,8 @@ class _PappBarState extends State<PappBar> {
           ],
         ),
       );
+    } else {
+      return Container();
     }
   }
 
@@ -271,20 +350,31 @@ class _PappBarState extends State<PappBar> {
     setState(() {
       switch (index) {
         case 0:
+          mode = 'home';
           title = lastHomeTitle;
           break;
         case 1:
+          mode = 'default';
           title = '功能中心';
           break;
         case 2:
+          mode = 'default';
           title = '画师更新';
           break;
         case 3:
+          mode = 'default';
           title = '用户中心';
           break;
         default:
+          mode = 'home';
           title = '日排行';
       }
+    });
+  }
+
+  void changeSearchKeywords(String keywords) {
+    setState(() {
+      searchController.text = keywords;
     });
   }
 }
