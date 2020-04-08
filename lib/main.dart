@@ -8,8 +8,8 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 
 import 'widget/nav_bar.dart';
 import 'widget/papp_bar.dart';
-import 'widget/menu_button.dart';
-import 'widget/menu_list.dart';
+// import 'widget/menu_button.dart';
+// import 'widget/menu_list.dart';
 
 import 'page/pic_page.dart';
 import 'page/new_page.dart';
@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController _textFieldController = TextEditingController();
 
   int _currentIndex = 0;
-  bool _navBarAlone = false;
+  bool _navBarAlone = true;
   bool _isPageScrolling = false;
   var _pageController = PageController(initialPage: 0);
 
@@ -61,8 +61,8 @@ class _MyHomePageState extends State<MyHomePage> {
   DateTime _picLastDate = DateTime.now().subtract(Duration(days: 3));
   DateTime _picFirstDate = DateTime(2008, 1, 1);
 
-  GlobalKey<MenuButtonState> _menuButtonKey = GlobalKey();
-  GlobalKey<MenuListState> _menuListKey = GlobalKey();
+  // GlobalKey<MenuButtonState> _menuButtonKey = GlobalKey();
+  // GlobalKey<MenuListState> _menuListKey = GlobalKey();
   GlobalKey<PappBarState> _pappBarKey = GlobalKey();
 
   PicPage picPage;
@@ -119,8 +119,8 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           ),
           NavBar(_currentIndex, _onNavbarTap, _navBarAlone, _isPageScrolling),
-          MenuButton(_onMenuButoonTap, _menuButtonKey),
-          MenuList(_onOptionCellTap, _menuListKey),
+          // MenuButton(_onMenuButoonTap, _menuButtonKey),
+          // MenuList(_onOptionCellTap, _menuListKey),
         ],
       ),
     );
@@ -152,24 +152,25 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       // print('_onPageChanged: $index');
       _currentIndex = index;
-      _menuButtonKey.currentState.changeTapState(false);
-      _menuListKey.currentState.changeActive(false);
+      // _menuButtonKey.currentState.changeTapState(false);
+      // _menuListKey.currentState.changeActive(false);
+
+      // if (index == 0) {
+      //   _navBarAlone = false;
+      //   _menuButtonKey.currentState.changeVisible(true);
+      // } else {
+      //   _navBarAlone = true;
+      //   _menuButtonKey.currentState.changeVisible(false);
+      // }
       _pappBarKey.currentState.changePappbarMode(index);
-      if (index == 0) {
-        _navBarAlone = false;
-        _menuButtonKey.currentState.changeVisible(true);
-      } else {
-        _navBarAlone = true;
-        _menuButtonKey.currentState.changeVisible(false);
-      }
       _onPageScrolling(false);
     });
   }
 
-  void _onMenuButoonTap() {
-    _menuButtonKey.currentState.flipTapState();
-    _menuListKey.currentState.flipActive();
-  }
+  // void _onMenuButoonTap() {
+  //   _menuButtonKey.currentState.flipTapState();
+  //   _menuListKey.currentState.flipActive();
+  // }
 
   void _onOptionCellTap(String parameter) async {
     if (parameter == 'new_date') {
@@ -199,10 +200,19 @@ class _MyHomePageState extends State<MyHomePage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('搜索关键词'),
+            title: Text(
+              '搜索关键词',
+              style: TextStyle(
+                  color: Color(0xFF515151), fontWeight: FontWeight.w300),
+            ),
             content: TextField(
+              autofocus: true,
               controller: _textFieldController,
-              decoration: InputDecoration(hintText: "输入关键词"),
+              decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: '要搜点什么呢',
+                  contentPadding:
+                      EdgeInsets.only(bottom: ScreenUtil().setHeight(8))),
             ),
             actions: <Widget>[
               new FlatButton(

@@ -42,6 +42,8 @@ class _PicDetailPageState extends State<PicDetailPage> {
   int picTotalNum;
   TextZhPicDetailPage text = TextZhPicDetailPage();
 
+  ScrollController scrollController = ScrollController();
+
   @override
   void initState() {
     print('picDetail Created');
@@ -54,6 +56,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
   @override
   Widget build(BuildContext context) {
     return ListView(
+      controller: scrollController,
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
       children: <Widget>[
@@ -245,6 +248,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
               color: Colors.white,
               child: PicPage.related(
                 relatedId: widget._picData['id'],
+                onPageTop: _onTopOfPicpage,
               )),
         ),
       ],
@@ -547,5 +551,12 @@ class _PicDetailPageState extends State<PicDetailPage> {
       await Requests.post(url,
           headers: headers, body: body, bodyEncoding: RequestBodyEncoding.JSON);
     }
+  }
+
+  _onTopOfPicpage() {
+    double position =
+        scrollController.position.extentBefore - ScreenUtil().setHeight(250);
+    scrollController.animateTo(position,
+        duration: Duration(milliseconds: 400), curve: Curves.easeInOut);
   }
 }

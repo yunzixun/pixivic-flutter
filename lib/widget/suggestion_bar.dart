@@ -34,7 +34,7 @@ class SuggestionBarState extends State<SuggestionBar> {
   Widget build(BuildContext context) {
     if(suggestions != null) {
       return Container(
-        height: ScreenUtil().setHeight(50),
+        height: ScreenUtil().setHeight(36),
         width: ScreenUtil().setWidth(324),
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
@@ -58,13 +58,13 @@ class SuggestionBarState extends State<SuggestionBar> {
                 widget.onCellTap(suggestions[index]['keyword']);
               },
               child: Container(
-                margin: EdgeInsets.all(ScreenUtil().setWidth(3)),
+                margin: EdgeInsets.all(ScreenUtil().setWidth(2)),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(ScreenUtil().setWidth(4)),
-                  color: Colors.teal[200],
+                  borderRadius: BorderRadius.circular(ScreenUtil().setWidth(3)),
+                  color: Color(0xFFB9EEE5),
                 ),
                 // width: ScreenUtil().setWidth(80),
-                padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
+                padding: EdgeInsets.all(ScreenUtil().setWidth(4)),
                 child: Center(child: keywordsColumn,),
               ),
             );

@@ -28,6 +28,7 @@ class _ArtistPageState extends State<ArtistPage> {
   bool loginState = prefs.getString('auth') != '' ? true : false;
   TextZhArtistPage text = TextZhArtistPage();
   bool isFollowed;
+  ScrollController scrollController = ScrollController();
 
   TextStyle smallTextStyle = TextStyle(
       fontSize: ScreenUtil().setWidth(10),
@@ -61,6 +62,7 @@ class _ArtistPageState extends State<ArtistPage> {
     return Container(
       color: Colors.white,
       child: ListView(
+        controller: scrollController,
         shrinkWrap: true,
         children: <Widget>[
           // 头像、名称、关注按钮
@@ -186,6 +188,13 @@ class _ArtistPageState extends State<ArtistPage> {
     return ('finished');
   }
 
+  void _onTopOfPicpage() {
+    double position =
+        scrollController.position.extentBefore - ScreenUtil().setHeight(250);
+    scrollController.animateTo(position,
+        duration: Duration(milliseconds: 400), curve: Curves.easeInOut);
+  }
+
   Widget _tabViewer() {
     // 初始化时 tabs 为 null，获取结果后被赋值
     if (tabs != null) {
@@ -209,7 +218,8 @@ class _ArtistPageState extends State<ArtistPage> {
                   children: tabs.map((Tab tab) {
                     return PicPage.artist(
                       artistId: widget.artistId,
-                      searchManga: tab.text.contains('漫画') ? true : false,
+                      isManga: tab.text.contains('漫画') ? true : false,
+                      onPageTop: _onTopOfPicpage,
                     );
                   }).toList(),
                 ),

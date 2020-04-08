@@ -26,11 +26,12 @@ class PicPage extends StatefulWidget {
     this.relatedId = 0,
     this.jsonMode = 'home',
     this.searchKeywords,
-    this.searchManga,
+    this.isManga,
     this.artistId,
     this.userId,
     this.spotlightId,
     @required this.onPageScrolling,
+    this.onPageTop,
   });
 
   PicPage.home({
@@ -39,11 +40,12 @@ class PicPage extends StatefulWidget {
     this.relatedId,
     this.jsonMode = 'home',
     this.searchKeywords,
-    this.searchManga,
+    this.isManga,
     this.artistId,
     this.userId,
     this.spotlightId,
     @required this.onPageScrolling,
+    this.onPageTop,
   });
 
   PicPage.related({
@@ -52,11 +54,12 @@ class PicPage extends StatefulWidget {
     this.picMode,
     this.jsonMode = 'related',
     this.searchKeywords,
-    this.searchManga,
+    this.isManga,
     this.artistId,
     this.userId,
     this.spotlightId,
     this.onPageScrolling,
+    @required this.onPageTop,
   });
 
   PicPage.search({
@@ -66,10 +69,11 @@ class PicPage extends StatefulWidget {
     this.jsonMode = 'search',
     this.relatedId,
     this.userId,
-    this.searchManga = false,
+    this.isManga = false,
     this.artistId,
     this.spotlightId,
     this.onPageScrolling,
+    this.onPageTop,
   });
 
   PicPage.artist({
@@ -79,10 +83,11 @@ class PicPage extends StatefulWidget {
     this.jsonMode = 'artist',
     this.relatedId,
     this.userId,
-    this.searchManga = false,
+    this.isManga = false,
     @required this.artistId,
     this.spotlightId,
     this.onPageScrolling,
+    @required this.onPageTop,
   });
 
   PicPage.followed({
@@ -92,10 +97,11 @@ class PicPage extends StatefulWidget {
     this.jsonMode = 'followed',
     this.relatedId,
     @required this.userId,
-    this.searchManga = false,
+    this.isManga = false,
     this.artistId,
     this.spotlightId,
     this.onPageScrolling,
+    this.onPageTop,
   });
 
   PicPage.bookmark({
@@ -105,10 +111,11 @@ class PicPage extends StatefulWidget {
     this.jsonMode = 'bookmark',
     this.relatedId,
     @required this.userId,
-    this.searchManga = false,
+    this.isManga = false,
     this.artistId,
     this.spotlightId,
     this.onPageScrolling,
+    this.onPageTop,
   });
 
   PicPage.spotlight({
@@ -119,9 +126,10 @@ class PicPage extends StatefulWidget {
     this.relatedId,
     this.userId,
     @required this.spotlightId,
-    this.searchManga = false,
+    this.isManga = false,
     this.artistId,
     this.onPageScrolling,
+    this.onPageTop,
   });
 
   PicPage.history({
@@ -132,9 +140,10 @@ class PicPage extends StatefulWidget {
     this.relatedId,
     this.userId,
     this.spotlightId,
-    this.searchManga = false,
+    this.isManga = false,
     this.artistId,
     this.onPageScrolling,
+    this.onPageTop,
   });
 
   PicPage.oldHistory({
@@ -145,9 +154,10 @@ class PicPage extends StatefulWidget {
     this.relatedId,
     this.userId,
     this.spotlightId,
-    this.searchManga = false,
+    this.isManga = false,
     this.artistId,
     this.onPageScrolling,
+    this.onPageTop,
   });
 
   final String picDate;
@@ -157,11 +167,12 @@ class PicPage extends StatefulWidget {
   final String spotlightId;
   final String userId;
   final String searchKeywords;
-  final bool searchManga;
+  final bool isManga;
   // jsonMode could be set to 'home, related, Spotlight, tag, artist, search...'
   final String jsonMode;
   // hide naviagtor bar when page is scrolling
   final ValueChanged<bool> onPageScrolling;
+  final VoidCallback onPageTop;
 }
 
 class _PicPageState extends State<PicPage> {
@@ -212,7 +223,7 @@ class _PicPageState extends State<PicPage> {
     scrollController = ScrollController(
         initialScrollOffset:
             widget.jsonMode == 'home' ? homeScrollerPosition : 0.0)
-      ..addListener(_autoLoadMore);
+      ..addListener(_doWhileScrolling);
 
     super.initState();
   }
@@ -220,7 +231,6 @@ class _PicPageState extends State<PicPage> {
   // 参数更改的逻辑：清空所有的现有参数，进入加载动画。当网络情况不好时，也无法看到之前的内容（更好的用户引导，功能稍缺）
   @override
   void didUpdateWidget(PicPage oldWidget) {
-    
     print('picPage didUpdateWidget: mode is ${widget.jsonMode}');
     // 当为 home 模式且切换了参数，则同时更新暂存的相关数据
     if (widget.jsonMode == 'home' &&
@@ -284,7 +294,7 @@ class _PicPageState extends State<PicPage> {
   @override
   void dispose() {
     print('PicPage Disposed');
-    // scrollController.removeListener(_autoLoadMore);
+    // scrollController.removeListener(_doWhileScrolling);
     // scrollController.dispose();
     if (widget.jsonMode == 'home' && picList != null) {
       homePicList = picList;
@@ -354,17 +364,17 @@ class _PicPageState extends State<PicPage> {
       url =
           'https://api.pixivic.com/ranks?page=$currentPage&date=${widget.picDate}&mode=${widget.picMode}&pageSize=30';
     } else if (widget.jsonMode == 'search') {
-      if (!widget.searchManga)
+      if (!widget.isManga)
         url =
-            'https://api.pixivic.com/illustrations?illustType=illust&searchType=original&maxSanityLevel=6&page=$currentPage&keyword=${widget.searchKeywords}&pageSize=30';
+            'https://api.pixivic.com/illustrations?page=$currentPage&keyword=${widget.searchKeywords}&pageSize=30';
       else
         url =
-            'https://api.pixivic.com/illustrations?illustType=manga&searchType=original&maxSanityLevel=6&page=$currentPage&keyword=${widget.searchKeywords}&pageSize=30';
+            'https://api.pixivic.com/illustrations?page=$currentPage&keyword=${widget.searchKeywords}&pageSize=30';
     } else if (widget.jsonMode == 'related') {
       url =
           'https://api.pixivic.com/illusts/${widget.relatedId}/related?page=$currentPage&pageSize=30';
     } else if (widget.jsonMode == 'artist') {
-      if (!widget.searchManga) {
+      if (!widget.isManga) {
         url =
             'https://api.pixivic.com/artists/${widget.artistId}/illusts/illust?page=$currentPage&pageSize=30&maxSanityLevel=10';
       } else {
@@ -373,7 +383,7 @@ class _PicPageState extends State<PicPage> {
       }
     } else if (widget.jsonMode == 'followed') {
       loadMoreAble = false;
-      if (!widget.searchManga) {
+      if (!widget.isManga) {
         url =
             'https://api.pixivic.com/users/${widget.userId}/followed/latest/illust?page=$currentPage&pageSize=30';
       } else {
@@ -381,7 +391,7 @@ class _PicPageState extends State<PicPage> {
             'https://api.pixivic.com/users/${widget.userId}/followed/latest/manga?page=$currentPage&pageSize=30';
       }
     } else if (widget.jsonMode == 'bookmark') {
-      if (!widget.searchManga) {
+      if (!widget.isManga) {
         url =
             'https://api.pixivic.com/users/${widget.userId}/bookmarked/illust?page=$currentPage&pageSize=30';
       } else {
@@ -438,10 +448,12 @@ class _PicPageState extends State<PicPage> {
     return [url, number, width, height];
   }
 
-  _autoLoadMore() {
+  _doWhileScrolling() {
     // 如果为主页面 picPage，则记录滑动位置、判断滑动
     if (widget.jsonMode == 'home') {
-      homeScrollerPosition = scrollController.position.extentBefore;
+      homeScrollerPosition = scrollController
+          .position.extentBefore; // 保持记录scrollposition，原因为dispose时无法记录
+          
       // 判断是否在滑动，以便隐藏底部控件
       if (scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
@@ -459,6 +471,16 @@ class _PicPageState extends State<PicPage> {
       }
     }
 
+    if(widget.jsonMode == 'related' || widget.jsonMode == 'artist') {
+      if(scrollController.position.extentBefore == 0 && scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+            widget.onPageTop();
+            print('on page top');
+          }
+          
+    }
+
+    // 自动加载
     if ((scrollController.position.extentAfter < 350) &&
         (currentPage < 30) &&
         loadMoreAble) {

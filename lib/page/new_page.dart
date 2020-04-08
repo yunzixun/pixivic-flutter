@@ -79,7 +79,7 @@ class NewPageState extends State<NewPage> {
               children: tabs.map((Tab tab) {
                 return PicPage.followed(
                   userId: prefs.getInt('id').toString(),
-                  searchManga: tab.text.contains('漫画') ? true : false,
+                  isManga: tab.text.contains('漫画') ? true : false,
                 );
               }).toList(),
             ),

@@ -25,6 +25,7 @@ class LoginPageState extends State<LoginPage> {
   TextEditingController _verificationController = TextEditingController();
   TextEditingController _userPasswordRepeatController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
+  ScrollController mainController = ScrollController();
 
   String verificationImage = '';
   String verificationCode;
@@ -60,71 +61,75 @@ class LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-        child: Container(
-          height: ScreenUtil().setHeight(504),
-          padding: EdgeInsets.only(
-              left: ScreenUtil().setWidth(30), top: modeIsLogin ? ScreenUtil().setHeight(40) : ScreenUtil().setHeight(8)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
-                child: Text(
-                  text.head,
-                  style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF515151)),
-                ),
+      controller: mainController,
+      child: Container(
+        height: ScreenUtil().setHeight(504),
+        padding: EdgeInsets.only(
+            left: ScreenUtil().setWidth(30),
+            top: modeIsLogin
+                ? ScreenUtil().setHeight(40)
+                : ScreenUtil().setHeight(8)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
+              child: Text(
+                text.head,
+                style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF515151)),
               ),
-              Container(
-                margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
-                child: Text(
-                  modeIsLogin ? text.welcomeLogin : text.welcomeRegister,
-                  style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w300,
-                      color: Color(0xFF515151)),
-                ),
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
+              child: Text(
+                modeIsLogin ? text.welcomeLogin : text.welcomeRegister,
+                style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w300,
+                    color: Color(0xFF515151)),
               ),
-              Container(
-                margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(13)),
-                child: Text(
-                  modeIsLogin ? text.tipLogin : text.tipRegister,
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      color: Color(0xFF9E9E9E)),
-                ),
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(13)),
+              child: Text(
+                modeIsLogin ? text.tipLogin : text.tipRegister,
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w300,
+                    color: Color(0xFF9E9E9E)),
               ),
-              inputCell(text.userName, _userNameController, false),
-              modeIsLogin
-                  ? Container()
-                  : inputCell(text.email, _emailController, false),
-              inputCell(text.password, _userPasswordController, true),
-              modeIsLogin
-                  ? Container()
-                  : inputCell(
-                      text.passwordRepeat, _userPasswordRepeatController, true),
-              verificationCell(_verificationController),
-              SizedBox(
-                height: ScreenUtil().setHeight(38),
+            ),
+            inputCell(text.userName, _userNameController, false),
+            modeIsLogin
+                ? Container()
+                : inputCell(text.email, _emailController, false),
+            inputCell(text.password, _userPasswordController, true),
+            modeIsLogin
+                ? Container()
+                : inputCell(
+                    text.passwordRepeat, _userPasswordRepeatController, true),
+            verificationCell(_verificationController),
+            SizedBox(
+              height: ScreenUtil().setHeight(38),
+            ),
+            Container(
+              width: ScreenUtil().setWidth(255),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  modeIsLogin ? loginButton() : registerButton(),
+                  modeCell(),
+                ],
               ),
-              Container(
-                width: ScreenUtil().setWidth(255),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    modeIsLogin ? loginButton() : registerButton(),
-                    modeCell(),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
+      ),
+    );
   }
 
   Widget inputCell(
@@ -143,6 +148,14 @@ class LoginPageState extends State<LoginPage> {
         cursorColor: Color(0xFFF2994A),
         controller: controller,
         obscureText: isPassword,
+        onTap: () async {
+          Future.delayed(Duration(milliseconds: 250), () {
+            double location = mainController.position.extentBefore + ScreenUtil().setHeight(100);
+            mainController.position.animateTo(location,
+                duration: Duration(milliseconds: 100),
+                curve: Curves.easeInCirc);
+          });
+        },
       ),
     );
   }

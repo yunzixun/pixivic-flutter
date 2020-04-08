@@ -15,7 +15,6 @@ class SearchPage extends StatefulWidget {
   SearchPage({
     @required this.searchKeywordsIn,
   });
-
 }
 
 class _SearchPageState extends State<SearchPage> {
@@ -32,19 +31,22 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     searchKeywords = widget.searchKeywordsIn;
     suggestionBar = SuggestionBar(searchKeywords, _onSearch, _suggestionBarKey);
+    picPage = PicPage.search(
+      searchKeywords: searchKeywords,
+      isManga: searchManga,
+    );
     super.initState();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    picPage = PicPage.search(searchKeywords: searchKeywords, searchManga: searchManga,);
 
     return Scaffold(
       appBar: PappBar.search(
-              searchKeywordsIn: searchKeywords, 
-              searchFucntion: _onSearch,
-              key: pappbarKey,
-            ),
+        searchKeywordsIn: searchKeywords,
+        searchFucntion: _onSearch,
+        key: pappbarKey,
+      ),
       body: ListView(
         children: <Widget>[
           suggestionBar,
@@ -64,8 +66,12 @@ class _SearchPageState extends State<SearchPage> {
   _onSearch(String value) {
     setState(() {
       searchKeywords = value;
+      picPage = PicPage.search(
+        searchKeywords: searchKeywords,
+        isManga: searchManga,
+      );
     });
+    pappbarKey.currentState.changeSearchKeywords(value);
     _suggestionBarKey.currentState.reloadSearchWords(value);
   }
-
 }
