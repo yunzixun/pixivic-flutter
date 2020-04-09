@@ -55,6 +55,8 @@ class PappBarState extends State<PappBar> {
 
   @override
   void initState() {
+    if(widget.title != null)
+      title = widget.title;
     lastHomeTitle = title;
     mode = widget.mode;
     searchController = TextEditingController(
@@ -143,7 +145,8 @@ class PappBarState extends State<PappBar> {
                   child: Text(title,
                       style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFF515151),
+                          // color: Color(0xFF515151),
+                          color: Colors.orange[400],
                           fontWeight: FontWeight.w700)),
                 ),
               ),

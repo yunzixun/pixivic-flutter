@@ -44,7 +44,7 @@ class TextZhUserPage {
   String favorite = '我的收藏';
   String follow = '我的关注';
   String history = '历史记录';
-  String download = '下载管理';
+  String download = '下载列表';
   String logout = '退出登录';
 }
 
