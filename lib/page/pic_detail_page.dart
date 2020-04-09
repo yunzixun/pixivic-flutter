@@ -496,6 +496,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
                           openFileFromNotification: true,
                           headers: {'Referer': 'https://app-api.pixiv.net'},
                         );
+                        print('download taskid: $taskId');
                         BotToast.showSimpleNotification(
                             title: '图片加入了下载列表( • ̀ω•́ )✧');
                       } else {

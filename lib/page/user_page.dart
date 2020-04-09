@@ -10,6 +10,7 @@ import '../data/texts.dart';
 import '../function/identity.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class UserPage extends StatefulWidget {
   @override
@@ -153,39 +154,47 @@ class UserPageState extends State<UserPage> {
     return Column(
       children: <Widget>[
         _optionCell(
-            Icon(
-              Icons.favorite,
+            FaIcon(
+              FontAwesomeIcons.solidHeart,
               color: Colors.red,
             ),
             text.favorite,
             _routeToBookmarkPage),
         _optionCell(
-            Icon(
-              Icons.face,
+            FaIcon(
+              FontAwesomeIcons.podcast,
               color: Colors.blue,
             ),
             text.follow,
             _routeToFollowPage),
         _optionCell(
-            Icon(
-              Icons.history,
+            FaIcon(
+              FontAwesomeIcons.history,
               color: Colors.grey,
             ),
             text.history,
             _routeToHistoryPage),
         _optionCell(
-            Icon(
-              Icons.exit_to_app,
+            FaIcon(
+              FontAwesomeIcons.download,
+              color: Colors.blueAccent,
+            ),
+            text.download,
+            () {}),
+        _optionCell(
+            FaIcon(
+              FontAwesomeIcons.signOutAlt,
               color: Colors.orange,
             ),
             text.logout, () {
           logout();
-        })
+        }),
+        
       ],
     );
   }
 
-  Widget _optionCell(Icon icon, String text, VoidCallback onTap) {
+  Widget _optionCell(FaIcon icon, String text, VoidCallback onTap) {
     return Container(
       height: ScreenUtil().setHeight(40),
       width: ScreenUtil().setWidth(324),
@@ -198,9 +207,7 @@ class UserPageState extends State<UserPage> {
             Icons.keyboard_arrow_right,
             color: Colors.grey,
           ),
-          title: Text(
-            text,
-          )),
+          title: Text(text, style: TextStyle(color: Colors.grey[700]))),
     );
   }
 
