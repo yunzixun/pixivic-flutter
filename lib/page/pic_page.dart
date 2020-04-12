@@ -551,11 +551,15 @@ class _PicPageState extends State<PicPage> {
                 child: Container(
                   // 限定constraints用于占用位置,经调试后以0.5为基准可以保证加载图片后不产生位移
                   constraints: BoxConstraints(
-                    minHeight: MediaQuery.of(context).size.width *
-                        0.5 /
+                    // minHeight: MediaQuery.of(context).size.width *
+                    //     0.5 /
+                    //     _picMainParameter(index)[2] *
+                    //     _picMainParameter(index)[3],
+                    // minWidth: MediaQuery.of(context).size.width * 0.41,
+                    minHeight: ScreenUtil().setWidth(148) /
                         _picMainParameter(index)[2] *
                         _picMainParameter(index)[3],
-                    minWidth: MediaQuery.of(context).size.width * 0.41,
+                    minWidth: ScreenUtil().setWidth(148)
                   ),
                   child: Hero(
                     tag: 'imageHero' + _picMainParameter(index)[0],
