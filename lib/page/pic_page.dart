@@ -32,6 +32,7 @@ class PicPage extends StatefulWidget {
     this.spotlightId,
     @required this.onPageScrolling,
     this.onPageTop,
+    this.onPageStart,
   });
 
   PicPage.home({
@@ -46,6 +47,7 @@ class PicPage extends StatefulWidget {
     this.spotlightId,
     @required this.onPageScrolling,
     this.onPageTop,
+    this.onPageStart,
   });
 
   PicPage.related({
@@ -60,6 +62,7 @@ class PicPage extends StatefulWidget {
     this.spotlightId,
     this.onPageScrolling,
     @required this.onPageTop,
+    @required this.onPageStart,
   });
 
   PicPage.search({
@@ -74,6 +77,7 @@ class PicPage extends StatefulWidget {
     this.spotlightId,
     this.onPageScrolling,
     this.onPageTop,
+    this.onPageStart,
   });
 
   PicPage.artist({
@@ -88,6 +92,7 @@ class PicPage extends StatefulWidget {
     this.spotlightId,
     this.onPageScrolling,
     @required this.onPageTop,
+    @required this.onPageStart,
   });
 
   PicPage.followed({
@@ -102,6 +107,7 @@ class PicPage extends StatefulWidget {
     this.spotlightId,
     this.onPageScrolling,
     this.onPageTop,
+    this.onPageStart,
   });
 
   PicPage.bookmark({
@@ -116,6 +122,7 @@ class PicPage extends StatefulWidget {
     this.spotlightId,
     this.onPageScrolling,
     this.onPageTop,
+    this.onPageStart,
   });
 
   PicPage.spotlight({
@@ -130,6 +137,7 @@ class PicPage extends StatefulWidget {
     this.artistId,
     this.onPageScrolling,
     this.onPageTop,
+    this.onPageStart,
   });
 
   PicPage.history({
@@ -144,6 +152,7 @@ class PicPage extends StatefulWidget {
     this.artistId,
     this.onPageScrolling,
     this.onPageTop,
+    this.onPageStart,
   });
 
   PicPage.oldHistory({
@@ -158,6 +167,7 @@ class PicPage extends StatefulWidget {
     this.artistId,
     this.onPageScrolling,
     this.onPageTop,
+    this.onPageStart,
   });
 
   final String picDate;
@@ -173,6 +183,7 @@ class PicPage extends StatefulWidget {
   // hide naviagtor bar when page is scrolling
   final ValueChanged<bool> onPageScrolling;
   final VoidCallback onPageTop;
+  final VoidCallback onPageStart;
 }
 
 class _PicPageState extends State<PicPage> {
@@ -449,11 +460,12 @@ class _PicPageState extends State<PicPage> {
   }
 
   _doWhileScrolling() {
+    // print(scrollController.position.extentBefore);
     // 如果为主页面 picPage，则记录滑动位置、判断滑动
     if (widget.jsonMode == 'home') {
       homeScrollerPosition = scrollController
           .position.extentBefore; // 保持记录scrollposition，原因为dispose时无法记录
-          
+
       // 判断是否在滑动，以便隐藏底部控件
       if (scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
@@ -471,13 +483,20 @@ class _PicPageState extends State<PicPage> {
       }
     }
 
-    if(widget.jsonMode == 'related' || widget.jsonMode == 'artist') {
-      if(scrollController.position.extentBefore == 0 && scrollController.position.userScrollDirection ==
-          ScrollDirection.forward) {
-            widget.onPageTop();
-            print('on page top');
-          }
-          
+    if (widget.jsonMode == 'related' || widget.jsonMode == 'artist') {
+      if (scrollController.position.extentBefore == 0 &&
+          scrollController.position.userScrollDirection ==
+              ScrollDirection.forward) {
+        widget.onPageTop();
+        print('on page top');
+      }
+      if (scrollController.position.extentBefore > 150 &&
+          scrollController.position.extentBefore < 200 &&
+          scrollController.position.userScrollDirection ==
+              ScrollDirection.reverse) {
+        widget.onPageStart();
+        print('on page start');
+      }
     }
 
     // 自动加载
@@ -551,16 +570,15 @@ class _PicPageState extends State<PicPage> {
                 child: Container(
                   // 限定constraints用于占用位置,经调试后以0.5为基准可以保证加载图片后不产生位移
                   constraints: BoxConstraints(
-                    // minHeight: MediaQuery.of(context).size.width *
-                    //     0.5 /
-                    //     _picMainParameter(index)[2] *
-                    //     _picMainParameter(index)[3],
-                    // minWidth: MediaQuery.of(context).size.width * 0.41,
-                    minHeight: ScreenUtil().setWidth(148) /
-                        _picMainParameter(index)[2] *
-                        _picMainParameter(index)[3],
-                    minWidth: ScreenUtil().setWidth(148)
-                  ),
+                      // minHeight: MediaQuery.of(context).size.width *
+                      //     0.5 /
+                      //     _picMainParameter(index)[2] *
+                      //     _picMainParameter(index)[3],
+                      // minWidth: MediaQuery.of(context).size.width * 0.41,
+                      minHeight: ScreenUtil().setWidth(148) /
+                          _picMainParameter(index)[2] *
+                          _picMainParameter(index)[3],
+                      minWidth: ScreenUtil().setWidth(148)),
                   child: Hero(
                     tag: 'imageHero' + _picMainParameter(index)[0],
                     // child: Image.network(

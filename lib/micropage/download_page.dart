@@ -33,7 +33,7 @@ class _DownloadPageState extends State<DownloadPage> {
   }
 
   Widget downloadCell(String fileName, String id, int progress, int status) {
-
+    
   }
 
   static void _loadDownloadInfo(String id, DownloadTaskStatus status, int progress) {
