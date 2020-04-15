@@ -6,6 +6,7 @@ import 'package:pixivic/page/pic_page.dart';
 import 'package:requests/requests.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_advanced_networkimage/provider.dart';
+import 'package:lottie/lottie.dart';
 
 import '../data/common.dart';
 import '../data/texts.dart';
@@ -30,6 +31,7 @@ class _ArtistPageState extends State<ArtistPage> {
   TextZhArtistPage text = TextZhArtistPage();
   bool isFollowed;
   ScrollController scrollController = ScrollController();
+  PappBar pappBar;
 
   TextStyle smallTextStyle = TextStyle(
       fontSize: ScreenUtil().setWidth(10),
@@ -48,10 +50,13 @@ class _ArtistPageState extends State<ArtistPage> {
   String urlTwitter = '';
   String urlWebPage = '';
   List<Tab> tabs;
+  bool isDataLoaded;
 
   @override
   void initState() {
+    isDataLoaded = false;
     isFollowed = widget.isFollowed;
+    _initPappbar();
     _loadArtistData().then((value) {
       setState(() {});
     });
@@ -61,8 +66,31 @@ class _ArtistPageState extends State<ArtistPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PappBar(title: '画师详情'),
-      body: Container(
+      appBar: pappBar,
+      body: !isDataLoaded
+      ? Container(
+          padding: EdgeInsets.only(top: ScreenUtil().setHeight(30)),
+          alignment: Alignment.center,
+          color: Colors.white,
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                Hero(
+                  tag: widget.artistAvatar,
+                  child: CircleAvatar(
+                    backgroundImage: AdvancedNetworkImage(
+                      widget.artistAvatar,
+                      header: {'Referer': 'https://app-api.pixiv.net'},
+                      useDiskCache: true,
+                      cacheRule: CacheRule(maxAge: const Duration(days: 7)),
+                    ),
+                  ),
+                ),
+                Lottie.asset('image/loading-box.json'),
+              ],
+            ),
+          ))
+      : Container(
         color: Colors.white,
         child: ListView(
           controller: scrollController,
@@ -184,11 +212,13 @@ class _ArtistPageState extends State<ArtistPage> {
           text: '漫画(${this.numOfManga})',
         ),
       ];
+      isDataLoaded = true;
     } catch (error) {
       print('======================');
       print(error);
       print('======================');
       BotToast.showSimpleNotification(title: '网络异常，请检查网络(´·_·`)');
+      isDataLoaded = false;
     }
 
     return ('finished');
@@ -295,5 +325,11 @@ class _ArtistPageState extends State<ArtistPage> {
             TextStyle(fontSize: ScreenUtil().setWidth(10), color: Colors.white),
       ),
     );
+  }
+
+  _initPappbar() {
+    String tempTitle = widget.artistName;
+    tempTitle.length > 20 ? tempTitle = tempTitle.substring(0,20) + '...' : tempTitle = tempTitle;
+    pappBar = PappBar(title: tempTitle);
   }
 }

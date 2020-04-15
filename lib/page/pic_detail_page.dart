@@ -42,22 +42,24 @@ class _PicDetailPageState extends State<PicDetailPage> {
       decoration: TextDecoration.none);
   int picTotalNum;
   TextZhPicDetailPage text = TextZhPicDetailPage();
+  PappBar pappBar;
 
   ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     print('picDetail Created');
-    print(widget._picData['artistPreView']['isFollowed']);
+    // print(widget._picData['artistPreView']['isFollowed']);
     picTotalNum = widget._picData['pageCount'];
     _uploadHistory();
+    _initPappbar();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PappBar(title: '画作详情',),
+      appBar: pappBar,
       body: ListView(
         controller: scrollController,
         shrinkWrap: true,
@@ -79,16 +81,16 @@ class _PicDetailPageState extends State<PicDetailPage> {
                         child: _picBanner(),
                       ),
                     ),
-                    loginState
-                        ? Positioned(
-                            bottom: ScreenUtil().setHeight(10),
-                            right: ScreenUtil().setWidth(20),
-                            child: _bookmarkHeart(),
-                          )
-                        : Container(),
+                    // loginState
+                    //     ? Positioned(
+                    //         bottom: ScreenUtil().setHeight(10),
+                    //         right: ScreenUtil().setWidth(20),
+                    //         child: _bookmarkHeart(),
+                    //       )
+                    //     : Container(),
                   ],
                 ),
-                // 标题、副标题、简介、标签
+                // 标题、爱心、副标题、简介、标签
                 Container(
                   padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
                   color: Colors.white,
@@ -98,8 +100,27 @@ class _PicDetailPageState extends State<PicDetailPage> {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        SelectableText(widget._picData['title'],
-                            style: normalTextStyle),
+                        // 标题栏、喜欢爱心
+                        Container(
+                          width: ScreenUtil().setWidth(324),
+                          height: ScreenUtil().setHeight(25),
+                          child: Stack(
+                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                child: SelectableText(widget._picData['title'],
+                                    style: normalTextStyle, ),
+                              ),
+                              loginState
+                                  ? Positioned(
+                                    right: ScreenUtil().setWidth(4),
+                                    top: 0,
+                                    child: _bookmarkHeart())
+                                  : Container(),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: ScreenUtil().setHeight(6),
                         ),
@@ -186,7 +207,8 @@ class _PicDetailPageState extends State<PicDetailPage> {
                                     return ArtistPage(
                                         widget._picData['artistPreView']
                                             ['avatar'],
-                                        widget._picData['artistPreView']['name'],
+                                        widget._picData['artistPreView']
+                                            ['name'],
                                         widget._picData['artistPreView']['id']
                                             .toString(),
                                         isFollowed: loginState
@@ -296,7 +318,8 @@ class _PicDetailPageState extends State<PicDetailPage> {
             },
             child: Hero(
                 tag: 'imageHero' +
-                    widget._picData['imageUrls'][index]['large'], //medium large
+                    widget._picData['imageUrls'][index]
+                        ['medium'], //medium large
                 child: Image(
                   image: AdvancedNetworkImage(
                     widget._picData['imageUrls'][index]['large'],
@@ -420,16 +443,16 @@ class _PicDetailPageState extends State<PicDetailPage> {
     String picId = widget._picData['id'].toString();
 
     return AnimatedContainer(
-      duration: Duration(milliseconds: 500),
-      curve: Curves.fastLinearToSlowEaseIn,
+      duration: Duration(milliseconds: 230),
+      curve: Curves.easeInOut,
       alignment: Alignment.center,
       // color: Colors.white,
       height: isLikedLocalState
-          ? ScreenUtil().setWidth(40)
-          : ScreenUtil().setWidth(37),
+          ? ScreenUtil().setWidth(28)
+          : ScreenUtil().setWidth(25),
       width: isLikedLocalState
-          ? ScreenUtil().setWidth(40)
-          : ScreenUtil().setWidth(37),
+          ? ScreenUtil().setWidth(28)
+          : ScreenUtil().setWidth(25),
       child: GestureDetector(
         onTap: () async {
           String url = 'https://api.pixivic.com/users/bookmarked';
@@ -571,5 +594,13 @@ class _PicDetailPageState extends State<PicDetailPage> {
         scrollController.position.extentBefore + ScreenUtil().setHeight(450);
     scrollController.animateTo(position,
         duration: Duration(milliseconds: 400), curve: Curves.easeInOut);
+  }
+
+  _initPappbar() {
+    String tempTitle = widget._picData['title'];
+    tempTitle.length > 20
+        ? tempTitle = tempTitle.substring(0, 20) + '...'
+        : tempTitle = tempTitle;
+    pappBar = PappBar(title: tempTitle);
   }
 }
