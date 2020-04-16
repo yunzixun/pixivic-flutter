@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../page/pic_page.dart';
 import '../data/common.dart';
+import '../widget/papp_bar.dart';
 
 class BookmarkPage extends StatefulWidget {
   @override
@@ -37,10 +38,13 @@ class BookmarkPageState extends State<BookmarkPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      alignment: Alignment.topCenter,
-      child: _tabViewer(),
+    return Scaffold(
+      appBar: PappBar(title: '我的收藏'),
+      body: Container(
+        color: Colors.white,
+        alignment: Alignment.topCenter,
+        child: _tabViewer(),
+      ),
     );
   }
 
@@ -59,7 +63,7 @@ class BookmarkPageState extends State<BookmarkPage> {
                     tabs: tabs,
                   ))),
           Container(
-            height: ScreenUtil().setHeight(546),
+            height: ScreenUtil().setHeight(491),
             width: ScreenUtil().setWidth(324),
             child: TabBarView(
               children: tabs.map((Tab tab) {

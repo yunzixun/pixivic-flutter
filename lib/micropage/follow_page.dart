@@ -10,6 +10,7 @@ import '../data/common.dart';
 import '../data/texts.dart';
 import '../page/artist_page.dart';
 import '../page/pic_detail_page.dart';
+import '../widget/papp_bar.dart';
 
 class FollowPage extends StatefulWidget {
   @override
@@ -44,18 +45,21 @@ class _FollowPageState extends State<FollowPage> {
 
   @override
   Widget build(BuildContext context) {
-    return jsonList != null
-        ? Container(
-            color: Colors.white,
-            child: ListView.builder(
-                shrinkWrap: true,
-                controller: scrollController,
-                itemCount: followTotalNum,
-                itemBuilder: (BuildContext context, int index) {
-                  return index > 0 ? artistCell(index - 1) : titleCell();
-                }),
-          )
-        : titleCell();
+    return Scaffold(
+      appBar: PappBar(title: '我的关注'),
+      body: jsonList != null
+          ? Container(
+              color: Colors.white,
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  controller: scrollController,
+                  itemCount: followTotalNum,
+                  itemBuilder: (BuildContext context, int index) {
+                    return index > 0 ? artistCell(index - 1) : titleCell();
+                  }),
+            )
+          : titleCell(),
+    );
   }
 
   Widget titleCell() {

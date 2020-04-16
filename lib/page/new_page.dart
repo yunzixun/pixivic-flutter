@@ -73,7 +73,7 @@ class NewPageState extends State<NewPage> {
                     tabs: tabs,
                   ))),
           Container(
-            height: ScreenUtil().setHeight(516),
+            height: ScreenUtil().setHeight(491),
             width: ScreenUtil().setWidth(324),
             child: TabBarView(
               children: tabs.map((Tab tab) {

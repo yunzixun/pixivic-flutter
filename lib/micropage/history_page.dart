@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../page/pic_page.dart';
+import '../widget/papp_bar.dart';
 
 class HistoryPage extends StatefulWidget {
   @override
@@ -37,10 +38,13 @@ class HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      alignment: Alignment.topCenter,
-      child: _tabViewer(),
+    return Scaffold(
+      appBar: PappBar(title: '历史记录'),
+      body: Container(
+        color: Colors.white,
+        alignment: Alignment.topCenter,
+        child: _tabViewer(),
+      ),
     );
   }
 
@@ -59,7 +63,7 @@ class HistoryPageState extends State<HistoryPage> {
                     tabs: tabs,
                   ))),
           Container(
-            height: ScreenUtil().setHeight(546),
+            height: ScreenUtil().setHeight(491),
             width: ScreenUtil().setWidth(324),
             child: TabBarView(
               children: tabs.map((Tab tab) {

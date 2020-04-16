@@ -31,8 +31,8 @@ class _NavBarState extends State<NavBar> {
     activeList = List.filled(4, false);
     activeList[widget.currentIndex] = true;
     if (widget.alone) {
-      containerLeft = ScreenUtil().setWidth(62);
-      containerRight = ScreenUtil().setWidth(63);
+      containerLeft = ScreenUtil().setWidth(54);
+      containerRight = ScreenUtil().setWidth(54);
     } else {
       containerLeft = ScreenUtil().setWidth(98);
       containerRight = ScreenUtil().setWidth(27);
@@ -55,8 +55,8 @@ class _NavBarState extends State<NavBar> {
           left: containerLeft,
           right: containerRight,
           child: Container(
-            width: ScreenUtil().setWidth(199),
-            height: ScreenUtil().setHeight(35),
+            width: ScreenUtil().setWidth(216),
+            height: ScreenUtil().setHeight(38),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(32.0),

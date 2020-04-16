@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:requests/requests.dart';
 import 'package:flutter_advanced_networkimage/provider.dart';
+import 'package:flutter_advanced_networkimage/zoomable.dart';
 
 import 'pic_page.dart';
 import 'artist_page.dart';
@@ -109,14 +110,16 @@ class _PicDetailPageState extends State<PicDetailPage> {
                             children: <Widget>[
                               Container(
                                 alignment: Alignment.centerLeft,
-                                child: SelectableText(widget._picData['title'],
-                                    style: normalTextStyle, ),
+                                child: SelectableText(
+                                  widget._picData['title'],
+                                  style: normalTextStyle,
+                                ),
                               ),
                               loginState
                                   ? Positioned(
-                                    right: ScreenUtil().setWidth(4),
-                                    top: 0,
-                                    child: _bookmarkHeart())
+                                      right: ScreenUtil().setWidth(4),
+                                      top: 0,
+                                      child: _bookmarkHeart())
                                   : Container(),
                             ],
                           ),
@@ -293,17 +296,22 @@ class _PicDetailPageState extends State<PicDetailPage> {
             tag: 'imageHero' +
                 widget._picData['imageUrls'][0][
                     'medium'], //medium large, set as medium now for hero switch
-            child: Image(
-              image: AdvancedNetworkImage(
-                widget._picData['imageUrls'][0]['large'],
-                header: {'Referer': 'https://app-api.pixiv.net'},
-                useDiskCache: true,
-                cacheRule: CacheRule(maxAge: const Duration(days: 7)),
+            child: ZoomableWidget(
+              panLimit: 1.0,
+              maxScale: 3.0,
+              minScale: 0.7,
+              child: Image(
+                image: AdvancedNetworkImage(
+                  widget._picData['imageUrls'][0]['large'],
+                  header: {'Referer': 'https://app-api.pixiv.net'},
+                  useDiskCache: true,
+                  cacheRule: CacheRule(maxAge: const Duration(days: 7)),
+                ),
+                width: ScreenUtil().setWidth(324),
+                height: ScreenUtil().setWidth(324) /
+                    widget._picData['width'] *
+                    widget._picData['height'],
               ),
-              width: ScreenUtil().setWidth(324),
-              height: ScreenUtil().setWidth(324) /
-                  widget._picData['width'] *
-                  widget._picData['height'],
             )),
       );
     } else if (picTotalNum > 1) {
@@ -320,17 +328,22 @@ class _PicDetailPageState extends State<PicDetailPage> {
                 tag: 'imageHero' +
                     widget._picData['imageUrls'][index]
                         ['medium'], //medium large
-                child: Image(
-                  image: AdvancedNetworkImage(
-                    widget._picData['imageUrls'][index]['large'],
-                    header: {'Referer': 'https://app-api.pixiv.net'},
-                    useDiskCache: true,
-                    cacheRule: CacheRule(maxAge: const Duration(days: 7)),
+                child: ZoomableWidget(
+                  panLimit: 1.0,
+                  maxScale: 3.0,
+                  minScale: 0.7,
+                  child: Image(
+                    image: AdvancedNetworkImage(
+                      widget._picData['imageUrls'][index]['large'],
+                      header: {'Referer': 'https://app-api.pixiv.net'},
+                      useDiskCache: true,
+                      cacheRule: CacheRule(maxAge: const Duration(days: 7)),
+                    ),
+                    width: ScreenUtil().setWidth(324),
+                    height: ScreenUtil().setWidth(324) /
+                        widget._picData['width'] *
+                        widget._picData['height'],
                   ),
-                  width: ScreenUtil().setWidth(324),
-                  height: ScreenUtil().setWidth(324) /
-                      widget._picData['width'] *
-                      widget._picData['height'],
                 )),
           );
         },
