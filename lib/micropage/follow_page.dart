@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:requests/requests.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:lottie/lottie.dart';
 
 import '../data/common.dart';
 import '../data/texts.dart';
@@ -34,7 +35,6 @@ class _FollowPageState extends State<FollowPage> {
     _getJsonList().then((value) {
       setState(() {
         followTotalNum = value.length;
-        followTotalNum++;
         jsonList = value;
       });
     }).catchError((e) {
@@ -55,10 +55,10 @@ class _FollowPageState extends State<FollowPage> {
                   controller: scrollController,
                   itemCount: followTotalNum,
                   itemBuilder: (BuildContext context, int index) {
-                    return index > 0 ? artistCell(index - 1) : titleCell();
+                    return artistCell(index);
                   }),
             )
-          : titleCell(),
+          : Lottie.asset('image/loading-box.json'),
     );
   }
 

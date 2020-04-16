@@ -19,6 +19,7 @@ import 'search_page.dart';
 import '../data/common.dart';
 import '../data/texts.dart';
 import '../widget/papp_bar.dart';
+import '../function/downloadImage.dart';
 
 class PicDetailPage extends StatefulWidget {
   @override
@@ -530,19 +531,18 @@ class _PicDetailPageState extends State<PicDetailPage> {
                     }
                     _checkPermission().then((value) async {
                       if (value) {
-                        final taskId = await FlutterDownloader.enqueue(
-                          url: url,
-                          savedDir: '${picDirFolder.path}',
-                          showNotification: true,
-                          openFileFromNotification: true,
-                          headers: {'Referer': 'https://app-api.pixiv.net'},
-                        );
+                        // final taskId = await FlutterDownloader.enqueue(
+                        //   url: url,
+                        //   savedDir: '${picDirFolder.path}',
+                        //   showNotification: true,
+                        //   openFileFromNotification: true,
+                        //   headers: {'Referer': 'https://app-api.pixiv.net'},
+                        // );
+                        DownloadImage downloadImage = DownloadImage(url);
                         // print('download taskid: $taskId');
-                        BotToast.showSimpleNotification(
-                            title: '图片加入了下载列表( • ̀ω•́ )✧');
                       } else {
                         BotToast.showSimpleNotification(
-                            title: '请赋予程序下载权限(｡ŏ_ŏ)');
+                            title: '请赋予程序下载权限(｡ŏ_ŏ)' );
                       }
                     });
 

@@ -4,7 +4,6 @@ import 'login_page.dart';
 import '../micropage/bookmark_page.dart';
 import '../micropage/follow_page.dart';
 import '../micropage/history_page.dart';
-import '../micropage/download_page.dart';
 
 import '../data/common.dart';
 import '../data/texts.dart';
@@ -177,13 +176,6 @@ class UserPageState extends State<UserPage> {
             _routeToHistoryPage),
         _optionCell(
             FaIcon(
-              FontAwesomeIcons.download,
-              color: Colors.lightGreen,
-            ),
-            text.download,
-            _routeToDownloadPage),
-        _optionCell(
-            FaIcon(
               FontAwesomeIcons.signOutAlt,
               color: Colors.orange,
             ),
@@ -232,8 +224,4 @@ class UserPageState extends State<UserPage> {
         context, MaterialPageRoute(builder: (context) => HistoryPage()));
   }
 
-  _routeToDownloadPage() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => DownloadPage()));
-  }
 }
