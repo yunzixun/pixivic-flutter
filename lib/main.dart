@@ -202,48 +202,52 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     } else if (parameter == 'search') {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              '搜索关键词',
-              style: TextStyle(
-                  color: Color(0xFF515151), fontWeight: FontWeight.w300),
-            ),
-            content: TextField(
-              autofocus: true,
-              controller: _textFieldController,
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: '要搜点什么呢',
-                  contentPadding:
-                      EdgeInsets.only(bottom: ScreenUtil().setHeight(8))),
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text('提交'),
-                onPressed: () {
-                  String input = _textFieldController.text;
-                  if (input == '') {
-                    Navigator.of(context).pop();
-                  } else {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              SearchPage(searchKeywordsIn: input)),
-                    );
-                    // _menuButtonKey.currentState.flipTapState();
-                    // _menuListKey.currentState.flipActive();
-                    _textFieldController.clear();
-                  }
-                },
-              )
-            ],
-          );
-        },
+      Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (context) => SearchPage(searchKeywordsIn: '')),
       );
+      // showDialog(
+      //   context: context,
+      //   builder: (context) {
+      //     return AlertDialog(
+      //       title: Text(
+      //         '搜索关键词',
+      //         style: TextStyle(
+      //             color: Color(0xFF515151), fontWeight: FontWeight.w300),
+      //       ),
+      //       content: TextField(
+      //         autofocus: true,
+      //         controller: _textFieldController,
+      //         decoration: InputDecoration(
+      //             border: InputBorder.none,
+      //             hintText: '要搜点什么呢',
+      //             contentPadding:
+      //                 EdgeInsets.only(bottom: ScreenUtil().setHeight(8))),
+      //       ),
+      //       actions: <Widget>[
+      //         new FlatButton(
+      //           child: new Text('提交'),
+      //           onPressed: () {
+      //             String input = _textFieldController.text;
+      //             if (input == '') {
+      //               Navigator.of(context).pop();
+      //             } else {
+      //               Navigator.of(context).pop();
+      //               Navigator.of(context).push(
+      //                 MaterialPageRoute(
+      //                     builder: (context) =>
+      //                         SearchPage(searchKeywordsIn: input)),
+      //               );
+      //               // _menuButtonKey.currentState.flipTapState();
+      //               // _menuListKey.currentState.flipActive();
+      //               _textFieldController.clear();
+      //             }
+      //           },
+      //         )
+      //       ],
+      //     );
+      //   },
+      // );
     } else {
       // _menuButtonKey.currentState.flipTapState();
       // _menuListKey.currentState.flipActive();

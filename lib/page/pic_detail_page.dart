@@ -6,7 +6,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+// import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:requests/requests.dart';
@@ -538,7 +538,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
                         //   openFileFromNotification: true,
                         //   headers: {'Referer': 'https://app-api.pixiv.net'},
                         // );
-                        DownloadImage downloadImage = DownloadImage(url);
+                        DownloadImage(url);
                         // print('download taskid: $taskId');
                       } else {
                         BotToast.showSimpleNotification(

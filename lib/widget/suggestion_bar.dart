@@ -21,6 +21,7 @@ class SuggestionBarState extends State<SuggestionBar> {
 
   @override
   void initState() {
+    print('SuggestionBar Created');
     searchKeywords = widget.searchKeywordsIn;
     _loadSuggestions().then((value) {
       setState(() {

@@ -84,3 +84,13 @@ class TextZhSpotlightPage {
   String httpLoadError = '加载错误，请检查网络';
   String title = 'Spotlight';
 }
+
+class TextZhSearchPage {
+  String everybodyIsWatching = '大家都在搜';
+  String illustAndManga = '插画漫画';
+  String transAndSearch = '翻译然后搜索';
+  String idToArtist = 'ID搜画师';
+  String idToIllust = 'ID搜画作';
+  String getCurrentError = '获取热门数据失败';
+  String connectError = '网络错误，请检查网络连接';
+}

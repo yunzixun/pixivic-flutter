@@ -138,7 +138,7 @@ class _SpotlightPageState extends State<SpotlightPage> {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  _openPicPage(data['id'].toString());
+                  _openPicPage(data['id'].toString(), data['title']);
                 },
               ),
             ))
@@ -181,12 +181,19 @@ class _SpotlightPageState extends State<SpotlightPage> {
     }
   }
 
-  _openPicPage(String spotlightId) {
+  _openPicPage(String spotlightId, String title) {
+    String tempTitle = title;
+    tempTitle.length > 20
+        ? tempTitle = tempTitle.substring(0, 20) + '...'
+        : tempTitle = tempTitle;
     Navigator.of(context).push(
       MaterialPageRoute(
-          builder: (context) => PicPage.spotlight(
-                spotlightId: spotlightId,
-              )),
+          builder: (context) => Scaffold(
+            appBar: PappBar(title: tempTitle,),
+            body: PicPage.spotlight(
+                  spotlightId: spotlightId,
+                ),
+          )),
     );
   }
 }

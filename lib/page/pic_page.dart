@@ -177,7 +177,7 @@ class PicPage extends StatefulWidget {
   final String spotlightId;
   final String userId;
   final String searchKeywords;
-  final bool isManga;
+  final bool isManga;    
   // jsonMode could be set to 'home, related, Spotlight, tag, artist, search...'
   final String jsonMode;
   // hide naviagtor bar when page is scrolling
