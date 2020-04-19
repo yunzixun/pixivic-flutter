@@ -435,7 +435,7 @@ class _PicPageState extends State<PicPage> {
         requests.raiseForStatus();
         jsonList = jsonDecode(requests.content())['data'];
       }
-      if (jsonList != null) if (jsonList.length < 30)
+      if (jsonList == null)
         loadMoreAble = false;
       else
         loadMoreAble = true;
@@ -500,7 +500,7 @@ class _PicPageState extends State<PicPage> {
     }
 
     // 自动加载
-    if ((scrollController.position.extentAfter < 850) &&
+    if ((scrollController.position.extentAfter < 1200) &&
         (currentPage < 30) &&
         loadMoreAble) {
       loadMoreAble = false;
