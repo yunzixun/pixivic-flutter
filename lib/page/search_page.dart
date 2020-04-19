@@ -43,12 +43,14 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     searchKeywords = widget.searchKeywordsIn;
-    suggestionBar = SuggestionBar(searchKeywords, _onSearch, _suggestionBarKey);
+
     if (searchKeywords != '') {
       picPage = PicPage.search(
         searchKeywords: searchKeywords,
         isManga: searchManga,
       );
+      suggestionBar =
+          SuggestionBar(searchKeywords, _onSearch, _suggestionBarKey);
     }
 
     _currentLoad().then((value) {
@@ -83,19 +85,45 @@ class _SearchPageState extends State<SearchPage> {
               )
             : currentOnLoading
                 ? Lottie.asset('image/loading-box.json')
-                : StaggeredGridView.countBuilder(
-                    physics: ClampingScrollPhysics(),
-                    crossAxisCount: 3,
-                    itemCount: currentNum,
-                    itemBuilder: (BuildContext context, int index) =>
-                        _currentCell(
-                            currentTags[index]['name'],
-                            currentTags[index]['translatedName'],
-                            currentTags[index]['illustration']['imageUrls'][0]
-                                ['medium']),
-                    staggeredTileBuilder: (index) => StaggeredTile.fit(1),
-                    mainAxisSpacing: 4.0,
-                    crossAxisSpacing: 4.0,
+                : SizedBox(
+                    height: ScreenUtil().setHeight(576),
+                    child: Flex(
+                      direction: Axis.vertical,
+                      children: <Widget>[
+                        Flexible(
+                          flex: 35,
+                          child: Container(
+                              alignment: Alignment.centerLeft,
+                              padding: EdgeInsets.only(
+                                  bottom: ScreenUtil().setHeight(5),
+                                  top: ScreenUtil().setHeight(5),
+                                  left: ScreenUtil().setWidth(4)),
+                              height: ScreenUtil().setHeight(35),
+                              child: Text(
+                                text.everybodyIsWatching,
+                                style: TextStyle(color: Colors.blueGrey),
+                              )),
+                        ),
+                        Expanded(
+                          flex: 541,
+                          child: StaggeredGridView.countBuilder(
+                            physics: ClampingScrollPhysics(),
+                            crossAxisCount: 3,
+                            itemCount: currentNum,
+                            itemBuilder: (BuildContext context, int index) =>
+                                _currentCell(
+                                    currentTags[index]['name'],
+                                    currentTags[index]['translatedName'],
+                                    currentTags[index]['illustration']
+                                        ['imageUrls'][0]['medium']),
+                            staggeredTileBuilder: (index) =>
+                                StaggeredTile.fit(1),
+                            mainAxisSpacing: 4.0,
+                            crossAxisSpacing: 4.0,
+                          ),
+                        ),
+                      ],
+                    ),
                   ));
   }
 
@@ -108,9 +136,11 @@ class _SearchPageState extends State<SearchPage> {
       );
     });
     pappbarKey.currentState.changeSearchKeywords(value);
-    if(fromCurrent)
-      suggestionBar = SuggestionBar(searchKeywords, _onSearch, _suggestionBarKey);
-    _suggestionBarKey.currentState.reloadSearchWords(value);
+    if (fromCurrent)
+      suggestionBar =
+          SuggestionBar(searchKeywords, _onSearch, _suggestionBarKey);
+    else
+      _suggestionBarKey.currentState.reloadSearchWords(value);
   }
 
   _currentLoad() async {
@@ -148,7 +178,7 @@ class _SearchPageState extends State<SearchPage> {
               image: DecorationImage(
                   fit: BoxFit.cover,
                   colorFilter:
-                      ColorFilter.mode(Colors.grey[300], BlendMode.darken),
+                      ColorFilter.mode(Colors.black26, BlendMode.darken),
                   image: AdvancedNetworkImage(
                     url,
                     header: {'Referer': 'https://app-api.pixiv.net'},

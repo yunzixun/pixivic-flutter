@@ -500,7 +500,7 @@ class _PicPageState extends State<PicPage> {
     }
 
     // 自动加载
-    if ((scrollController.position.extentAfter < 350) &&
+    if ((scrollController.position.extentAfter < 850) &&
         (currentPage < 30) &&
         loadMoreAble) {
       loadMoreAble = false;
@@ -518,7 +518,7 @@ class _PicPageState extends State<PicPage> {
               homeCurrentPage = currentPage;
             }
             loadMoreAble = true;
-            BotToast.showSimpleNotification(title: '摩多摩多!!!(つ´ω`)つ');
+            // BotToast.showSimpleNotification(title: '摩多摩多!!!(つ´ω`)つ');
           });
         }
       }).catchError((error) {
@@ -553,6 +553,7 @@ class _PicPageState extends State<PicPage> {
               borderRadius: BorderRadius.circular(15),
               child: GestureDetector(
                 onTap: () async {
+                  FocusScope.of(context).unfocus();
                   // 对广告图片做区分判断
                   if (picMapData['type'] == 'ad_image') {
                     if (await canLaunch(picMapData['link'])) {
@@ -581,26 +582,6 @@ class _PicPageState extends State<PicPage> {
                       minWidth: ScreenUtil().setWidth(148)),
                   child: Hero(
                     tag: 'imageHero' + _picMainParameter(index)[0],
-                    // child: Image.network(
-                    //   _picMainParameter(index)[0],
-                    //   headers: {'Referer': 'https://app-api.pixiv.net'},
-                    //   fit: BoxFit.fill,
-                    //   frameBuilder:
-                    //       (context, child, frame, wasSynchronouslyLoaded) {
-                    //     if (wasSynchronouslyLoaded) {
-                    //       return child;
-                    //     }
-                    //     return Container(
-                    //       child: AnimatedOpacity(
-                    //         child:
-                    //             frame == null ? Container(color: color) : child,
-                    //         opacity: frame == null ? 0.3 : 1,
-                    //         duration: const Duration(seconds: 1),
-                    //         curve: Curves.easeOut,
-                    //       ),
-                    //     );
-                    //   },
-                    // ),
                     child: Image(
                       image: AdvancedNetworkImage(
                         _picMainParameter(index)[0],

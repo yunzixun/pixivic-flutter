@@ -216,13 +216,14 @@ class PappBarState extends State<PappBar> {
               child: TextField(
                 controller: searchController,
                 onSubmitted: (value) {
+                  FocusScope.of(context).unfocus();
                   widget.searchFucntion(searchController.text);
                 },
-                decoration: InputDecoration(
+                decoration: InputDecoration(  
                     border: InputBorder.none,
                     hintText: '要搜点什么呢',
                     contentPadding: EdgeInsets.only(
-                        left: ScreenUtil().setWidth(8),
+                        left: ScreenUtil().setWidth(8), 
                         bottom: ScreenUtil().setHeight(8))),
               ),
             ),
