@@ -8,6 +8,7 @@ import '../page/pic_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:requests/requests.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:lottie/lottie.dart';
 
 class SpotlightPage extends StatefulWidget {
   @override
@@ -55,7 +56,7 @@ class _SpotlightPageState extends State<SpotlightPage> {
                     return cardCell(index);
                   }),
             )
-          : Container(),
+          : Lottie.asset('image/loading-box.json'),
     );
   }
 
