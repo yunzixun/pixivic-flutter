@@ -45,6 +45,12 @@ dev_dependencies:
   flutter_advanced_networkimage: ^0.7.0
   lottie: ^0.3.2
   image_downloader: ^0.19.2
+  flutter_launcher_icons: ^0.7.4
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "icon/app_icon.jpg"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

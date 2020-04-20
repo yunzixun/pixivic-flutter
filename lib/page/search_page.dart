@@ -107,6 +107,10 @@ class _SearchPageState extends State<SearchPage> {
                         Expanded(
                           flex: 541,
                           child: StaggeredGridView.countBuilder(
+                            controller: ScrollController()
+                              ..addListener(() {
+                                FocusScope.of(context).unfocus();
+                              }),
                             physics: ClampingScrollPhysics(),
                             crossAxisCount: 3,
                             itemCount: currentNum,
@@ -167,6 +171,7 @@ class _SearchPageState extends State<SearchPage> {
     return Material(
       child: InkWell(
         onTap: () {
+          FocusScope.of(context).unfocus();
           _onSearch(jpTitle, fromCurrent: true);
         },
         child: Container(

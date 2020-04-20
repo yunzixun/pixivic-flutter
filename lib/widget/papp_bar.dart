@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../data/texts.dart';
+
 class PappBar extends StatefulWidget implements PreferredSizeWidget {
   //删去
   final String title;
@@ -43,25 +45,28 @@ class PappBar extends StatefulWidget implements PreferredSizeWidget {
   PappBarState createState() => PappBarState();
 
   @override
-  Size get preferredSize => Size.fromHeight(ScreenUtil().setHeight(35));
+  Size get preferredSize => Size.fromHeight(ScreenUtil().setHeight(77));
 }
 
 class PappBarState extends State<PappBar> {
   double contentHeight;
+  double searchBarHeight;
   String title = '日排行';
   String lastHomeTitle;
   String mode;
   TextEditingController searchController;
+  TextZhPappBar texts = TextZhPappBar();
 
   @override
   void initState() {
-    if(widget.title != null)
-      title = widget.title;
+    if (widget.title != null) title = widget.title;
     lastHomeTitle = title;
     mode = widget.mode;
     searchController = TextEditingController(
-        text: widget.searchKeywordsIn != null ? widget.searchKeywordsIn : null);
+        text: widget.searchKeywordsIn != null ? widget.searchKeywordsIn : null)
+      ..addListener(searchTextEditingListener);
     contentHeight = ScreenUtil().setHeight(35);
+    searchBarHeight = contentHeight;
     super.initState();
   }
 
@@ -74,7 +79,9 @@ class PappBarState extends State<PappBar> {
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(15)),
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(15),
+                bottomRight: Radius.circular(15)),
             boxShadow: [
               BoxShadow(
                   blurRadius: 13,
@@ -82,7 +89,7 @@ class PappBarState extends State<PappBar> {
                   color: Color(0x73E5E5E5)),
             ],
           ),
-          height: contentHeight,
+          // height: contentHeight,
           child: chooseWidget(),
         ),
       ),
@@ -103,6 +110,7 @@ class PappBarState extends State<PappBar> {
 
   Widget homeWidgets() {
     return Container(
+        height: contentHeight,
         padding: EdgeInsets.only(
             left: ScreenUtil().setWidth(18), right: ScreenUtil().setWidth(18)),
         child: Row(
@@ -176,6 +184,7 @@ class PappBarState extends State<PappBar> {
 
   Widget defaultWidgets() {
     return Container(
+        height: contentHeight,
         alignment: Alignment.center,
         padding: EdgeInsets.only(
             left: ScreenUtil().setWidth(18), right: ScreenUtil().setWidth(18)),
@@ -187,48 +196,105 @@ class PappBarState extends State<PappBar> {
   }
 
   Widget searchWidgets() {
-    return Container(
-        padding: EdgeInsets.only(left: ScreenUtil().setWidth(18)),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return AnimatedContainer(
+        duration: Duration(milliseconds: 250),
+        curve: Curves.easeInOutExpo,
+        // padding: EdgeInsets.only(left: ScreenUtil().setWidth(18)),
+        height: searchBarHeight,
+        child: Column(
           children: <Widget>[
-            Container(
-              height: contentHeight,
-              alignment: Alignment.center,
-              child: FaIcon(
-                FontAwesomeIcons.search,
-                color: Color(0xFF515151),
-                size: ScreenUtil().setWidth(15),
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  height: contentHeight,
+                  padding: EdgeInsets.only(left: ScreenUtil().setWidth(18)),
+                  alignment: Alignment.center,
+                  child: FaIcon(
+                    FontAwesomeIcons.search,
+                    color: Color(0xFF515151),
+                    size: ScreenUtil().setWidth(15),
+                  ),
+                ),
+                Container(
+                  width: ScreenUtil().setWidth(265),
+                  height: ScreenUtil().setHeight(25),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Color(0xFFF4F3F3F3),
+                  ),
+                  margin: EdgeInsets.only(
+                    left: ScreenUtil().setWidth(13),
+                    right: ScreenUtil().setWidth(12),
+                  ),
+                  child: TextField(
+                    controller: searchController,
+                    onSubmitted: (value) {
+                      FocusScope.of(context).unfocus();
+                      widget.searchFucntion(searchController.text);
+                    },
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: '要搜点什么呢',
+                        contentPadding: EdgeInsets.only(
+                            left: ScreenUtil().setWidth(8),
+                            bottom: ScreenUtil().setHeight(8))),
+                  ),
+                ),
+              ],
             ),
-            Container(
-              width: ScreenUtil().setWidth(265),
-              height: ScreenUtil().setHeight(25),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Color(0xFFF4F3F3F3),
-              ),
-              margin: EdgeInsets.only(
-                left: ScreenUtil().setWidth(13),
-                right: ScreenUtil().setWidth(12),
-              ),
-              child: TextField(
-                controller: searchController,
-                onSubmitted: (value) {
-                  FocusScope.of(context).unfocus();
-                  widget.searchFucntion(searchController.text);
-                },
-                decoration: InputDecoration(  
-                    border: InputBorder.none,
-                    hintText: '要搜点什么呢',
-                    contentPadding: EdgeInsets.only(
-                        left: ScreenUtil().setWidth(8), 
-                        bottom: ScreenUtil().setHeight(8))),
-              ),
-            ),
+            searchBarHeight == contentHeight
+                ? Container()
+                : searchAdditionGroup()
           ],
         ));
+  }
+
+  Widget searchAdditionGroup() {
+    return Container(
+      alignment: Alignment.center,
+      width: ScreenUtil().setWidth(285),
+      margin: EdgeInsets.only(
+          top: ScreenUtil().setHeight(8), bottom: ScreenUtil().setHeight(8)),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          searchAdditionCell(texts.transAndSearch),
+          searchAdditionCell(texts.idToArtist),
+          searchAdditionCell(texts.idToIllust),
+        ],
+      ),
+    );
+  }
+
+  Widget searchAdditionCell(String label) {
+    return InkWell(
+      onTap: () {
+        print('$label on tap');
+      },
+      child: Container(
+        height: ScreenUtil().setHeight(26),
+        width: ScreenUtil().setWidth(89),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(
+            Radius.circular(13),
+          ),
+          boxShadow: [
+            BoxShadow(
+                blurRadius: 15,
+                offset: Offset(5, 5),
+                color: Color(0x73E5E5E5)),
+          ],
+        ),
+        child: Text(
+          label,
+          style: TextStyle(fontWeight: FontWeight.w300, fontSize: 10),
+        ),
+      ),
+    );
   }
 
   Widget homeBottomSheet() {
@@ -380,5 +446,17 @@ class PappBarState extends State<PappBar> {
     setState(() {
       searchController.text = keywords;
     });
+  }
+
+  void searchTextEditingListener() {
+    if (FocusScope.of(context).hasFocus == false) {
+      setState(() {
+        searchBarHeight = contentHeight;
+      });
+    } else {
+      setState(() {
+        searchBarHeight = ScreenUtil().setHeight(77);
+      });
+    }
   }
 }

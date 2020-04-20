@@ -177,7 +177,7 @@ class PicPage extends StatefulWidget {
   final String spotlightId;
   final String userId;
   final String searchKeywords;
-  final bool isManga;    
+  final bool isManga;
   // jsonMode could be set to 'home, related, Spotlight, tag, artist, search...'
   final String jsonMode;
   // hide naviagtor bar when page is scrolling
@@ -461,6 +461,7 @@ class _PicPageState extends State<PicPage> {
 
   _doWhileScrolling() {
     // print(scrollController.position.extentBefore);
+    FocusScope.of(context).unfocus();
     // 如果为主页面 picPage，则记录滑动位置、判断滑动
     if (widget.jsonMode == 'home') {
       homeScrollerPosition = scrollController
