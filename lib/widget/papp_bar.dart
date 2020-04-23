@@ -268,30 +268,28 @@ class PappBarState extends State<PappBar> {
     );
   }
 
-  Widget searchAdditionCell(String label) {
-    return InkWell(
-      onTap: () {
-        print('$label on tap');
-      },
-      child: Container(
-        height: ScreenUtil().setHeight(26),
-        width: ScreenUtil().setWidth(89),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(
-            Radius.circular(13),
-          ),
-          boxShadow: [
-            BoxShadow(
-                blurRadius: 15,
-                offset: Offset(5, 5),
-                color: Color(0x73E5E5E5)),
-          ],
+  Widget searchAdditionCell(String label, {Function onTap}) {
+    return Container(
+      height: ScreenUtil().setHeight(26),
+      width: ScreenUtil().setWidth(89),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(
+          Radius.circular(13),
         ),
-        child: Text(
-          label,
-          style: TextStyle(fontWeight: FontWeight.w300, fontSize: 10),
+        boxShadow: [
+          BoxShadow(
+              blurRadius: 15, offset: Offset(5, 5), color: Color(0x73E5E5E5)),
+        ],
+      ),
+      child: Material(
+        child: InkWell(
+          onTap: () {},
+          child: Text(
+            label,
+            style: TextStyle(fontWeight: FontWeight.w300, fontSize: 10),
+          ),
         ),
       ),
     );

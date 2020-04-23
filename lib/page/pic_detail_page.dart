@@ -12,6 +12,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:requests/requests.dart';
 import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:flutter_advanced_networkimage/zoomable.dart';
+import 'package:flutter_advanced_networkimage/transition.dart';
 
 import 'pic_page.dart';
 import 'artist_page.dart';
@@ -301,7 +302,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
               panLimit: 1.0,
               maxScale: 3.0,
               minScale: 0.7,
-              child: Image(
+              child: TransitionToImage(
                 image: AdvancedNetworkImage(
                   widget._picData['imageUrls'][0]['large'],
                   header: {'Referer': 'https://app-api.pixiv.net'},
@@ -312,6 +313,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
                 height: ScreenUtil().setWidth(324) /
                     widget._picData['width'] *
                     widget._picData['height'],
+                placeholder: CircularProgressIndicator(),
               ),
             )),
       );
@@ -333,7 +335,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
                   panLimit: 1.0,
                   maxScale: 3.0,
                   minScale: 0.7,
-                  child: Image(
+                  child: TransitionToImage(
                     image: AdvancedNetworkImage(
                       widget._picData['imageUrls'][index]['large'],
                       header: {'Referer': 'https://app-api.pixiv.net'},
@@ -344,6 +346,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
                     height: ScreenUtil().setWidth(324) /
                         widget._picData['width'] *
                         widget._picData['height'],
+                    placeholder: CircularProgressIndicator(),
                   ),
                 )),
           );

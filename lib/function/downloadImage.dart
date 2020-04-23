@@ -34,16 +34,17 @@ class DownloadImage {
         ..inExternalFilesDir(),
     ).catchError((onError) {
       print(onError);
-      BotToast.showSimpleNotification(title: '下载失败');
+      BotToast.showSimpleNotification(title: '下载失败,请检查网络');
       ImageDownloader.cancel();
       return false;
-    }).timeout(Duration(seconds: 10), onTimeout: () {
-      print('time out');
-      BotToast.showSimpleNotification(title: '下载超时');
-      ImageDownloader.cancel();
-      return 'timeout';
     });
-
+    // .timeout(Duration(seconds: 10), onTimeout: () {
+    //   print('time out');
+    //   BotToast.showSimpleNotification(title: '下载超时');
+    //   ImageDownloader.cancel();
+    //   return 'timeout';
+    // });
+    ImageDownloader.cancel();
     if (imageId == null) {
       print('image dwonload error');
       return false;
