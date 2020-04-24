@@ -254,7 +254,7 @@ class PappBarState extends State<PappBar> {
                         hintText: '要搜点什么呢',
                         contentPadding: EdgeInsets.only(
                             left: ScreenUtil().setWidth(8),
-                            bottom: ScreenUtil().setHeight(8))),
+                            bottom: ScreenUtil().setHeight(9))),
                   ),
                 ),
               ],

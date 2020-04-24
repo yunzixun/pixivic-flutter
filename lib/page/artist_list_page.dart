@@ -15,9 +15,10 @@ class ArtistListPage extends StatefulWidget {
   @override
   _ArtistListPageState createState() => _ArtistListPageState();
 
-  ArtistListPage(this.jsonList);
+  ArtistListPage(this.jsonList, this.mode);
 
   final List jsonList;
+  final String mode;
 }
 
 class _ArtistListPageState extends State<ArtistListPage> {
