@@ -43,14 +43,14 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     searchKeywords = widget.searchKeywordsIn;
+    suggestionBar =
+          SuggestionBar(searchKeywords, _onSearch, _suggestionBarKey);
 
     if (searchKeywords != '') {
       picPage = PicPage.search(
         searchKeywords: searchKeywords,
         isManga: searchManga,
       );
-      suggestionBar =
-          SuggestionBar(searchKeywords, _onSearch, _suggestionBarKey);
     }
 
     _currentLoad().then((value) {
@@ -113,7 +113,7 @@ class _SearchPageState extends State<SearchPage> {
                               }),
                             physics: ClampingScrollPhysics(),
                             crossAxisCount: 3,
-                            itemCount: currentNum,
+                            itemCount: currentTags.length,
                             itemBuilder: (BuildContext context, int index) =>
                                 _currentCell(
                                     currentTags[index]['name'],
@@ -132,19 +132,27 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   _onSearch(String value, {bool fromCurrent}) {
+    FocusScope.of(context).unfocus();
     setState(() {
       searchKeywords = value;
-      picPage = PicPage.search(
-        searchKeywords: searchKeywords,
-        isManga: searchManga,
+      if(value != '')
+        picPage = PicPage.search(
+          searchKeywords: searchKeywords,
+          isManga: searchManga,
       );
     });
     pappbarKey.currentState.changeSearchKeywords(value);
-    if (fromCurrent)
+    if (fromCurrent != null && fromCurrent)
       suggestionBar =
           SuggestionBar(searchKeywords, _onSearch, _suggestionBarKey);
     else
-      _suggestionBarKey.currentState.reloadSearchWords(value);
+      try {
+        _suggestionBarKey.currentState.reloadSearchWords(value);
+      } catch(e) {
+        suggestionBar =
+          SuggestionBar(searchKeywords, _onSearch, _suggestionBarKey);
+      }
+      
   }
 
   _currentLoad() async {
@@ -180,6 +188,7 @@ class _SearchPageState extends State<SearchPage> {
           height: ScreenUtil().setWidth(104),
           padding: EdgeInsets.only(top: ScreenUtil().setWidth(60)),
           decoration: BoxDecoration(
+              color: Colors.grey[300],
               image: DecorationImage(
                   fit: BoxFit.cover,
                   colorFilter:
@@ -194,6 +203,7 @@ class _SearchPageState extends State<SearchPage> {
             children: <Widget>[
               Text(
                 '#$jpTitle',
+                textAlign: TextAlign.center,
                 strutStyle: StrutStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w400,
@@ -205,6 +215,7 @@ class _SearchPageState extends State<SearchPage> {
               ),
               Text(
                 transTitle,
+                textAlign: TextAlign.center,
                 strutStyle: StrutStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w300,

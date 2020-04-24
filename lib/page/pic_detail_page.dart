@@ -26,7 +26,7 @@ class PicDetailPage extends StatefulWidget {
   @override
   _PicDetailPageState createState() => _PicDetailPageState();
 
-  PicDetailPage(this._picData, this.index, this.bookmarkRefresh);
+  PicDetailPage(this._picData, {this.index, this.bookmarkRefresh});
 
   final Map _picData;
   final int index;
@@ -521,7 +521,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
                   title: Text('下载原图'),
                   leading: Icon(Icons.cloud_download),
                   onTap: () async {
-                    final directory =
+                    final Directory directory =
                         Theme.of(context).platform == TargetPlatform.android
                             ? await getExternalStorageDirectory()
                             : await getApplicationDocumentsDirectory();

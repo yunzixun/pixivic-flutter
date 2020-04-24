@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pixivic/micropage/about_page.dart';
+import 'package:pixivic/sidepage/about_page.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../data/texts.dart';
-import '../micropage/spotlight_page.dart';
+import '../sidepage/spotlight_page.dart';
 
 class CenterPage extends StatefulWidget {
   @override

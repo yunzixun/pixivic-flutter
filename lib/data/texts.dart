@@ -97,4 +97,9 @@ class TextZhPappBar {
   String transAndSearch = '翻译然后搜索';
   String idToArtist = 'ID搜画师';
   String idToIllust = 'ID搜画作';
+  String networkError = '请求失败，请检查网络';
+  String translateError = '翻译失败，请检查网络';
+  String inputError = '请输入有效的字符';
+  String inputIsNotNum = '搜索ID时请仅输入数字';
+  String searchTimeout = '搜索超时，请重试';
 }

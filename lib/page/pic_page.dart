@@ -566,8 +566,9 @@ class _PicPageState extends State<PicPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => PicDetailPage(
-                                picMapData, index, _bookmarkRefresh)));
+                            builder: (context) => PicDetailPage(picMapData,
+                                index: index,
+                                bookmarkRefresh: _bookmarkRefresh)));
                 },
                 child: Container(
                   // 限定constraints用于占用位置,经调试后以0.5为基准可以保证加载图片后不产生位移

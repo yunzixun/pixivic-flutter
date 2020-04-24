@@ -32,6 +32,12 @@ class SuggestionBarState extends State<SuggestionBar> {
   }
 
   @override
+  void dispose() {
+    print('SuggestionBar Disposed');
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (suggestions != null) {
       return AnimatedContainer(
@@ -93,6 +99,7 @@ class SuggestionBarState extends State<SuggestionBar> {
   }
 
   _loadSuggestions() async {
+    print('reloading suggestions');
     List jsonList;
     var requests;
     String urlPixiv =

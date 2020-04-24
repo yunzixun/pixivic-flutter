@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'login_page.dart';
-import '../micropage/bookmark_page.dart';
-import '../micropage/follow_page.dart';
-import '../micropage/history_page.dart';
+import '../sidepage/bookmark_page.dart';
+import '../sidepage/follow_page.dart';
+import '../sidepage/history_page.dart';
 
 import '../data/common.dart';
 import '../data/texts.dart';

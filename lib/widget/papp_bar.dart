@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:requests/requests.dart';
+import 'package:bot_toast/bot_toast.dart';
 
 import '../data/texts.dart';
+import '../page/artist_page.dart';
+import '../page/pic_detail_page.dart';
+
 
 class PappBar extends StatefulWidget implements PreferredSizeWidget {
   //删去
@@ -62,12 +68,17 @@ class PappBarState extends State<PappBar> {
     if (widget.title != null) title = widget.title;
     lastHomeTitle = title;
     mode = widget.mode;
-    searchController = TextEditingController(
-        text: widget.searchKeywordsIn != null ? widget.searchKeywordsIn : null)
+    searchController = TextEditingController(text: widget.searchKeywordsIn)
       ..addListener(searchTextEditingListener);
     contentHeight = ScreenUtil().setHeight(35);
     searchBarHeight = contentHeight;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -230,8 +241,13 @@ class PappBarState extends State<PappBar> {
                   child: TextField(
                     controller: searchController,
                     onSubmitted: (value) {
-                      FocusScope.of(context).unfocus();
                       widget.searchFucntion(searchController.text);
+                    },
+                    onChanged: (value) {
+                      if (value == '') {
+                        widget.searchFucntion(value);
+                        FocusScope.of(context).previousFocus();
+                      }
                     },
                     decoration: InputDecoration(
                         border: InputBorder.none,
@@ -260,36 +276,41 @@ class PappBarState extends State<PappBar> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          searchAdditionCell(texts.transAndSearch),
-          searchAdditionCell(texts.idToArtist),
-          searchAdditionCell(texts.idToIllust),
+          searchAdditionCell(texts.transAndSearch,
+              onTap: onTranslateThenSearch),
+          searchAdditionCell(texts.idToArtist, onTap: onSearchArtistById),
+          searchAdditionCell(texts.idToIllust, onTap: onSearchIllustById),
         ],
       ),
     );
   }
 
   Widget searchAdditionCell(String label, {Function onTap}) {
-    return Container(
-      height: ScreenUtil().setHeight(26),
-      width: ScreenUtil().setWidth(89),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(
-          Radius.circular(13),
-        ),
-        boxShadow: [
-          BoxShadow(
-              blurRadius: 15, offset: Offset(5, 5), color: Color(0x73E5E5E5)),
-        ],
-      ),
-      child: Material(
-        child: InkWell(
-          onTap: () {},
-          child: Text(
-            label,
-            style: TextStyle(fontWeight: FontWeight.w300, fontSize: 10),
+    return GestureDetector(
+      onTap: () {
+        if (searchController.text != '') {
+          onTap();
+        } else {
+          BotToast.showSimpleNotification(title: texts.inputError);
+        }
+      },
+      child: Container(
+        height: ScreenUtil().setHeight(26),
+        width: ScreenUtil().setWidth(89),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(
+            Radius.circular(13),
           ),
+          boxShadow: [
+            BoxShadow(
+                blurRadius: 15, offset: Offset(5, 5), color: Color(0x73E5E5E5)),
+          ],
+        ),
+        child: Text(
+          label,
+          style: TextStyle(fontWeight: FontWeight.w300, fontSize: 10),
         ),
       ),
     );
@@ -455,6 +476,89 @@ class PappBarState extends State<PappBar> {
       setState(() {
         searchBarHeight = ScreenUtil().setHeight(77);
       });
+    }
+  }
+
+  onTranslateThenSearch() async {
+    var response = await Requests.get(
+            'https://api.pixivic.com/keywords/${searchController.text}/translations')
+        .catchError((e) {
+      print(e);
+      BotToast.showSimpleNotification(title: texts.translateError);
+    });
+    response.raiseForStatus();
+    if (response.statusCode == 200) {
+      widget.searchFucntion(jsonDecode(response.content())['data']['keyword']);
+    } else {
+      BotToast.showSimpleNotification(title: texts.translateError);
+    }
+  }
+
+  onSearchArtistById() async {
+    if (int.tryParse(searchController.text) == null) {
+      BotToast.showSimpleNotification(title: texts.inputIsNotNum);
+    } else {
+      CancelFunc cancelLoading = BotToast.showLoading();
+      var response = await Requests.get(
+              'https://api.pixivic.com/artists/${searchController.text}')
+          .catchError((e) {
+        if (e.toString().contains('TimeoutException'))
+          BotToast.showSimpleNotification(title: texts.searchTimeout);
+        else
+          BotToast.showSimpleNotification(title: texts.networkError);
+        cancelLoading();
+        return false;
+      });
+      cancelLoading();
+      Map result = jsonDecode(response.content());
+      if (response.statusCode == 200) {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) {
+            return ArtistPage(
+                result['data']['avatar'],
+                result['data']['name'],
+                result['data']['id'].toString(),
+                );
+          },
+        ));
+        return true;
+      } else if (response.statusCode == 400) {
+        BotToast.showSimpleNotification(title: result['message']);
+        return false;
+      }
+    }
+  }
+
+  onSearchIllustById() async {
+    if (int.tryParse(searchController.text) == null) {
+      BotToast.showSimpleNotification(title: texts.inputIsNotNum);
+    } else {
+      CancelFunc cancelLoading = BotToast.showLoading();
+      var response = await Requests.get(
+              'https://api.pixivic.com/illusts/${searchController.text}')
+          .catchError((e) {
+        if (e.toString().contains('TimeoutException'))
+          BotToast.showSimpleNotification(title: texts.searchTimeout);
+        else
+          BotToast.showSimpleNotification(title: texts.networkError);
+        cancelLoading();
+        return false;
+      });
+      cancelLoading();
+      Map result = jsonDecode(response.content());
+      if (response.statusCode == 200) {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) {
+            return PicDetailPage(
+                result['data']
+                );
+          },
+        ));
+        return true;
+      } else if (response.statusCode == 404) {
+        BotToast.showSimpleNotification(title: result['message']);
+        return false;
+      }
     }
   }
 }

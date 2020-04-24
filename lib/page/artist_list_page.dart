@@ -5,20 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:requests/requests.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:lottie/lottie.dart';
 
 import '../data/common.dart';
 import '../data/texts.dart';
 import '../page/artist_page.dart';
 import '../page/pic_detail_page.dart';
-import '../widget/papp_bar.dart';
 
-class FollowPage extends StatefulWidget {
+class ArtistListPage extends StatefulWidget {
   @override
-  _FollowPageState createState() => _FollowPageState();
+  _ArtistListPageState createState() => _ArtistListPageState();
+
+  ArtistListPage(this.jsonList);
+
+  final List jsonList;
 }
 
-class _FollowPageState extends State<FollowPage> {
+class _ArtistListPageState extends State<ArtistListPage> {
   TextZhFollowPage text = TextZhFollowPage();
   ScrollController scrollController;
   int currentPage;
@@ -31,34 +33,22 @@ class _FollowPageState extends State<FollowPage> {
     currentPage = 1;
     loadMoreAble = true;
     scrollController = ScrollController()..addListener(_autoLoadMore);
-
-    _getJsonList().then((value) {
-      setState(() {
-        followTotalNum = value.length;
-        jsonList = value;
-      });
-    }).catchError((e) {
-      print('followPage init error: $e');
-    });
+    jsonList = widget.jsonList;
+    followTotalNum = jsonList.length;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PappBar(title: '我的关注'),
-      body: jsonList != null
-          ? Container(
-              color: Colors.white,
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  controller: scrollController,
-                  itemCount: followTotalNum,
-                  itemBuilder: (BuildContext context, int index) {
-                    return artistCell(index);
-                  }),
-            )
-          : Lottie.asset('image/loading-box.json'),
+    return Container(
+      color: Colors.white,
+      child: ListView.builder(
+          shrinkWrap: true,
+          controller: scrollController,
+          itemCount: followTotalNum,
+          itemBuilder: (BuildContext context, int index) {
+            return artistCell(jsonList[index], jsonList[index]);
+          }),
     );
   }
 
@@ -77,13 +67,12 @@ class _FollowPageState extends State<FollowPage> {
     );
   }
 
-  Widget artistCell(int index) {
-    Map cellData = jsonList[index];
+  Widget artistCell(Map cellData, Map picData) {
     return Container(
       padding: EdgeInsets.only(bottom: ScreenUtil().setHeight(10)),
       child: Column(
         children: <Widget>[
-          picsCell(index),
+          picsCell(picData),
           Material(
             child: InkWell(
               onTap: () {
@@ -126,7 +115,7 @@ class _FollowPageState extends State<FollowPage> {
     );
   }
 
-  Widget picsCell(int index) {
+  Widget picsCell(Map picData) {
     List<int> allIndex = [0, 1, 2];
     return Row(
       children: allIndex.map((int item) {
@@ -134,11 +123,10 @@ class _FollowPageState extends State<FollowPage> {
           color: Colors.grey[200],
           child: GestureDetector(
             onTap: () {
-              _routeToPicDetailPage(
-                  jsonList[index]['recentlyIllustrations'][item]);
+              _routeToPicDetailPage(picData['recentlyIllustrations'][item]);
             },
             child: Image.network(
-              jsonList[index]['recentlyIllustrations'][item]['imageUrls'][0]
+              picData['recentlyIllustrations'][item]['imageUrls'][0]
                   ['squareMedium'],
               headers: {'Referer': 'https://app-api.pixiv.net'},
               width: ScreenUtil().setWidth(108),
@@ -206,8 +194,7 @@ class _FollowPageState extends State<FollowPage> {
       var r = await Requests.get(url, headers: headers);
       r.raiseForStatus();
       List jsonList = jsonDecode(r.content())['data'];
-      if(jsonList.length < 30) 
-        loadMoreAble = false;
+      if (jsonList.length < 30) loadMoreAble = false;
       return (jsonList);
     } catch (e) {
       print('followPage error: $e');
@@ -219,28 +206,26 @@ class _FollowPageState extends State<FollowPage> {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) {
         return ArtistPage(
-            data['avatar'],
-            data['name'],
-            data['id'].toString(),
-            isFollowed: data['isFollowed'],
-            followedRefresh: (bool result) {
-              setState(() {
-                data['isFollowed'] = result;
-              });
-            },
-            );
+          data['avatar'],
+          data['name'],
+          data['id'].toString(),
+          isFollowed: data['isFollowed'],
+          followedRefresh: (bool result) {
+            setState(() {
+              data['isFollowed'] = result;
+            });
+          },
+        );
       },
     ));
   }
 
   _routeToPicDetailPage(Map picData) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => PicDetailPage(picData, null, null)));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => PicDetailPage(picData)));
   }
 
-  _autoLoadMore() { 
+  _autoLoadMore() {
     if ((scrollController.position.extentAfter < 350) &&
         (currentPage < 30) &&
         loadMoreAble) {
