@@ -527,7 +527,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
                             : 'ios';
                     _checkPermission().then((value) async {
                       if (value) {
-                        DownloadImage(url, platform);
+                        DownloadImage downloadImage = DownloadImage(url, platform);
                       } else {
                         BotToast.showSimpleNotification(
                             title: '请赋予程序下载权限(｡ŏ_ŏ)' );

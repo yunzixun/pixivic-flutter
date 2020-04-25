@@ -70,3 +70,4 @@ Future initData() async {
   } else
     isLogin = false;
 }
+

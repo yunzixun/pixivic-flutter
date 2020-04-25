@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -19,8 +21,12 @@ import 'page/center_page.dart';
 
 import 'data/common.dart';
 
+ReceivePort _port = ReceivePort();
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // FlutterDownloader.initialize(debug: false);
+
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(MyApp());
@@ -79,8 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    WidgetsFlutterBinding.ensureInitialized();
-    FlutterDownloader.initialize();
+    initFlutterDownloader();
     initData().then((value) {
       setState(() {
         picPage = PicPage.home(
@@ -271,6 +276,31 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _isPageScrolling = false;
       });
+    }
+  }
+
+  initFlutterDownloader() async{
+    await FlutterDownloader.initialize(debug: false);
+    
+    IsolateNameServer.registerPortWithName(
+        _port.sendPort, 'downloader_send_port');
+    _port.listen((dynamic data) {
+      String id = data[0];
+      DownloadTaskStatus status = data[1];
+      int progress = data[2];
+      setState((){ });
+    });
+    FlutterDownloader.registerCallback(_onAndroidDownloaderCallBack);
+  }
+  
+  static _onAndroidDownloaderCallBack(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port');
+    send.send([id, status, progress]);
+    print(progress);
+    if (progress == 100) {
+      print('下载完成');
     }
   }
 }

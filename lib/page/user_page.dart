@@ -100,8 +100,11 @@ class UserPageState extends State<UserPage> {
               child: CircleAvatar(
                   backgroundColor: Colors.white,
                   radius: ScreenUtil().setHeight(25),
-                  backgroundImage: AdvancedNetworkImage(
+                  backgroundImage: NetworkImage(
                     prefs.getString('avatarLink'),
+                    headers: {
+                      'referer':'https://pixivic.com'
+                    }
                   ))),
           Positioned(
             top: ScreenUtil().setHeight(33),

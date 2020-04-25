@@ -7,9 +7,9 @@ import 'package:requests/requests.dart';
 import 'package:bot_toast/bot_toast.dart';
 
 import '../data/texts.dart';
+import '../data/common.dart';
 import '../page/artist_page.dart';
 import '../page/pic_detail_page.dart';
-
 
 class PappBar extends StatefulWidget implements PreferredSizeWidget {
   //删去
@@ -515,10 +515,10 @@ class PappBarState extends State<PappBar> {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) {
             return ArtistPage(
-                result['data']['avatar'],
-                result['data']['name'],
-                result['data']['id'].toString(),
-                );
+              result['data']['avatar'],
+              result['data']['name'],
+              result['data']['id'].toString(),
+            );
           },
         ));
         return true;
@@ -535,7 +535,10 @@ class PappBarState extends State<PappBar> {
     } else {
       CancelFunc cancelLoading = BotToast.showLoading();
       var response = await Requests.get(
-              'https://api.pixivic.com/illusts/${searchController.text}')
+              'https://api.pixivic.com/illusts/${searchController.text}',
+              headers: prefs.getString('auth') != ''
+                  ? {'authorization': prefs.getString('auth')}
+                  : {})
           .catchError((e) {
         if (e.toString().contains('TimeoutException'))
           BotToast.showSimpleNotification(title: texts.searchTimeout);
@@ -549,9 +552,7 @@ class PappBarState extends State<PappBar> {
       if (response.statusCode == 200) {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) {
-            return PicDetailPage(
-                result['data']
-                );
+            return PicDetailPage(result['data']);
           },
         ));
         return true;

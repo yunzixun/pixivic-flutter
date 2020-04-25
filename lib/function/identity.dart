@@ -26,10 +26,11 @@ login(String userName, String pwd, String verificationCode,
     print(prefs.getString('auth'));
     Map data = jsonDecode(
         utf8.decode(response.bodyBytes, allowMalformed: true))['data'];
+    print(data);
     prefs.setInt('id', data['id']);
     prefs.setString('name', data['username']);
     prefs.setString('email', data['email']);
-    prefs.setString('avatarLink', data['avatar']);
+    prefs.setString('avatarLink', 'https://pic.cheerfun.dev/${data['id']}.png');
     if (data['signature'] != null)
       prefs.setString('signature', data['signature']);
     if (data['location'] != null) prefs.setString('location', data['location']);
@@ -58,7 +59,9 @@ login(String userName, String pwd, String verificationCode,
     homeCurrentPage = 1;
   } else {
     // isLogin = false;
-    BotToast.showSimpleNotification(title: TextZhLoginPage().loginFailed);
+    BotToast.showSimpleNotification(
+        title: jsonDecode(
+            utf8.decode(response.bodyBytes, allowMalformed: true))['message']);
   }
   tempVerificationCode = null;
   tempVerificationImage = null;
@@ -82,16 +85,20 @@ checkAuth() async {
   else {
     String url =
         'https://api-doc.cheerfun.dev/mock/12/users/${prefs.getInt('id').toString()}/isBindQQ';
-    Map<String, String> header = {'Content-Type': 'application/json', 'authorization': authStored};
+    Map<String, String> header = {
+      'Content-Type': 'application/json',
+      'authorization': authStored
+    };
     var client = http.Client();
-    var response =
-        await client.post(url, headers: header,);
-    if(response.statusCode == 200) {
-      if(response.headers['authorization'] != null)
+    var response = await client.post(
+      url,
+      headers: header,
+    );
+    if (response.statusCode == 200) {
+      if (response.headers['authorization'] != null)
         prefs.setString('auth', response.headers['authorization']);
       return true;
-    }
-    else if(response.statusCode == 401) {
+    } else if (response.statusCode == 401) {
       return false;
     }
   }
