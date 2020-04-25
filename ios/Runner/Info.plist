@@ -44,11 +44,25 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Save to Photo Library</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Use Photo Library</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>将下载的图片存储到相册</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>读取相册目录结构存储下载的图片</string>
+	<key>NSContactsUsageDescription</key>
+	<string>使用用户的电子邮件</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>使用日历选择画作时间</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>使用媒体文件进行播放</string>
+	<key>NSMotionUsageDescription</key>
+	<string>使用运动信息</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>使用语音输入</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>后台持续使用地理数据</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>打开应用时使用地理数据</string>
 </dict>
 </plist>
