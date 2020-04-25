@@ -521,28 +521,13 @@ class _PicDetailPageState extends State<PicDetailPage> {
                   title: Text('下载原图'),
                   leading: Icon(Icons.cloud_download),
                   onTap: () async {
-                    final Directory directory =
+                    final String platform =
                         Theme.of(context).platform == TargetPlatform.android
-                            ? await getExternalStorageDirectory()
-                            : await getApplicationDocumentsDirectory();
-                    final Directory picDirFolder = Directory(
-                        '${directory.path}${Platform.pathSeparator}pixivic_images');
-                    // print(picDirFolder.path);
-                    if (!await picDirFolder.exists()) {
-                      print('creating folder');
-                      await picDirFolder.create(recursive: true);
-                    }
+                            ? 'android'
+                            : 'ios';
                     _checkPermission().then((value) async {
                       if (value) {
-                        // final taskId = await FlutterDownloader.enqueue(
-                        //   url: url,
-                        //   savedDir: '${picDirFolder.path}',
-                        //   showNotification: true,
-                        //   openFileFromNotification: true,
-                        //   headers: {'Referer': 'https://app-api.pixiv.net'},
-                        // );
-                        DownloadImage(url);
-                        // print('download taskid: $taskId');
+                        DownloadImage(url, platform);
                       } else {
                         BotToast.showSimpleNotification(
                             title: '请赋予程序下载权限(｡ŏ_ŏ)' );
