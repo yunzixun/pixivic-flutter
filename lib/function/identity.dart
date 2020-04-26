@@ -123,7 +123,8 @@ register(String userName, String pwd, String pwdRepeat, String verificationCode,
   } else {
     // isLogin = false;
     print(response.content());
-    BotToast.showSimpleNotification(title: TextZhLoginPage().registerFailed);
+    BotToast.showSimpleNotification(
+        title: jsonDecode(response.content())['message']);
   }
   tempVerificationCode = null;
   tempVerificationImage = null;
@@ -132,13 +133,15 @@ register(String userName, String pwd, String pwdRepeat, String verificationCode,
 
 checkRegisterInfo(
     String userName, String pwd, String pwdRepeat, String email) async {
+  final String regexEmail =
+      "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*\$";
   if (pwd != pwdRepeat) {
     return TextZhLoginPage().errorPwdNotSame;
   }
   if (pwd.length < 8 || pwd.length > 20) {
     return TextZhLoginPage().errorPwdLength;
   }
-  if (!email.contains('@') || !email.contains('.')) {
+  if (!RegExp(regexEmail).hasMatch(email)) {
     return TextZhLoginPage().errorEmail;
   }
   if (userName.length < 4 || userName.length > 10) {

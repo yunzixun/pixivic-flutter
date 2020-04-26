@@ -14,43 +14,56 @@ class CenterPage extends StatefulWidget {
 }
 
 class _CenterPageState extends State<CenterPage> {
-  TextZhCenterPage text = TextZhCenterPage();
+  TextZhCenterPage texts = TextZhCenterPage();
 
   @override
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.topCenter,
-      color: Colors.white,
+      decoration: BoxDecoration(
+          color: Colors.white,
+          image: DecorationImage(
+              image: AssetImage('image/background.png'),
+              fit: BoxFit.fitWidth)),
       child: Column(
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              cell(text.spotlight, FontAwesomeIcons.solidImages,
+              cell(texts.spotlight, FontAwesomeIcons.solidImages,
                   Colors.yellow[700], _routeToSpotlightPage),
-              cell(text.community, FontAwesomeIcons.solidComments,
+              cell(texts.community, FontAwesomeIcons.solidComments,
                   Colors.orange, () {
-                    _openUrl('https://discuss.pixivic.com/');
-                  }),
-              cell(text.about, FontAwesomeIcons.infoCircle, Colors.blueGrey,
+                _openUrl('https://discuss.pixivic.com/');
+              }),
+              cell(texts.about, FontAwesomeIcons.infoCircle, Colors.blueGrey,
                   _routeToAboutPage),
-              cell(text.frontend, FontAwesomeIcons.githubAlt, Colors.blueAccent,
+              cell(
+                  texts.frontend, FontAwesomeIcons.githubAlt, Colors.blueAccent,
                   () {
-                    _openUrl('https://github.com/cheer-fun/pixivic-mobile');
-                  }),
+                _openUrl('https://github.com/cheer-fun/pixivic-mobile');
+              }),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              cell(text.rearend, FontAwesomeIcons.githubAlt, Colors.redAccent,
+              cell(texts.rearend, FontAwesomeIcons.githubAlt, Colors.redAccent,
                   () {
-                    _openUrl('https://github.com/cheer-fun/pixivic-web-backend');
-                  }),
-              cell(text.friendUrl, FontAwesomeIcons.paperclip, Colors.purple,
+                _openUrl('https://github.com/cheer-fun/pixivic-web-backend');
+              }),
+              cell(texts.mobile, FontAwesomeIcons.githubAlt, Colors.lightGreen,
                   () {
-                    _openUrl('https://m.pixivic.com/friends?VNK=d6d42013');
-                  }),
+                _openUrl('https://github.com/cheer-fun/pixivic-flutter');
+              }),
+              cell(texts.friendUrl, FontAwesomeIcons.paperclip, Colors.purple,
+                  () {
+                _openUrl('https://m.pixivic.com/friends?VNK=d6d42013');
+              }),
+              cell(texts.friendUrl, FontAwesomeIcons.userShield,
+                  Colors.lightGreen[300], () {
+                _openUrl('https://pixivic.com/policy/');
+              }),
             ],
           )
         ],
@@ -58,9 +71,10 @@ class _CenterPageState extends State<CenterPage> {
     );
   }
 
-  Widget cell(String label, IconData icon, Color iconColor, VoidCallback onTap) {
+  Widget cell(
+      String label, IconData icon, Color iconColor, VoidCallback onTap) {
     return Material(
-      color: Colors.white,
+      color: Colors.white.withOpacity(0),
       child: InkWell(
         onTap: () {
           onTap();

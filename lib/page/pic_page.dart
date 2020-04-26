@@ -247,11 +247,18 @@ class _PicPageState extends State<PicPage> {
     if (widget.jsonMode == 'home' &&
         (oldWidget.picDate != widget.picDate ||
             oldWidget.picMode != widget.picMode)) {
-      scrollController.animateTo(
+      try {
+        scrollController.animateTo(
         0.0,
         duration: const Duration(milliseconds: 500),
-        curve: Curves.easeOut,
-      );
+        curve: Curves.easeOut,);
+      } catch(e) {
+        scrollController = ScrollController(
+        initialScrollOffset:
+            widget.jsonMode == 'home' ? homeScrollerPosition : 0.0)
+      ..addListener(_doWhileScrolling);
+      }
+      
       // 清空 Picpage 控件参数和缓存参数
       currentPage = 1;
       homeCurrentPage = 1;
@@ -560,6 +567,7 @@ class _PicPageState extends State<PicPage> {
                     if (await canLaunch(picMapData['link'])) {
                       await launch(picMapData['link']);
                     } else {
+                      BotToast.showSimpleNotification(title: '唤起网页失败');
                       throw 'Could not launch ${picMapData['link']}';
                     }
                   } else

@@ -500,7 +500,10 @@ class PappBarState extends State<PappBar> {
     } else {
       CancelFunc cancelLoading = BotToast.showLoading();
       var response = await Requests.get(
-              'https://api.pixivic.com/artists/${searchController.text}')
+              'https://api.pixivic.com/artists/${searchController.text}',
+              headers: prefs.getString('auth') != ''
+                  ? {'authorization': prefs.getString('auth')}
+                  : {})
           .catchError((e) {
         if (e.toString().contains('TimeoutException'))
           BotToast.showSimpleNotification(title: texts.searchTimeout);
@@ -518,6 +521,9 @@ class PappBarState extends State<PappBar> {
               result['data']['avatar'],
               result['data']['name'],
               result['data']['id'].toString(),
+              isFollowed: prefs.getString('auth') != ''
+                  ? result['data']['isFollowed']
+                  : false,
             );
           },
         ));

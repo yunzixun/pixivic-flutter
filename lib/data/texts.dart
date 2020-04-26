@@ -1,6 +1,6 @@
 class TextZhForAboutPage {
   String description =
-      'Pixivc 出生于2018-10-01，是一位兴趣使然的工具酱。\n她精致（ui统一），敏捷（前后分离&纯js）。\n将提供以下有限的服务：pixiv日排行的浏览与免费高级会员热门排序搜索。她希望能在茫茫互联网留下一些存在的痕迹，翘首以盼大家能通过各大搜索引擎访问她（将有助于提升她的搜索排名），\n搜索关键词：Pixiv\n当前版本: 内测版 V0.0.1 200408 \n有任何使用上的疑问和建议，请反馈于官方群';
+      'Pixivc 出生于2018-10-01，是一位兴趣使然的工具酱。\n她精致（ui统一），敏捷（前后分离&纯js）。\n将提供以下有限的服务：pixiv日排行的浏览与免费高级会员热门排序搜索。她希望能在茫茫互联网留下一些存在的痕迹，翘首以盼大家能通过各大搜索引擎访问她（将有助于提升她的搜索排名），\n搜索关键词：Pixiv\n当前版本: 内测版 V0.0.1 200426 \n有任何使用上的疑问和建议，请反馈于官方群';
 
   String savePicLabel = '图片的保存';
   String savePic = '在图片详情页中，长按图片即可下载原图';
@@ -37,6 +37,7 @@ class TextZhLoginPage {
   String errorEmail = '邮箱格式输入错误，请检查';
   String errorNameLength = '用户名长度需4-10位';
   String errorPwdLength = '密码长度需8-20位';
+  String errorGetVerificationCode = '无法获取验证码';
 }
 
 class TextZhUserPage {
@@ -47,6 +48,7 @@ class TextZhUserPage {
   String history = '历史记录';
   String download = '下载列表';
   String logout = '退出登录';
+  String makerSureLogout = '确定要退出登录吗？';
 }
 
 class TextZhPicDetailPage {

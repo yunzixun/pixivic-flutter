@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-// import 'package:flutter_downloader/flutter_downloader.dart';
+
 import 'package:permission_handler/permission_handler.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:requests/requests.dart';
@@ -527,7 +525,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
                             : 'ios';
                     _checkPermission().then((value) async {
                       if (value) {
-                        DownloadImage downloadImage = DownloadImage(url, platform);
+                       DownloadImage(url, platform);
                       } else {
                         BotToast.showSimpleNotification(
                             title: '请赋予程序下载权限(｡ŏ_ŏ)' );

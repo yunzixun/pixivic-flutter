@@ -29,10 +29,12 @@ class LoginPageState extends State<LoginPage> {
 
   String verificationImage = '';
   String verificationCode;
+  final String regexEmail =
+      "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*\$";
 
-  TextZhLoginPage text = TextZhLoginPage();
+  TextZhLoginPage texts = TextZhLoginPage();
 
-  // 需设定延时充值按钮
+  // 需设定延时重置按钮
   bool loginOnLoading = false;
   bool registerOnLoading = false;
   bool modeIsLogin = true;
@@ -44,9 +46,7 @@ class LoginPageState extends State<LoginPage> {
       verificationImage = tempVerificationImage;
       verificationCode = tempVerificationCode;
     } else {
-      _getVerificationCode().then((value) {
-        setState(() {});
-      });
+      _getVerificationCode();
     }
   }
 
@@ -76,7 +76,7 @@ class LoginPageState extends State<LoginPage> {
             Container(
               margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
               child: Text(
-                text.head,
+                texts.head,
                 style: TextStyle(
                     fontSize: 48,
                     fontWeight: FontWeight.w400,
@@ -86,7 +86,7 @@ class LoginPageState extends State<LoginPage> {
             Container(
               margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
               child: Text(
-                modeIsLogin ? text.welcomeLogin : text.welcomeRegister,
+                modeIsLogin ? texts.welcomeLogin : texts.welcomeRegister,
                 style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.w300,
@@ -96,22 +96,22 @@ class LoginPageState extends State<LoginPage> {
             Container(
               margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(13)),
               child: Text(
-                modeIsLogin ? text.tipLogin : text.tipRegister,
+                modeIsLogin ? texts.tipLogin : texts.tipRegister,
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w300,
                     color: Color(0xFF9E9E9E)),
               ),
             ),
-            inputCell(text.userName, _userNameController, false),
+            inputCell(texts.userName, _userNameController, false),
             modeIsLogin
                 ? Container()
-                : inputCell(text.email, _emailController, false),
-            inputCell(text.password, _userPasswordController, true),
+                : inputCell(texts.email, _emailController, false),
+            inputCell(texts.password, _userPasswordController, true),
             modeIsLogin
                 ? Container()
                 : inputCell(
-                    text.passwordRepeat, _userPasswordRepeatController, true),
+                    texts.passwordRepeat, _userPasswordRepeatController, true),
             verificationCell(_verificationController),
             SizedBox(
               height: ScreenUtil().setHeight(38),
@@ -122,7 +122,7 @@ class LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   modeIsLogin ? loginButton() : registerButton(),
-                  modeCell(),
+                  modeButton(),
                 ],
               ),
             ),
@@ -150,7 +150,8 @@ class LoginPageState extends State<LoginPage> {
         obscureText: isPassword,
         onTap: () async {
           Future.delayed(Duration(milliseconds: 250), () {
-            double location = mainController.position.extentBefore + ScreenUtil().setHeight(100);
+            double location = mainController.position.extentBefore +
+                ScreenUtil().setHeight(100);
             mainController.position.animateTo(location,
                 duration: Duration(milliseconds: 100),
                 curve: Curves.easeInCirc);
@@ -168,7 +169,7 @@ class LoginPageState extends State<LoginPage> {
         children: <Widget>[
           Positioned(
             left: 0,
-            child: inputCell(text.verification, controller, false),
+            child: inputCell(texts.verification, controller, false),
           ),
           Positioned(
             right: ScreenUtil().setWidth(46),
@@ -179,9 +180,8 @@ class LoginPageState extends State<LoginPage> {
                   minHeight: ScreenUtil().setHeight(40)),
               padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
               child: GestureDetector(
-                  onTap: () async {
-                    await _getVerificationCode();
-                    setState(() {});
+                  onTap: () {
+                    _getVerificationCode();
                   },
                   child: verificationImage != ''
                       ? Image.memory(
@@ -205,7 +205,7 @@ class LoginPageState extends State<LoginPage> {
               borderRadius: new BorderRadius.circular(5.0),
             ),
             child: Text(
-              text.buttonLoginLoading,
+              texts.buttonLoginLoading,
               style: TextStyle(color: Colors.grey),
             ))
         : OutlineButton(
@@ -231,7 +231,7 @@ class LoginPageState extends State<LoginPage> {
               borderRadius: new BorderRadius.circular(5.0),
             ),
             child: Text(
-              text.buttonLogin,
+              texts.buttonLogin,
               style: TextStyle(color: Color(0xFF515151)),
             ));
   }
@@ -245,7 +245,7 @@ class LoginPageState extends State<LoginPage> {
               borderRadius: new BorderRadius.circular(5.0),
             ),
             child: Text(
-              text.buttonRegisterLoading,
+              texts.buttonRegisterLoading,
               style: TextStyle(color: Colors.grey),
             ))
         : OutlineButton(
@@ -259,9 +259,7 @@ class LoginPageState extends State<LoginPage> {
                   _userPasswordRepeatController.text,
                   _emailController.text);
               if (check == true) {
-                setState(() {
-                  _getVerificationCode();
-                });
+                _getVerificationCode();
                 int registerResult = await identity.register(
                     _userNameController.text,
                     _userPasswordController.text,
@@ -286,13 +284,13 @@ class LoginPageState extends State<LoginPage> {
               borderRadius: new BorderRadius.circular(5.0),
             ),
             child: Text(
-              text.buttonRegister,
+              texts.buttonRegister,
               style: TextStyle(color: Color(0xFF515151)),
             ));
   }
 
   // 注册、登陆的切换按钮
-  Widget modeCell() {
+  Widget modeButton() {
     return Container(
       child: GestureDetector(
         onTap: () {
@@ -303,7 +301,7 @@ class LoginPageState extends State<LoginPage> {
           });
         },
         child: Text(
-          modeIsLogin ? text.registerMode : text.loginMode,
+          modeIsLogin ? texts.registerMode : texts.loginMode,
           style: TextStyle(color: Colors.blueAccent[200]),
         ),
       ),
@@ -315,12 +313,15 @@ class LoginPageState extends State<LoginPage> {
     r.raiseForStatus();
     if (r.statusCode == 200) {
       dynamic json = r.json();
-      verificationCode = json['data']['vid'];
-      verificationImage = json['data']['imageBase64'];
-      tempVerificationImage = verificationImage;
-      tempVerificationCode = verificationCode;
+      setState(() {
+        verificationCode = json['data']['vid'];
+        verificationImage = json['data']['imageBase64'];
+        tempVerificationImage = verificationImage;
+        tempVerificationCode = verificationCode;
+      });
       return true;
     } else {
+      BotToast.showSimpleNotification(title: texts.errorGetVerificationCode);
       print('无法获取验证码');
       return false;
     }

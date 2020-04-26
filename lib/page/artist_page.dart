@@ -7,6 +7,8 @@ import 'package:requests/requests.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:lottie/lottie.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../data/common.dart';
 import '../data/texts.dart';
@@ -68,40 +70,12 @@ class _ArtistPageState extends State<ArtistPage> {
     return Scaffold(
       appBar: pappBar,
       body: !isDataLoaded
-      ? Container(
-          padding: EdgeInsets.only(top: ScreenUtil().setHeight(30)),
-          alignment: Alignment.center,
-          color: Colors.white,
-          child: Center(
-            child: Column(
-              children: <Widget>[
-                Hero(
-                  tag: widget.artistAvatar,
-                  child: CircleAvatar(
-                    backgroundImage: AdvancedNetworkImage(
-                      widget.artistAvatar,
-                      header: {'Referer': 'https://app-api.pixiv.net'},
-                      useDiskCache: true,
-                      cacheRule: CacheRule(maxAge: const Duration(days: 7)),
-                    ),
-                  ),
-                ),
-                Lottie.asset('image/loading-box.json'),
-              ],
-            ),
-          ))
-      : Container(
-        color: Colors.white,
-        child: ListView(
-          controller: scrollController,
-          shrinkWrap: true,
-          children: <Widget>[
-            // 头像、名称、关注按钮
-            Container(
-                padding: EdgeInsets.all(ScreenUtil().setHeight(10)),
-                margin: EdgeInsets.all(ScreenUtil().setHeight(20)),
+          ? Container(
+              padding: EdgeInsets.only(top: ScreenUtil().setHeight(30)),
+              alignment: Alignment.center,
+              color: Colors.white,
+              child: Center(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Hero(
                       tag: widget.artistAvatar,
@@ -114,73 +88,120 @@ class _ArtistPageState extends State<ArtistPage> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: ScreenUtil().setHeight(20),
-                    ),
-                    Text(
-                      widget.artistName,
-                      style: normalTextStyle,
-                    ),
-                    SizedBox(
-                      height: ScreenUtil().setHeight(25),
-                    ),
-                    loginState ? _subscribeButton() : Container(),
+                    Lottie.asset('image/loading-box.json'),
                   ],
-                )),
-            // 个人网站和 Twitter
-            Container(
-              padding: EdgeInsets.all(ScreenUtil().setHeight(0)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                ),
+              ))
+          : Container(
+              color: Colors.white,
+              child: ListView(
+                controller: scrollController,
+                shrinkWrap: true,
                 children: <Widget>[
-                  GestureDetector(
-                      onTap: () {},
-                      child: Icon(
-                        Icons.home,
-                        color: Colors.blue,
+                  // 头像、名称、关注按钮
+                  Container(
+                      padding: EdgeInsets.all(ScreenUtil().setHeight(10)),
+                      margin: EdgeInsets.all(ScreenUtil().setHeight(20)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Hero(
+                            tag: widget.artistAvatar,
+                            child: CircleAvatar(
+                              backgroundImage: AdvancedNetworkImage(
+                                widget.artistAvatar,
+                                header: {
+                                  'Referer': 'https://app-api.pixiv.net'
+                                },
+                                useDiskCache: true,
+                                cacheRule:
+                                    CacheRule(maxAge: const Duration(days: 7)),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: ScreenUtil().setHeight(20),
+                          ),
+                          Text(
+                            widget.artistName,
+                            style: normalTextStyle,
+                          ),
+                          SizedBox(
+                            height: ScreenUtil().setHeight(25),
+                          ),
+                          loginState ? _subscribeButton() : Container(),
+                        ],
                       )),
-                  SizedBox(
-                    width: ScreenUtil().setWidth(5),
+                  // 个人网站和 Twitter
+                  Container(
+                    padding: EdgeInsets.all(ScreenUtil().setHeight(0)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        GestureDetector(
+                            onTap: () async {
+                              if (await canLaunch(urlWebPage)) {
+                                await launch(urlWebPage);
+                              } else {
+                                BotToast.showSimpleNotification(
+                                    title: '唤起网页失败');
+                                throw 'Could not launch $urlWebPage';
+                              }
+                            },
+                            child: FaIcon(
+                              FontAwesomeIcons.home,
+                              color: Colors.blue,
+                            )),
+                        SizedBox(
+                          width: ScreenUtil().setWidth(8),
+                        ),
+                        GestureDetector(
+                            onTap: () async{
+                              if (await canLaunch(urlTwitter)) {
+                                await launch(urlTwitter);
+                              } else {
+                                BotToast.showSimpleNotification(
+                                    title: '唤起网页失败');
+                                throw 'Could not launch $urlTwitter';
+                              }
+                            },
+                            child: FaIcon(
+                              FontAwesomeIcons.twitterSquare,
+                              color: Colors.blue,
+                            ))
+                      ],
+                    ),
                   ),
-                  GestureDetector(
-                      onTap: () {},
-                      child: Icon(
-                        Icons.group,
-                        color: Colors.blue,
-                      ))
+                  // 关注人数
+                  Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(ScreenUtil().setHeight(10)),
+                    child: (Text(
+                      '$numOfFollower 关注',
+                      style: smallTextStyle,
+                    )),
+                  ),
+                  // 简介
+                  Container(
+                    margin: EdgeInsets.all(ScreenUtil().setHeight(20)),
+                    child: Wrap(
+                      children: <Widget>[
+                        Text(
+                          '$comment',
+                          style: smallTextStyle,
+                        ),
+                      ],
+                    ),
+                  ),
+                  // 相关图片
+                  Container(
+                    height: ScreenUtil().setHeight(521),
+                    width: ScreenUtil().setWidth(324),
+                    child: _tabViewer(),
+                  )
                 ],
               ),
             ),
-            // 关注人数
-            Container(
-              alignment: Alignment.center,
-              padding: EdgeInsets.all(ScreenUtil().setHeight(10)),
-              child: (Text(
-                '$numOfFollower 关注',
-                style: smallTextStyle,
-              )),
-            ),
-            // 简介
-            Container(
-              margin: EdgeInsets.all(ScreenUtil().setHeight(20)),
-              child: Wrap(
-                children: <Widget>[
-                  Text(
-                    '$comment',
-                    style: smallTextStyle,
-                  ),
-                ],
-              ),
-            ),
-            // 相关图片
-            Container(
-              height: ScreenUtil().setHeight(521),
-              width: ScreenUtil().setWidth(324),
-              child: _tabViewer(),
-            )
-          ],
-        ),
-      ),
     );
   }
 
@@ -329,7 +350,9 @@ class _ArtistPageState extends State<ArtistPage> {
 
   _initPappbar() {
     String tempTitle = widget.artistName;
-    tempTitle.length > 20 ? tempTitle = tempTitle.substring(0,20) + '...' : tempTitle = tempTitle;
+    tempTitle.length > 20
+        ? tempTitle = tempTitle.substring(0, 20) + '...'
+        : tempTitle = tempTitle;
     pappBar = PappBar(title: tempTitle);
   }
 }

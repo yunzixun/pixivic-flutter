@@ -11,7 +11,6 @@ import '../function/identity.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_advanced_networkimage/provider.dart';
 
 class UserPage extends StatefulWidget {
   @override
@@ -100,12 +99,8 @@ class UserPageState extends State<UserPage> {
               child: CircleAvatar(
                   backgroundColor: Colors.white,
                   radius: ScreenUtil().setHeight(25),
-                  backgroundImage: NetworkImage(
-                    prefs.getString('avatarLink'),
-                    headers: {
-                      'referer':'https://pixivic.com'
-                    }
-                  ))),
+                  backgroundImage: NetworkImage(prefs.getString('avatarLink'),
+                      headers: {'referer': 'https://pixivic.com'}))),
           Positioned(
             top: ScreenUtil().setHeight(33),
             left: ScreenUtil().setWidth(90),
@@ -184,9 +179,28 @@ class UserPageState extends State<UserPage> {
               color: Colors.orange,
             ),
             text.logout, () {
-          logout();
-        }),
-        
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text(text.logout),
+                  content: Text(text.makerSureLogout),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("取消"),
+                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    ),
+                    FlatButton(
+                      child: Text("确定"),
+                      onPressed: () {
+                        logout();
+                        Navigator.of(context).pop(true); //关闭对话框
+                      },
+                    ),
+                  ],
+                );
+              });
+        })
       ],
     );
   }
@@ -227,5 +241,4 @@ class UserPageState extends State<UserPage> {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => HistoryPage()));
   }
-
 }

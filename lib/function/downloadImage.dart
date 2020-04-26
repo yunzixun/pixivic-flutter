@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:path_provider/path_provider.dart';
@@ -25,18 +24,6 @@ class DownloadImage {
     print('start download');
     BotToast.showSimpleNotification(title: '开始下载');
 
-    // FlutterDownloader.initialize(debug: false);
-    // FlutterDownloader.registerCallback(_onAndroidDownloaderCallBack);
-
-    // set callback from this class, not from outside
-    // ReceivePort _port = ReceivePort();
-    // IsolateNameServer.registerPortWithName(
-    //     _port.sendPort, 'downloader_send_port');
-    // _port.listen((dynamic data) {
-    //   String id = data[0];
-    //   DownloadTaskStatus status = data[1];
-    //   int progress = data[2];
-    // });
     ImageDownloader.callback(
         onProgressUpdate: (String imageId, int progressNow) {
       progress = progressNow;
@@ -106,14 +93,4 @@ class DownloadImage {
       return false;
     });
   }
-
-  // static _onAndroidDownloaderCallBack(
-  //     String id, DownloadTaskStatus status, int progress) {
-  //   final SendPort send =
-  //       IsolateNameServer.lookupPortByName('downloader_send_port');
-  //   send.send([id, status, progress]);
-  //   if (progress == 100) {
-  //     BotToast.showSimpleNotification(title: '下载完成');
-  //   }
-  // }
 }
