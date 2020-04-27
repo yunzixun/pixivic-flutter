@@ -59,8 +59,8 @@ class _CenterPageState extends State<CenterPage> {
                   () {
                 _openUrl('https://m.pixivic.com/friends?VNK=d6d42013');
               }),
-              cell(texts.policy, FontAwesomeIcons.solidPaperPlane,
-                  Colors.green[500], () {
+              cell(texts.policy, FontAwesomeIcons.userSecret,
+                  Colors.black38, () {
                 _openUrl('https://pixivic.com/policy/');
               }),
             ],

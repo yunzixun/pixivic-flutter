@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:pixivic/page/search_page.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_bugly/flutter_bugly.dart';
 
 import 'widget/nav_bar.dart';
 import 'widget/papp_bar.dart';
@@ -19,13 +20,16 @@ import 'page/user_page.dart';
 import 'page/center_page.dart';
 
 import 'data/common.dart';
+import 'data/bugly.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  FlutterDownloader.initialize(debug: false);
+
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  runApp(MyApp());
+  FlutterBugly.postCatchedException(() {
+    runApp(MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -89,7 +93,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    FlutterDownloader.cancelAll();
+    FlutterBugly.init(androidAppId: buglyAndroid, iOSAppId: buglyIos);
+    FlutterDownloader.initialize(debug: false).then((value) {
+      FlutterDownloader.cancelAll();
+    });
     initData().then((value) {
       setState(() {
         picPage = PicPage.home(

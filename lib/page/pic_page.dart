@@ -249,16 +249,17 @@ class _PicPageState extends State<PicPage> {
             oldWidget.picMode != widget.picMode)) {
       try {
         scrollController.animateTo(
-        0.0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeOut,);
-      } catch(e) {
+          0.0,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOut,
+        );
+      } catch (e) {
         scrollController = ScrollController(
-        initialScrollOffset:
-            widget.jsonMode == 'home' ? homeScrollerPosition : 0.0)
-      ..addListener(_doWhileScrolling);
+            initialScrollOffset:
+                widget.jsonMode == 'home' ? homeScrollerPosition : 0.0)
+          ..addListener(_doWhileScrolling);
       }
-      
+
       // 清空 Picpage 控件参数和缓存参数
       currentPage = 1;
       homeCurrentPage = 1;
@@ -547,94 +548,98 @@ class _PicPageState extends State<PicPage> {
   Widget imageCell(int index) {
     final Color color = _randomColor.randomColor();
     Map picMapData = Map.from(picList[index]);
-    return Container(
-      padding: EdgeInsets.only(
-        left: ScreenUtil().setWidth(4),
-        right: ScreenUtil().setWidth(4),
-        top: ScreenUtil().setWidth(10),
-      ),
-      child: Stack(
-        children: <Widget>[
-          Positioned(
-            child: ClipRRect(
-              clipBehavior: Clip.antiAlias,
-              borderRadius: BorderRadius.circular(15),
-              child: GestureDetector(
-                onTap: () async {
-                  FocusScope.of(context).unfocus();
-                  // 对广告图片做区分判断
-                  if (picMapData['type'] == 'ad_image') {
-                    if (await canLaunch(picMapData['link'])) {
-                      await launch(picMapData['link']);
-                    } else {
-                      BotToast.showSimpleNotification(title: '唤起网页失败');
-                      throw 'Could not launch ${picMapData['link']}';
-                    }
-                  } else
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PicDetailPage(picMapData,
-                                index: index,
-                                bookmarkRefresh: _bookmarkRefresh)));
-                },
-                child: Container(
-                  // 限定constraints用于占用位置,经调试后以0.5为基准可以保证加载图片后不产生位移
-                  constraints: BoxConstraints(
-                      // minHeight: MediaQuery.of(context).size.width *
-                      //     0.5 /
-                      //     _picMainParameter(index)[2] *
-                      //     _picMainParameter(index)[3],
-                      // minWidth: MediaQuery.of(context).size.width * 0.41,
-                      minHeight: ScreenUtil().setWidth(148) /
-                          _picMainParameter(index)[2] *
-                          _picMainParameter(index)[3],
-                      minWidth: ScreenUtil().setWidth(148)),
-                  child: Hero(
-                    tag: 'imageHero' + _picMainParameter(index)[0],
-                    child: Image(
-                      image: AdvancedNetworkImage(
-                        _picMainParameter(index)[0],
-                        header: {'Referer': 'https://app-api.pixiv.net'},
-                        useDiskCache: true,
-                        cacheRule: CacheRule(maxAge: const Duration(days: 7)),
+    if (picMapData['xrestict'] == 1 || picMapData['sanityLevel'] > 6)
+      return Container();
+    else
+      return Container(
+        padding: EdgeInsets.only(
+          left: ScreenUtil().setWidth(4),
+          right: ScreenUtil().setWidth(4),
+          top: ScreenUtil().setWidth(10),
+        ),
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              child: ClipRRect(
+                clipBehavior: Clip.antiAlias,
+                borderRadius: BorderRadius.circular(15),
+                child: GestureDetector(
+                  onTap: () async {
+                    FocusScope.of(context).unfocus();
+                    // 对广告图片做区分判断
+                    if (picMapData['type'] == 'ad_image') {
+                      if (await canLaunch(picMapData['link'])) {
+                        await launch(picMapData['link']);
+                      } else {
+                        BotToast.showSimpleNotification(title: '唤起网页失败');
+                        throw 'Could not launch ${picMapData['link']}';
+                      }
+                    } else
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PicDetailPage(picMapData,
+                                  index: index,
+                                  bookmarkRefresh: _bookmarkRefresh)));
+                  },
+                  child: Container(
+                    // 限定constraints用于占用位置,经调试后以0.5为基准可以保证加载图片后不产生位移
+                    constraints: BoxConstraints(
+                        // minHeight: MediaQuery.of(context).size.width *
+                        //     0.5 /
+                        //     _picMainParameter(index)[2] *
+                        //     _picMainParameter(index)[3],
+                        // minWidth: MediaQuery.of(context).size.width * 0.41,
+                        minHeight: ScreenUtil().setWidth(148) /
+                            _picMainParameter(index)[2] *
+                            _picMainParameter(index)[3],
+                        minWidth: ScreenUtil().setWidth(148)),
+                    child: Hero(
+                      tag: 'imageHero' + _picMainParameter(index)[0],
+                      child: Image(
+                        image: AdvancedNetworkImage(
+                          _picMainParameter(index)[0],
+                          header: {'Referer': 'https://app-api.pixiv.net'},
+                          useDiskCache: true,
+                          cacheRule: CacheRule(maxAge: const Duration(days: 7)),
+                        ),
+                        fit: BoxFit.fill,
+                        frameBuilder:
+                            (context, child, frame, wasSynchronouslyLoaded) {
+                          if (wasSynchronouslyLoaded) {
+                            return child;
+                          }
+                          return Container(
+                            child: AnimatedOpacity(
+                              child: frame == null
+                                  ? Container(color: color)
+                                  : child,
+                              opacity: frame == null ? 0.3 : 1,
+                              duration: const Duration(seconds: 1),
+                              curve: Curves.easeOut,
+                            ),
+                          );
+                        },
                       ),
-                      fit: BoxFit.fill,
-                      frameBuilder:
-                          (context, child, frame, wasSynchronouslyLoaded) {
-                        if (wasSynchronouslyLoaded) {
-                          return child;
-                        }
-                        return Container(
-                          child: AnimatedOpacity(
-                            child:
-                                frame == null ? Container(color: color) : child,
-                            opacity: frame == null ? 0.3 : 1,
-                            duration: const Duration(seconds: 1),
-                            curve: Curves.easeOut,
-                          ),
-                        );
-                      },
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            child: numberViewer(_picMainParameter(index)[1]),
-            right: ScreenUtil().setWidth(10),
-            top: ScreenUtil().setHeight(5),
-          ),
-          prefs.getString('auth') != ''
-              ? Positioned(
-                  bottom: ScreenUtil().setHeight(5),
-                  right: ScreenUtil().setWidth(5),
-                  child: bookmarkHeart(index))
-              : Container(),
-        ],
-      ),
-    );
+            Positioned(
+              child: numberViewer(_picMainParameter(index)[1]),
+              right: ScreenUtil().setWidth(10),
+              top: ScreenUtil().setHeight(5),
+            ),
+            prefs.getString('auth') != ''
+                ? Positioned(
+                    bottom: ScreenUtil().setHeight(5),
+                    right: ScreenUtil().setWidth(5),
+                    child: bookmarkHeart(index))
+                : Container(),
+          ],
+        ),
+      );
   }
 
   Widget numberViewer(num numberOfPic) {

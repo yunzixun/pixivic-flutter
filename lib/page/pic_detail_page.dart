@@ -542,7 +542,7 @@ class _PicDetailPageState extends State<PicDetailPage> {
                   title: Text('跳转pixiv详情'),
                   leading: Icon(Icons.image, color: Colors.purple),
                   onTap: () async {
-                    String url = 'https://pixiv.net/users/';
+                    String url = 'https://pixiv.net/artworks/${widget._picData['id']}';
                     if (await canLaunch(url)) {
                       await launch(url);
                     } else {
@@ -558,6 +558,13 @@ class _PicDetailPageState extends State<PicDetailPage> {
                     color: Colors.blueAccent,
                   ),
                   onTap: () async {
+                    String url = 'https://pixiv.net/users/${widget._picData['artistId']}';
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    } else {
+                      throw 'Could not launch $url';
+                    }
+                    Navigator.of(context).pop();
                     Navigator.of(context).pop();
                   },
                 ),
