@@ -517,7 +517,10 @@ class _PicDetailPageState extends State<PicDetailPage> {
               children: <Widget>[
                 ListTile(
                   title: Text('下载原图'),
-                  leading: Icon(Icons.cloud_download),
+                  leading: Icon(
+                    Icons.cloud_download,
+                    color: Colors.orangeAccent,
+                  ),
                   onTap: () async {
                     final String platform =
                         Theme.of(context).platform == TargetPlatform.android
@@ -525,16 +528,39 @@ class _PicDetailPageState extends State<PicDetailPage> {
                             : 'ios';
                     _checkPermission().then((value) async {
                       if (value) {
-                       DownloadImage(url, platform);
+                        DownloadImage(url, platform);
                       } else {
                         BotToast.showSimpleNotification(
-                            title: '请赋予程序下载权限(｡ŏ_ŏ)' );
+                            title: '请赋予程序下载权限(｡ŏ_ŏ)');
                       }
                     });
 
                     Navigator.of(context).pop();
                   },
-                )
+                ),
+                ListTile(
+                  title: Text('跳转pixiv详情'),
+                  leading: Icon(Icons.image, color: Colors.purple),
+                  onTap: () async {
+                    String url = 'https://pixiv.net/users/';
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    } else {
+                      throw 'Could not launch $url';
+                    }
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ListTile(
+                  title: Text('跳转pixiv画师'),
+                  leading: Icon(
+                    Icons.people,
+                    color: Colors.blueAccent,
+                  ),
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                  },
+                ),
               ],
             ),
           );

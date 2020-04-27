@@ -79,6 +79,7 @@ class TextZhCenterPage {
   String rearend = '后端';
   String mobile = '移动端';
   String friendUrl = '友链';
+  String policy = '隐私政策';
 }
 
 class TextZhSpotlightPage {

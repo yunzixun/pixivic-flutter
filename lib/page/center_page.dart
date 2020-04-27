@@ -23,23 +23,22 @@ class _CenterPageState extends State<CenterPage> {
       decoration: BoxDecoration(
           color: Colors.white,
           image: DecorationImage(
-              image: AssetImage('image/background.png'),
-              fit: BoxFit.fitWidth)),
+              image: AssetImage('image/background.png'), fit: BoxFit.fitWidth)),
       child: Column(
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               cell(texts.spotlight, FontAwesomeIcons.solidImages,
-                  Colors.yellow[700], _routeToSpotlightPage),
+                  Colors.green[300], _routeToSpotlightPage),
               cell(texts.community, FontAwesomeIcons.solidComments,
-                  Colors.orange, () {
+                  Colors.deepOrange[200], () {
                 _openUrl('https://discuss.pixivic.com/');
               }),
-              cell(texts.about, FontAwesomeIcons.infoCircle, Colors.blueGrey,
+              cell(texts.about, FontAwesomeIcons.infoCircle, Colors.blueGrey[400],
                   _routeToAboutPage),
               cell(
-                  texts.frontend, FontAwesomeIcons.githubAlt, Colors.blueAccent,
+                  texts.frontend, FontAwesomeIcons.githubAlt, Colors.blue[400],
                   () {
                 _openUrl('https://github.com/cheer-fun/pixivic-mobile');
               }),
@@ -48,20 +47,20 @@ class _CenterPageState extends State<CenterPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              cell(texts.rearend, FontAwesomeIcons.githubAlt, Colors.redAccent,
+              cell(texts.rearend, FontAwesomeIcons.githubAlt, Colors.red[400],
                   () {
                 _openUrl('https://github.com/cheer-fun/pixivic-web-backend');
               }),
-              cell(texts.mobile, FontAwesomeIcons.githubAlt, Colors.lightGreen,
+              cell(texts.mobile, FontAwesomeIcons.githubAlt, Colors.orange[300],
                   () {
                 _openUrl('https://github.com/cheer-fun/pixivic-flutter');
               }),
-              cell(texts.friendUrl, FontAwesomeIcons.paperclip, Colors.purple,
+              cell(texts.friendUrl, FontAwesomeIcons.paperclip, Colors.pink[200],
                   () {
                 _openUrl('https://m.pixivic.com/friends?VNK=d6d42013');
               }),
-              cell(texts.friendUrl, FontAwesomeIcons.userShield,
-                  Colors.lightGreen[300], () {
+              cell(texts.policy, FontAwesomeIcons.solidPaperPlane,
+                  Colors.green[500], () {
                 _openUrl('https://pixivic.com/policy/');
               }),
             ],
@@ -87,12 +86,16 @@ class _CenterPageState extends State<CenterPage> {
               FaIcon(
                 icon,
                 color: iconColor,
-                size: ScreenUtil().setWidth(35),
+                size: ScreenUtil().setWidth(30),
               ),
               SizedBox(
                 height: ScreenUtil().setHeight(5),
               ),
-              Text(label),
+              Text(label,
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
+                      color: Colors.blueGrey)),
             ],
           ),
         ),
