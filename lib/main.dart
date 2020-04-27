@@ -93,7 +93,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    FlutterBugly.init(androidAppId: buglyAndroid, iOSAppId: buglyIos);
+    FlutterBugly.init(androidAppId: buglyAndroid, iOSAppId: buglyIos).then((onValue) {
+      print('FlutterBugly: ${onValue.isSuccess}');
+      print('FlutterBugly: ${onValue.appId}');
+      print('FlutterBugly: ${onValue.message}');
+      FlutterBugly.setUserId('pixivic 0.0.1');
+    });
     FlutterDownloader.initialize(debug: false).then((value) {
       FlutterDownloader.cancelAll();
     });
