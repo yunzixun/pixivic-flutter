@@ -29,7 +29,7 @@ List<String> keywordsString = [
   'signature',
   'location',
 ];
-List<String> keywordsInt = ['id', 'star'];
+List<String> keywordsInt = ['id', 'star', 'sanityLevel'];
 List<String> keywordsBool = ['isBindQQ', 'isCheckEmail'];
 
 GlobalKey<NewPageState> newPageKey;
@@ -39,7 +39,6 @@ GlobalKey<UserPageState> userPageKey;
 Future initData() async {
   newPageKey = GlobalKey();
   userPageKey = GlobalKey();
-
 
   prefs = await SharedPreferences.getInstance();
   cacheSize = await DiskCache().cacheSize();
@@ -51,7 +50,10 @@ Future initData() async {
     if (prefs.getString(item) == null) prefs.setString(item, '');
   }
   for (var item in keywordsInt) {
-    if (prefs.getInt(item) == null) prefs.setInt(item, 0);
+    if (prefs.getInt(item) == null && item != 'sanityLevel')
+      prefs.setInt(item, 0);
+    else if (prefs.getInt(item) == null && item == 'sanityLevel')
+      prefs.setInt(item, 3);
   }
   for (var item in keywordsBool) {
     if (prefs.getBool(item) == null) prefs.setBool(item, false);
@@ -70,4 +72,3 @@ Future initData() async {
   } else
     isLogin = false;
 }
-

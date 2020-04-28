@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pixivic/data/common.dart';
 import 'package:pixivic/sidepage/about_page.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -35,10 +36,9 @@ class _CenterPageState extends State<CenterPage> {
                   Colors.deepOrange[200], () {
                 _openUrl('https://discuss.pixivic.com/');
               }),
-              cell(texts.about, FontAwesomeIcons.infoCircle, Colors.blueGrey[400],
-                  _routeToAboutPage),
-              cell(
-                  texts.frontend, FontAwesomeIcons.githubAlt, Colors.blue[400],
+              cell(texts.about, FontAwesomeIcons.infoCircle,
+                  Colors.blueGrey[400], _routeToAboutPage),
+              cell(texts.frontend, FontAwesomeIcons.githubAlt, Colors.blue[400],
                   () {
                 _openUrl('https://github.com/cheer-fun/pixivic-mobile');
               }),
@@ -55,14 +55,22 @@ class _CenterPageState extends State<CenterPage> {
                   () {
                 _openUrl('https://github.com/cheer-fun/pixivic-flutter');
               }),
-              cell(texts.friendUrl, FontAwesomeIcons.paperclip, Colors.pink[200],
+              cell(
+                  texts.friendUrl, FontAwesomeIcons.paperclip, Colors.pink[200],
                   () {
                 _openUrl('https://m.pixivic.com/friends?VNK=d6d42013');
               }),
-              cell(texts.policy, FontAwesomeIcons.userSecret,
-                  Colors.black38, () {
+              cell(texts.policy, FontAwesomeIcons.userSecret, Colors.black38,
+                  () {
                 _openUrl('https://pixivic.com/policy/');
               }),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              cell(texts.safety, FontAwesomeIcons.lock, Colors.blueGrey[300],
+                  () {_openSafetySetting();}),
             ],
           )
         ],
@@ -119,5 +127,32 @@ class _CenterPageState extends State<CenterPage> {
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  _openSafetySetting() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(texts.safetyTitle),
+            content: Text(texts.safetyWarn),
+            actions: <Widget>[
+              FlatButton(
+                child: Text(texts.safetyLevelHigh),
+                onPressed: () {
+                  prefs.setInt('sanityLevel', 3);
+                  Navigator.of(context).pop();
+                }, //关闭对话框
+              ),
+              FlatButton(
+                child: Text(texts.safetyLevelLowHigh),
+                onPressed: () {
+                  prefs.setInt('sanityLevel', 6);
+                  Navigator.of(context).pop(true); //关闭对话框¯˘¿
+                },
+              ),
+            ],
+          );
+        });
   }
 }

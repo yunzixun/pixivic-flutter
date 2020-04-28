@@ -1,5 +1,9 @@
 PODS:
+  - Bugly (2.5.2)
   - Flutter (1.0.0)
+  - flutter_bugly (0.0.1):
+    - Bugly
+    - Flutter
   - flutter_downloader (0.0.1):
     - Flutter
   - image_downloader (0.0.1):
@@ -25,6 +29,7 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_bugly (from `.symlinks/plugins/flutter_bugly/ios`)
   - flutter_downloader (from `.symlinks/plugins/flutter_downloader/ios`)
   - image_downloader (from `.symlinks/plugins/image_downloader/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
@@ -37,9 +42,15 @@ DEPENDENCIES:
   - url_launcher_macos (from `.symlinks/plugins/url_launcher_macos/ios`)
   - url_launcher_web (from `.symlinks/plugins/url_launcher_web/ios`)
 
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - Bugly
+
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_bugly:
+    :path: ".symlinks/plugins/flutter_bugly/ios"
   flutter_downloader:
     :path: ".symlinks/plugins/flutter_downloader/ios"
   image_downloader:
@@ -64,7 +75,9 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_web/ios"
 
 SPEC CHECKSUMS:
+  Bugly: dbac48b55ad469a97cc4321045cd50df8f63d44f
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  flutter_bugly: c9800f4d5bc5bdc27ffdde3417a26ba44266e0c3
   flutter_downloader: 058b9c41564a90500f67f3e432e3524613a7fd83
   image_downloader: 73e190d6c9f286f2649554051348d9cb319cd4b3
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
@@ -77,6 +90,6 @@ SPEC CHECKSUMS:
   url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313
   url_launcher_web: e5527357f037c87560776e36436bf2b0288b965c
 
-PODFILE CHECKSUM: 1b66dae606f75376c5f2135a8290850eeb09ae83
+PODFILE CHECKSUM: fd2b8bc7d63b46697f4d2c39a162ce238664c8f3
 
 COCOAPODS: 1.9.1

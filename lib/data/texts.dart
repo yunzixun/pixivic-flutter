@@ -80,6 +80,11 @@ class TextZhCenterPage {
   String mobile = '移动端';
   String friendUrl = '友链';
   String policy = '隐私政策';
+  String safety = '安全设定';
+  String safetyTitle = '安全等级设定';
+  String safetyWarn = '注意！！\nPixivic 进行了严格的图片敏感信息过滤，默认安全等级为高等。\n您可以选择使用中高等的安全等级，但请知晓，此等级下展示的更多图片可能包含轻微暴露图片。\n这些图片可能会引起您的反感或不适。\n切换等级后请自行重启应用以更新相应内容';
+  String safetyLevelHigh = '高';
+  String safetyLevelLowHigh = '中高';
 }
 
 class TextZhSpotlightPage {

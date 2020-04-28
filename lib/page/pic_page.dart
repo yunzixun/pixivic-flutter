@@ -548,7 +548,7 @@ class _PicPageState extends State<PicPage> {
   Widget imageCell(int index) {
     final Color color = _randomColor.randomColor();
     Map picMapData = Map.from(picList[index]);
-    if (picMapData['xrestict'] == 1 || picMapData['sanityLevel'] > 6)
+    if (picMapData['xrestict'] == 1 || picMapData['sanityLevel'] > prefs.getInt('sanityLevel'))
       return Container();
     else
       return Container(
